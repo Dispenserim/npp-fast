@@ -112,6 +112,7 @@ void DocTabView::addBuffer(BufferID buffer)
 	tie.pszText = encodedLabel;
 	tie.lParam = reinterpret_cast<LPARAM>(buffer);
 	applyBatchFixedWidth();
+	flushPendingDeletes(); // the new tab goes right after the live ones
 	int insertedIndex = static_cast<int>(::SendMessage(_hSelf, TCM_INSERTITEM, _nbItem++, reinterpret_cast<LPARAM>(&tie)));
 	addBufferToIndex(buffer);
 	if (insertedIndex >= 0)
@@ -136,14 +137,79 @@ void DocTabView::deletItemAt(size_t index)
 		return;
 	removeBufferFromIndex(getBufferByIndex(index));
 	applyBatchFixedWidth();
-	TabBar::deletItemAt(index);
 	_lastFoundIndex = -1;
+
+	// Closing the last tab during a batch: leave it in the control, see flushPendingDeletes().
+	// The selected tab is still removed for real, so the selection never points to a closed tab.
+	if (_isInBatch && index == _nbItem - 1 && static_cast<int>(index) != getCurrentTabIndex())
+	{
+		--_nbItem;
+		++_nbPendingTrailingDeletes;
+		return;
+	}
+
+	TabBar::deletItemAt(index);
 }
 
 void DocTabView::deletAllItem()
 {
 	TabBar::deletAllItem();
+	_nbPendingTrailingDeletes = 0;
 	_bufferTabCount.clear();
+	_lastFoundIndex = -1;
+}
+
+void DocTabView::flushPendingDeletes()
+{
+	if (_nbPendingTrailingDeletes == 0)
+		return;
+	_nbPendingTrailingDeletes = 0;
+
+	const size_t nbInControl = static_cast<size_t>(::SendMessage(_hSelf, TCM_GETITEMCOUNT, 0, 0));
+	if (nbInControl <= _nbItem)
+		return;
+
+	if (_nbItem < nbInControl - _nbItem)
+	{
+		// Fewer tabs left than to remove (e.g. after "Close All to the Right"): rebuilding the few remaining ones
+		// is much cheaper than removing every closed one.
+		struct TabItem
+		{
+			wchar_t text[2 * MAX_PATH] = { '\0' };
+			int image = -1;
+			LPARAM param = 0;
+		};
+		std::vector<TabItem> items(_nbItem);
+		for (size_t i = 0; i < _nbItem; ++i)
+		{
+			TCITEM tie{};
+			tie.mask = TCIF_TEXT | TCIF_IMAGE | TCIF_PARAM;
+			tie.pszText = items[i].text;
+			tie.cchTextMax = static_cast<int>(std::size(items[i].text));
+			::SendMessage(_hSelf, TCM_GETITEM, i, reinterpret_cast<LPARAM>(&tie));
+			items[i].image = tie.iImage;
+			items[i].param = tie.lParam;
+		}
+		const int selected = getCurrentTabIndex();
+
+		::SendMessage(_hSelf, TCM_DELETEALLITEMS, 0, 0);
+		for (size_t i = 0; i < items.size(); ++i)
+		{
+			TCITEM tie{};
+			tie.mask = TCIF_TEXT | TCIF_IMAGE | TCIF_PARAM;
+			tie.pszText = items[i].text;
+			tie.iImage = items[i].image;
+			tie.lParam = items[i].param;
+			::SendMessage(_hSelf, TCM_INSERTITEM, i, reinterpret_cast<LPARAM>(&tie));
+		}
+		if (selected >= 0 && static_cast<size_t>(selected) < _nbItem)
+			::SendMessage(_hSelf, TCM_SETCURSEL, selected, 0);
+	}
+	else
+	{
+		for (size_t i = nbInControl; i > _nbItem; --i)
+			::SendMessage(_hSelf, TCM_DELETEITEM, i - 1, 0);
+	}
 	_lastFoundIndex = -1;
 }
 
@@ -158,28 +224,34 @@ void DocTabView::removeBufferFromIndex(BufferID id)
 
 void DocTabView::applyBatchFixedWidth()
 {
-	if (_batchUpdateDepth == 0 || _isBatchFixedWidthApplied || !_hSelf)
+	if (_batchUpdateDepth == 0 || _isInBatch || !_hSelf)
 		return;
 
-	LONG_PTR style = ::GetWindowLongPtr(_hSelf, GWL_STYLE);
-	if (style & TCS_FIXEDWIDTH)
-		return; // already fixed width, nothing to gain
-
 	::SendMessage(_hSelf, WM_SETREDRAW, FALSE, 0); // nothing to paint until the batch is done
-	::SetWindowLongPtr(_hSelf, GWL_STYLE, style | TCS_FIXEDWIDTH);
-	_isBatchFixedWidthApplied = true;
+	LONG_PTR style = ::GetWindowLongPtr(_hSelf, GWL_STYLE);
+	if (!(style & TCS_FIXEDWIDTH)) // otherwise already fixed width, nothing to gain
+	{
+		::SetWindowLongPtr(_hSelf, GWL_STYLE, style | TCS_FIXEDWIDTH);
+		_hasBatchAddedFixedWidth = true;
+	}
+	_isInBatch = true;
 	_batchFixedWidthTabs.push_back(this);
 }
 
 void DocTabView::restoreBatchFixedWidth()
 {
-	if (!_isBatchFixedWidthApplied)
+	if (!_isInBatch)
 		return;
 
-	_isBatchFixedWidthApplied = false;
-	LONG_PTR style = ::GetWindowLongPtr(_hSelf, GWL_STYLE);
-	::SetWindowLongPtr(_hSelf, GWL_STYLE, style & ~static_cast<LONG_PTR>(TCS_FIXEDWIDTH));
-	refresh(); // forces the tab control to re-measure all the tabs with the restored style
+	_isInBatch = false;
+	flushPendingDeletes();
+	if (_hasBatchAddedFixedWidth)
+	{
+		_hasBatchAddedFixedWidth = false;
+		LONG_PTR style = ::GetWindowLongPtr(_hSelf, GWL_STYLE);
+		::SetWindowLongPtr(_hSelf, GWL_STYLE, style & ~static_cast<LONG_PTR>(TCS_FIXEDWIDTH));
+		refresh(); // forces the tab control to re-measure all the tabs with the restored style
+	}
 	::SendMessage(_hSelf, WM_SETREDRAW, TRUE, 0);
 	::InvalidateRect(_hSelf, nullptr, TRUE);
 }

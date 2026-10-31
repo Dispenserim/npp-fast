@@ -65,6 +65,9 @@ public:
 	void deletItemAt(size_t index);
 	void deletAllItem();
 
+	// Hides TabBar::getItemCount(): during a batch, closed tabs at the end can still be in the control (see below).
+	int getItemCount() const { return static_cast<int>(_nbItem); }
+
 	// Batch mode: while at least one batch is open, the WM_SIZE that every tab insertion/removal
 	// would send to the main window is coalesced into a single one sent when the last batch ends.
 	// Opening or closing N files then costs one full window layout instead of N.
@@ -129,10 +132,19 @@ private :
 	// While a batch is open, tabs are laid out with TCS_FIXEDWIDTH: otherwise the tab control re-measures the text
 	// of every tab on each insertion/removal, which makes adding or removing n tabs O(n^2) text measurements.
 	// The real style is restored (and the tabs re-measured once) when the batch ends.
-	bool _isBatchFixedWidthApplied = false;
+	// Painting is also turned off for the duration of the batch.
+	bool _isInBatch = false;            // registered in _batchFixedWidthTabs, painting off
+	bool _hasBatchAddedFixedWidth = false; // TCS_FIXEDWIDTH was set by the batch (not by the user's settings)
 	static inline std::vector<DocTabView*> _batchFixedWidthTabs;
 	void applyBatchFixedWidth();
 	void restoreBatchFixedWidth();
+
+	// While a batch is open, closing the last tab (what "Close All" and "Close All to the Right" do, right to left)
+	// only drops it from _nbItem: each TCM_DELETEITEM re-lays out every remaining tab, so closing n tabs one by one
+	// is O(n^2). The control keeps these closed tabs after the _nbItem live ones, hidden since painting is off,
+	// and they are all removed at once by flushPendingDeletes() when the batch ends (or before a tab is added).
+	size_t _nbPendingTrailingDeletes = 0;
+	void flushPendingDeletes();
 
 	using TabBarPlus::init;
 };
