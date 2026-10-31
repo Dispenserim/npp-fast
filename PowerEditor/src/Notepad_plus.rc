@@ -291,6 +291,8 @@ IDC_DRAG_INTERDIT_TAB           CURSOR    "cursors/drag_interdit.cur"
 IDC_DRAG_PLUS_TAB               CURSOR    "cursors/drag_plus.cur"
 IDC_DRAG_OUT_TAB                CURSOR    "cursors/drag_out.cur"
 
+IDR_DARKMODEDEFAULT_XML         RCDATA    "../installer/themes/DarkModeDefault.xml"
+
 IDR_FILENEW                     BITMAP    "icons/standard/toolbar/newFile.bmp"
 IDR_FILEOPEN                    BITMAP    "icons/standard/toolbar/openFile.bmp"
 IDR_FILESAVE                    BITMAP    "icons/standard/toolbar/saveFile.bmp"

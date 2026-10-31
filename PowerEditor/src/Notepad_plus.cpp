@@ -8754,7 +8754,17 @@ void Notepad_plus::refreshDarkMode(bool resetStyle)
 				pathAppend(themePath, xmlFileName);
 			}
 
+			if (!doesFileExist(themePath.c_str()) && NppDarkMode::isEnabled())
+			{
+				// No themes folder next to the exe: fall back to the dark theme built into the exe
+				std::wstring builtinPath = nppParams.extractBuiltinDarkTheme(xmlFileName);
+				if (!builtinPath.empty())
+					themePath = builtinPath;
+			}
+
 			themeName = themeSwitcher.getThemeFromXmlFileName(themePath.c_str());
+			if (doesFileExist(themePath.c_str()) && !themeSwitcher.themeNameExists(themeName.c_str()))
+				themeSwitcher.addThemeFromXml(themePath);
 		}
 		else
 		{
@@ -8769,11 +8779,7 @@ void Notepad_plus::refreshDarkMode(bool resetStyle)
 		{
 			nppParams.getNppGUI()._themeName = themePath;
 
-			if (_configStyleDlg.isCreated())
-			{
-				_configStyleDlg.selectThemeByName(themeName.c_str());
-			}
-			else
+			if (!_configStyleDlg.isCreated() || !_configStyleDlg.selectThemeByName(themeName.c_str()))
 			{
 				nppParams.reloadStylers(themePath.c_str());
 				::SendMessage(_pPublicInterface->getHSelf(), WM_UPDATESCINTILLAS, TRUE, 0);

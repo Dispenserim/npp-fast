@@ -44,6 +44,7 @@
 #define IDI_CHAMELEON_DM           102
 #define IDR_RT_MANIFEST            103
 #define IDI_ICONABSENT             104
+#define IDR_DARKMODEDEFAULT_XML    105
 
 //
 // TOOLBAR ICO - set 1
