@@ -146,16 +146,9 @@ intptr_t CALLBACK AboutDlg::run_dlgProc(UINT message, WPARAM wParam, LPARAM lPar
 
             //_emailLink.init(_hInst, _hSelf);
 			//_emailLink.create(::GetDlgItem(_hSelf, IDC_AUTHOR_NAME), L"mailto:don.h@free.fr";
-			//_emailLink.create(::GetDlgItem(_hSelf, IDC_AUTHOR_NAME), L"https://notepad-plus-plus.org/news/v781-free-uyghur-edition/";
-			//_emailLink.create(::GetDlgItem(_hSelf, IDC_AUTHOR_NAME), L"https://notepad-plus-plus.org/news/v792-stand-with-hong-kong/";
-			//_emailLink.create(::GetDlgItem(_hSelf, IDC_AUTHOR_NAME), L"https://notepad-plus-plus.org/news/v791-pour-samuel-paty/";
 			//_pageLink.create(::GetDlgItem(_hSelf, IDC_HOME_ADDR), L"https://notepad-plus-plus.org/news/v843-unhappy-users-edition/";
 			//_pageLink.create(::GetDlgItem(_hSelf, IDC_HOME_ADDR), L"https://notepad-plus-plus.org/news/v844-happy-users-edition/";
             //_pageLink.create(::GetDlgItem(_hSelf, IDC_HOME_ADDR), L"https://notepad-plus-plus.org/news/v86-20thyearanniversary";
-            //_pageLink.create(::GetDlgItem(_hSelf, IDC_AUTHOR_NAME), L"https://notepad-plus-plus.org/news/v87-about-taiwan/");
-			//_pageLink.create(::GetDlgItem(_hSelf, IDC_AUTHOR_NAME), L"https://notepad-plus-plus.org/news/v881-we-are-with-ukraine/");
-			//_pageLink.create(::GetDlgItem(_hSelf, IDC_AUTHOR_NAME), L"https://notepad-plus-plus.org/news/v8964-released/");
-			//_pageLink.create(::GetDlgItem(_hSelf, IDC_AUTHOR_NAME), L"https://notepad-plus-plus.org/news/v897-slava-ukraini/");
             
 			_pageLink.init(_hInst, _hSelf);
 			_pageLink.create(::GetDlgItem(_hSelf, IDC_HOME_ADDR), L"https://notepad-plus-plus.org/");
@@ -205,13 +198,8 @@ intptr_t CALLBACK AboutDlg::run_dlgProc(UINT message, WPARAM wParam, LPARAM lPar
 			if (_hIcon == nullptr)
 			{
 				DPIManagerV2::loadIcon(_hInst, MAKEINTRESOURCE(NppDarkMode::isEnabled() ? IDI_CHAMELEON_DM : IDI_CHAMELEON), iconSize, iconSize, &_hIcon);
-				//DPIManagerV2::loadIcon(_hInst, MAKEINTRESOURCE(IDI_WITHUKRAINE), iconSize, iconSize, &_hIcon);
-				//DPIManagerV2::loadIcon(_hInst, MAKEINTRESOURCE(NppDarkMode::isEnabled() ? IDI_TAIWANSSOVEREIGNTY_DM : IDI_TAIWANSSOVEREIGNTY), iconSize, iconSize, &_hIcon);
 			}
 
-			//HICON hIcon = (HICON)::LoadImage(_hInst, MAKEINTRESOURCE(IDI_JESUISCHARLIE), IMAGE_ICON, 64, 64, LR_DEFAULTSIZE);
-			//HICON hIcon = (HICON)::LoadImage(_hInst, MAKEINTRESOURCE(IDI_GILETJAUNE), IMAGE_ICON, 64, 64, LR_DEFAULTSIZE);
-			//HICON hIcon = (HICON)::LoadImage(_hInst, MAKEINTRESOURCE(IDI_SAMESEXMARRIAGE), IMAGE_ICON, 64, 64, LR_DEFAULTSIZE);
 
 			auto pdis = reinterpret_cast<DRAWITEMSTRUCT*>(lParam);
 			::DrawIconEx(pdis->hDC, 0, 0, _hIcon, iconSize, iconSize, 0, nullptr, DI_NORMAL);
