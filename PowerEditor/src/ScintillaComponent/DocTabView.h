@@ -126,6 +126,14 @@ private :
 	static inline int _batchUpdateDepth = 0;
 	static inline HWND _hPendingResizeParent = nullptr;
 
+	// While a batch is open, tabs are laid out with TCS_FIXEDWIDTH: otherwise the tab control re-measures the text
+	// of every tab on each insertion/removal, which makes adding or removing n tabs O(n^2) text measurements.
+	// The real style is restored (and the tabs re-measured once) when the batch ends.
+	bool _isBatchFixedWidthApplied = false;
+	static inline std::vector<DocTabView*> _batchFixedWidthTabs;
+	void applyBatchFixedWidth();
+	void restoreBatchFixedWidth();
+
 	using TabBarPlus::init;
 };
 

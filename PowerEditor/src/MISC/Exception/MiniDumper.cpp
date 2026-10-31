@@ -30,7 +30,7 @@ MiniDumper::MiniDumper()
 bool MiniDumper::writeDump(EXCEPTION_POINTERS * pExceptionInfo)
 {
 	wchar_t szScratch[MAX_PATH];
-	LPCTSTR szResult = NULL;
+	LPCTSTR szResult = nullptr;
 	bool retval = false;
 
 	HMODULE hDll = ::LoadLibraryEx(L"DBGHELP.DLL", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);	//that won't work on older windows version than XP, #care :)
@@ -41,17 +41,17 @@ bool MiniDumper::writeDump(EXCEPTION_POINTERS * pExceptionInfo)
 		if (pDump)
 		{
 			wchar_t szDumpPath[MAX_PATH];
-			::GetModuleFileName(NULL, szDumpPath, MAX_PATH);
+			::GetModuleFileName(nullptr, szDumpPath, MAX_PATH);
 			::PathRemoveFileSpec(szDumpPath);
 			wcscat_s(szDumpPath, L"\\NppDump.dmp");
 
 			// ask the user if they want to save a dump file
-			int msgret = ::MessageBox(NULL, L"Do you want to save a dump file?\r\nDoing so can aid in developing Notepad++.", msgTitle, MB_YESNO);
+			int msgret = ::MessageBox(nullptr, L"Do you want to save a dump file?\r\nDoing so can aid in developing Notepad++.", msgTitle, MB_YESNO);
 			if (msgret == IDYES)
 			{
 				// create the file
-				HANDLE hFile = ::CreateFile( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,
-											FILE_ATTRIBUTE_NORMAL, NULL );
+				HANDLE hFile = ::CreateFile( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS,
+											FILE_ATTRIBUTE_NORMAL, nullptr );
 
 				if (hFile!=INVALID_HANDLE_VALUE)
 				{
@@ -62,7 +62,7 @@ bool MiniDumper::writeDump(EXCEPTION_POINTERS * pExceptionInfo)
 					ExInfo.ClientPointers = FALSE;
 
 					// write the dump
-					BOOL bOK = pDump( GetCurrentProcess(), GetCurrentProcessId(), hFile, MiniDumpNormal, &ExInfo, NULL, NULL );
+					BOOL bOK = pDump( GetCurrentProcess(), GetCurrentProcessId(), hFile, MiniDumpNormal, &ExInfo, nullptr, nullptr );
 					if (bOK)
 					{
 						wsprintf( szScratch, L"Saved dump file to '%s'", szDumpPath );
@@ -95,7 +95,7 @@ bool MiniDumper::writeDump(EXCEPTION_POINTERS * pExceptionInfo)
 	}
 
 	if (szResult)
-		::MessageBox(NULL, szResult, msgTitle, MB_OK);
+		::MessageBox(nullptr, szResult, msgTitle, MB_OK);
 
 	return retval;
 }

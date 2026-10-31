@@ -100,19 +100,19 @@ void URLCtrl::action()
 	{
 		_linkColor = _visitedColor;
 
-		::InvalidateRect(_hSelf, 0, 0);
+		::InvalidateRect(_hSelf, nullptr, 0);
 		::UpdateWindow(_hSelf);
 
 		// Open a browser
 		if (!_URL.empty())
 		{
-			::ShellExecute(NULL, L"open", _URL.c_str(), NULL, NULL, SW_SHOWNORMAL);
+			::ShellExecute(nullptr, L"open", _URL.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 		}
 		else
 		{
 			wchar_t szWinText[MAX_PATH] = { '\0' };
 			::GetWindowText(_hSelf, szWinText, MAX_PATH);
-			::ShellExecute(NULL, L"open", szWinText, NULL, NULL, SW_SHOWNORMAL);
+			::ShellExecute(nullptr, L"open", szWinText, nullptr, nullptr, SW_SHOWNORMAL);
 		}
 	}
 }
@@ -216,7 +216,7 @@ LRESULT CALLBACK URLCtrl::URLCtrlProc(
 		case WM_SETTEXT:
 		{
 			const LRESULT ret = ::DefSubclassProc(hwnd, Message, wParam, lParam);
-			::InvalidateRect(hwnd, 0, 0);
+			::InvalidateRect(hwnd, nullptr, 0);
 			return ret;
 		}
 		// Provide a hand cursor when the mouse moves over us

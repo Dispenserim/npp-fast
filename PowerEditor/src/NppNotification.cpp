@@ -67,7 +67,7 @@ BOOL Notepad_plus::notify(SCNotification *notification)
 
 				// While the text modification, we make sure the link beblow the modification will be reprocessed
 				_linkTriggered = true;
-				::InvalidateRect(notifyView->getHSelf(), NULL, TRUE);
+				::InvalidateRect(notifyView->getHSelf(), nullptr, TRUE);
 
 				// for the backup system
 				buffer->setModifiedStatus(true);
@@ -82,7 +82,7 @@ BOOL Notepad_plus::notify(SCNotification *notification)
 
 			if (notification->modificationType & SC_MOD_CHANGEINDICATOR)
 			{
-				::InvalidateRect(notifyView->getHSelf(), NULL, FALSE);
+				::InvalidateRect(notifyView->getHSelf(), nullptr, FALSE);
 			}
 			break;
 		}
@@ -92,7 +92,7 @@ BOOL Notepad_plus::notify(SCNotification *notification)
 		{
 			//if (!notifyView) return FALSE; // Could be _invisibleEditView or _fileEditView (see the following code)
 
-			Buffer * buf = 0;
+			Buffer * buf = nullptr;
 			if (isFromPrimary)
 			{
 				buf = _mainEditView.getCurrentBuffer();
@@ -192,7 +192,7 @@ BOOL Notepad_plus::notify(SCNotification *notification)
 					HMENU hBookmarkMenu = ::GetSubMenu(hSearchMenu, menuPos._y);
 					if (hBookmarkMenu)
 					{
-						TrackPopupMenu(hBookmarkMenu, 0, p.x, p.y, 0, _pPublicInterface->getHSelf(), NULL);
+						TrackPopupMenu(hBookmarkMenu, 0, p.x, p.y, 0, _pPublicInterface->getHSelf(), nullptr);
 					}
 				}
 			}
@@ -427,7 +427,7 @@ BOOL Notepad_plus::notify(SCNotification *notification)
 						}
 					}
 				}
-				::ShellExecute(_pPublicInterface->getHSelf(), L"open", url.c_str(), NULL, NULL, SW_SHOW);
+				::ShellExecute(_pPublicInterface->getHSelf(), L"open", url.c_str(), nullptr, nullptr, SW_SHOW);
 			}
 			break;
 		}
@@ -995,7 +995,7 @@ BOOL Notepad_plus::notify(SCNotification *notification)
 					POINT p;
 					::GetCursorPos(&p);
 					HMENU hLangMenu = ::GetSubMenu(_mainMenuHandle, MENUINDEX_LANGUAGE);
-					TrackPopupMenu(hLangMenu, 0, p.x, p.y, 0, _pPublicInterface->getHSelf(), NULL);
+					TrackPopupMenu(hLangMenu, 0, p.x, p.y, 0, _pPublicInterface->getHSelf(), nullptr);
 				}
 				else if (lpnm->dwItemSpec == DWORD(STATUSBAR_EOF_FORMAT))
 				{
@@ -1008,14 +1008,14 @@ BOOL Notepad_plus::notify(SCNotification *notification)
 					HMENU hEolFormatMenu = ::GetSubMenu(hEditMenu, menuPos._y);
 					if (!hEolFormatMenu)
 						return TRUE;
-					TrackPopupMenu(hEolFormatMenu, 0, p.x, p.y, 0, _pPublicInterface->getHSelf(), NULL);
+					TrackPopupMenu(hEolFormatMenu, 0, p.x, p.y, 0, _pPublicInterface->getHSelf(), nullptr);
 				}
 				else if (lpnm->dwItemSpec == DWORD(STATUSBAR_UNICODE_TYPE))
 				{
 					POINT p;
 					::GetCursorPos(&p);
 					HMENU hLangMenu = ::GetSubMenu(_mainMenuHandle, MENUINDEX_FORMAT);
-					TrackPopupMenu(hLangMenu, 0, p.x, p.y, 0, _pPublicInterface->getHSelf(), NULL);
+					TrackPopupMenu(hLangMenu, 0, p.x, p.y, 0, _pPublicInterface->getHSelf(), nullptr);
 				}
 			}
 			break;
@@ -1040,7 +1040,7 @@ BOOL Notepad_plus::notify(SCNotification *notification)
 				if (lpnm->dwItemSpec == DWORD(STATUSBAR_DOC_TYPE))
 				{
 					HMENU hLangMenu = ::GetSubMenu(_mainMenuHandle, MENUINDEX_LANGUAGE);
-					TrackPopupMenu(hLangMenu, 0, p.x, p.y, 0, _pPublicInterface->getHSelf(), NULL);
+					TrackPopupMenu(hLangMenu, 0, p.x, p.y, 0, _pPublicInterface->getHSelf(), nullptr);
 				}
 				else if (lpnm->dwItemSpec == DWORD(STATUSBAR_EOF_FORMAT))
 				{
@@ -1051,14 +1051,14 @@ BOOL Notepad_plus::notify(SCNotification *notification)
 					HMENU hEolFormatMenu = ::GetSubMenu(hEditMenu, menuPos._y);
 					if (!hEolFormatMenu)
 						return TRUE;
-					TrackPopupMenu(hEolFormatMenu, 0, p.x, p.y, 0, _pPublicInterface->getHSelf(), NULL);
+					TrackPopupMenu(hEolFormatMenu, 0, p.x, p.y, 0, _pPublicInterface->getHSelf(), nullptr);
 				}
 				else if (lpnm->dwItemSpec == DWORD(STATUSBAR_UNICODE_TYPE))
 				{
 					POINT cursorPos;
 					::GetCursorPos(&cursorPos);
 					HMENU hLangMenu = ::GetSubMenu(_mainMenuHandle, MENUINDEX_FORMAT);
-					TrackPopupMenu(hLangMenu, 0, cursorPos.x, cursorPos.y, 0, _pPublicInterface->getHSelf(), NULL);
+					TrackPopupMenu(hLangMenu, 0, cursorPos.x, cursorPos.y, 0, _pPublicInterface->getHSelf(), nullptr);
 				}
 				return TRUE;
 			}
@@ -1120,22 +1120,22 @@ BOOL Notepad_plus::notify(SCNotification *notification)
 					itemUnitArray.push_back(MenuItemUnit(IDM_FILE_OPEN_CMD, L"Open Containing Folder in cmd", L"Open into"));
 					itemUnitArray.push_back(MenuItemUnit(IDM_FILE_OPEN_POWERSHELL, L"Open Containing Folder in PowerShell", L"Open into"));
 					itemUnitArray.push_back(MenuItemUnit(IDM_FILE_CONTAININGFOLDERASWORKSPACE, L"Open Containing Folder as Workspace", L"Open into"));
-					itemUnitArray.push_back(MenuItemUnit(0, NULL, L"Open into"));
+					itemUnitArray.push_back(MenuItemUnit(0, nullptr, L"Open into"));
 					itemUnitArray.push_back(MenuItemUnit(IDM_FILE_OPEN_DEFAULT_VIEWER, L"Open in Default Viewer", L"Open into"));
 					itemUnitArray.push_back(MenuItemUnit(IDM_FILE_RENAME, L"Rename"));
 					itemUnitArray.push_back(MenuItemUnit(IDM_FILE_DELETE, L"Move to Recycle Bin"));
 					itemUnitArray.push_back(MenuItemUnit(IDM_FILE_RELOAD, L"Reload"));
 					itemUnitArray.push_back(MenuItemUnit(IDM_FILE_PRINT, L"Print"));
-					itemUnitArray.push_back(MenuItemUnit(0, NULL));
+					itemUnitArray.push_back(MenuItemUnit(0, nullptr));
 					itemUnitArray.push_back(MenuItemUnit(IDM_EDIT_TOGGLEREADONLY, L"Read-Only in Notepad++"));
 					itemUnitArray.push_back(MenuItemUnit(IDM_EDIT_TOGGLESYSTEMREADONLY, L"Read-Only Attribute in Windows"));
-					itemUnitArray.push_back(MenuItemUnit(0, NULL));
+					itemUnitArray.push_back(MenuItemUnit(0, nullptr));
 					itemUnitArray.push_back(MenuItemUnit(IDM_EDIT_FULLPATHTOCLIP, L"Copy Full File Path", L"Copy to Clipboard"));
 					itemUnitArray.push_back(MenuItemUnit(IDM_EDIT_FILENAMETOCLIP, L"Copy Filename", L"Copy to Clipboard"));
 					itemUnitArray.push_back(MenuItemUnit(IDM_EDIT_CURRENTDIRTOCLIP, L"Copy Current Dir. Path", L"Copy to Clipboard"));
 					itemUnitArray.push_back(MenuItemUnit(IDM_VIEW_GOTO_START, L"Move to Start", L"Move Document"));
 					itemUnitArray.push_back(MenuItemUnit(IDM_VIEW_GOTO_END, L"Move to End", L"Move Document"));
-					itemUnitArray.push_back(MenuItemUnit(0, NULL, L"Move Document"));
+					itemUnitArray.push_back(MenuItemUnit(0, nullptr, L"Move Document"));
 					itemUnitArray.push_back(MenuItemUnit(IDM_VIEW_GOTO_ANOTHER_VIEW, L"Move to Other View", L"Move Document"));
 					itemUnitArray.push_back(MenuItemUnit(IDM_VIEW_CLONE_TO_ANOTHER_VIEW, L"Clone to Other View", L"Move Document"));
 					itemUnitArray.push_back(MenuItemUnit(IDM_VIEW_GOTO_NEW_INSTANCE, L"Move to New Instance", L"Move Document"));
@@ -1251,17 +1251,17 @@ BOOL Notepad_plus::notify(SCNotification *notification)
 		{
 			try {
 				LPTOOLTIPTEXT lpttt = (LPTOOLTIPTEXT)notification;
-				lpttt->hinst = NULL;
+				lpttt->hinst = nullptr;
 
 				POINT p;
 				::GetCursorPos(&p);
-				::MapWindowPoints(NULL, _pPublicInterface->getHSelf(), &p, 1);
+				::MapWindowPoints(nullptr, _pPublicInterface->getHSelf(), &p, 1);
 				HWND hWin = ::ChildWindowFromPointEx(_pPublicInterface->getHSelf(), p, CWP_SKIPINVISIBLE);
 				const int tipMaxLen = 1024;
 				static wchar_t docTip[tipMaxLen];
 				docTip[0] = '\0';
 
-				wstring tipTmp(L"");
+				wstring tipTmp;
 				int id = int(lpttt->hdr.idFrom);
 
 				if (hWin == _rebarTop.getHSelf())

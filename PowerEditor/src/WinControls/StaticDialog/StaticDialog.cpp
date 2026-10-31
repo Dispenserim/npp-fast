@@ -179,7 +179,7 @@ RECT StaticDialog::getViewablePositionRect(RECT testPositionRc) const
 
 	bool rectPosViewableWithoutChange = false;
 
-	if (hMon != NULL)
+	if (hMon != nullptr)
 	{
 		// rect would be at least partially visible on a monitor
 

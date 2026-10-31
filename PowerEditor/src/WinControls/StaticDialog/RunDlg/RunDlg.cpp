@@ -433,7 +433,7 @@ intptr_t CALLBACK RunDlg::run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam
 						int const posBase = runMenu.getPosBase();
 						
 						if (nbTopLevelItem == 0)
-							::InsertMenu(hRunMenu, posBase - 1, MF_BYPOSITION, static_cast<unsigned int>(-1), 0);
+							::InsertMenu(hRunMenu, posBase - 1, MF_BYPOSITION, static_cast<unsigned int>(-1), nullptr);
 						
 						theUserCmds.push_back(uc);
 						runMenu.push_back(MenuItemUnit(cmdID, string2wstring(uc.getName(), CP_UTF8)));
@@ -442,7 +442,7 @@ intptr_t CALLBACK RunDlg::run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam
                         if (nbTopLevelItem == 0)
                         {
                             // Insert the separator and modify/delete command
-							::InsertMenu(hRunMenu, posBase + nbTopLevelItem + 1, MF_BYPOSITION, static_cast<unsigned int>(-1), 0);
+							::InsertMenu(hRunMenu, posBase + nbTopLevelItem + 1, MF_BYPOSITION, static_cast<unsigned int>(-1), nullptr);
 							NativeLangSpeaker *pNativeLangSpeaker = nppParams.getNativeLangSpeaker();
 							wstring nativeLangShortcutMapperMacro = pNativeLangSpeaker->getNativeLangMenuString(IDM_SETTING_SHORTCUT_MAPPER_MACRO);
 							if (nativeLangShortcutMapperMacro == L"")
@@ -488,7 +488,7 @@ intptr_t CALLBACK RunDlg::run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam
 					HMENU hVariablePopup;  // shortcut menu
 					hmenu = ::LoadMenu(_hInst, MAKEINTRESOURCE(IDR_RUN_DLG_MENU_VARIABLES));
 					hVariablePopup = ::GetSubMenu(hmenu, 0);
-					TrackPopupMenu(hVariablePopup, TPM_LEFTALIGN, rcButton.right, rcButton.top, 0, _hSelf, NULL);
+					TrackPopupMenu(hVariablePopup, TPM_LEFTALIGN, rcButton.right, rcButton.top, 0, _hSelf, nullptr);
 					PostMessage(_hSelf, WM_NULL, 0, 0);
 					DestroyMenu(hmenu);
 

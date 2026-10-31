@@ -387,7 +387,7 @@ bool AutoCompletion::showAutoComplete(AutocompleteType autocType, bool autoInser
 
 		if (autocType == autocWord && wordArray.size() == 1 && autoInsert)
 		{
-			const size_t typeSeparatorPos = wordArray[0].find("\x1E");
+			const size_t typeSeparatorPos = wordArray[0].find('\036');
 
 			intptr_t replacedLength = _pEditView->replaceTarget(
 				(typeSeparatorPos == std::string::npos) ?
@@ -559,7 +559,7 @@ static bool getRawPath(const std::wstring& input, std::wstring &rawPath_out)
 	// Algorithm: look for a colon. The colon must be preceded by an alphabetic character.
 	// The alphabetic character must, in turn, be preceded by nothing, or by whitespace, or by
 	// a quotation mark.
-	size_t lastOccurrence = input.rfind(L":");
+	size_t lastOccurrence = input.rfind(L':');
 	if (lastOccurrence == std::string::npos) // No match.
 		return false;
 	else if (lastOccurrence == 0)
@@ -592,7 +592,7 @@ static bool getPathsForPathCompletion(const std::wstring& input, std::wstring &r
 	}
 	else
 	{
-		size_t last_occurrence = rawPath.rfind(L"\\");
+		size_t last_occurrence = rawPath.rfind(L'\\');
 		if (last_occurrence == std::wstring::npos) // No match.
 			return false;
 		else

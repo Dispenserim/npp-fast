@@ -38,7 +38,7 @@ void ContextMenu::create(HWND hParent, const std::vector<MenuItemUnit> & menuIte
 	_hParent = hParent;
 	_hMenu = ::CreatePopupMenu();
 	bool lastIsSep = false;
-	HMENU hParentFolder = NULL;
+	HMENU hParentFolder = nullptr;
 	std::wstring currentParentFolderStr;
 	int j = 0;
 	MENUITEMINFO mii{};
@@ -49,7 +49,7 @@ void ContextMenu::create(HWND hParent, const std::vector<MenuItemUnit> & menuIte
 		if (item._parentFolderName.empty())
 		{
 			currentParentFolderStr.clear();
-			hParentFolder = NULL;
+			hParentFolder = nullptr;
 			j = 0;
 		}
 		else

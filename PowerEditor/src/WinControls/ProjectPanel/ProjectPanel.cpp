@@ -67,7 +67,7 @@ intptr_t CALLBACK ProjectPanel::run_dlgProc(UINT message, WPARAM wParam, LPARAM 
 
 			// Create toolbar menu
 			int style = WS_CHILD | WS_VISIBLE | CCS_ADJUSTABLE | TBSTYLE_AUTOSIZE | TBSTYLE_FLAT | TBSTYLE_LIST;
-			_hToolbarMenu = CreateWindowEx(0,TOOLBARCLASSNAME,NULL, style,
+			_hToolbarMenu = CreateWindowEx(0,TOOLBARCLASSNAME,nullptr, style,
 								   0,0,0,0,_hSelf, nullptr, _hInst, nullptr);
 
 			TBBUTTON tbButtons[2]{};
@@ -274,9 +274,9 @@ void ProjectPanel::initMenus()
 	::InsertMenu(_hWorkSpaceMenu, 0, MF_BYCOMMAND, IDM_PROJECT_SAVEWS, save_workspace.c_str());
 	::InsertMenu(_hWorkSpaceMenu, 0, MF_BYCOMMAND, IDM_PROJECT_SAVEASWS, saveas_workspace.c_str());
 	::InsertMenu(_hWorkSpaceMenu, 0, MF_BYCOMMAND, IDM_PROJECT_SAVEACOPYASWS, saveacopyas_workspace.c_str());
-	::InsertMenu(_hWorkSpaceMenu, 0, MF_BYCOMMAND, static_cast<UINT>(-1), 0);
+	::InsertMenu(_hWorkSpaceMenu, 0, MF_BYCOMMAND, static_cast<UINT>(-1), nullptr);
 	::InsertMenu(_hWorkSpaceMenu, 0, MF_BYCOMMAND, IDM_PROJECT_NEWPROJECT, newproject_workspace.c_str());
-	::InsertMenu(_hWorkSpaceMenu, 0, MF_BYCOMMAND, static_cast<UINT>(-1), 0);
+	::InsertMenu(_hWorkSpaceMenu, 0, MF_BYCOMMAND, static_cast<UINT>(-1), nullptr);
 	::InsertMenu(_hWorkSpaceMenu, 0, MF_BYCOMMAND, IDM_PROJECT_FINDINPROJECTSWS, findinprojects_workspace.c_str());
 
 	wstring edit_moveup = pNativeSpeaker->getProjectPanelLangMenuStr("ProjectMenu", IDM_PROJECT_MOVEUP, PM_MOVEUPENTRY);
@@ -290,7 +290,7 @@ void ProjectPanel::initMenus()
 	_hProjectMenu = ::CreatePopupMenu();
 	::InsertMenu(_hProjectMenu, 0, MF_BYCOMMAND, IDM_PROJECT_MOVEUP, edit_moveup.c_str());
 	::InsertMenu(_hProjectMenu, 0, MF_BYCOMMAND, IDM_PROJECT_MOVEDOWN, edit_movedown.c_str());
-	::InsertMenu(_hProjectMenu, 0, MF_BYCOMMAND, static_cast<UINT>(-1), 0);
+	::InsertMenu(_hProjectMenu, 0, MF_BYCOMMAND, static_cast<UINT>(-1), nullptr);
 	::InsertMenu(_hProjectMenu, 0, MF_BYCOMMAND, IDM_PROJECT_RENAME, edit_rename.c_str());
 	::InsertMenu(_hProjectMenu, 0, MF_BYCOMMAND, IDM_PROJECT_NEWFOLDER, edit_addfolder.c_str());
 	::InsertMenu(_hProjectMenu, 0, MF_BYCOMMAND, IDM_PROJECT_ADDFILES, edit_addfiles.c_str());
@@ -308,7 +308,7 @@ void ProjectPanel::initMenus()
 	_hFolderMenu = ::CreatePopupMenu();
 	::InsertMenu(_hFolderMenu, 0, MF_BYCOMMAND, IDM_PROJECT_MOVEUP,        edit_moveup.c_str());
 	::InsertMenu(_hFolderMenu, 0, MF_BYCOMMAND, IDM_PROJECT_MOVEDOWN,      edit_movedown.c_str());
-	::InsertMenu(_hFolderMenu, 0, MF_BYCOMMAND, static_cast<UINT>(-1), 0);
+	::InsertMenu(_hFolderMenu, 0, MF_BYCOMMAND, static_cast<UINT>(-1), nullptr);
 	::InsertMenu(_hFolderMenu, 0, MF_BYCOMMAND, IDM_PROJECT_RENAME,        edit_rename.c_str());
 	::InsertMenu(_hFolderMenu, 0, MF_BYCOMMAND, IDM_PROJECT_NEWFOLDER,     edit_addfolder.c_str());
 	::InsertMenu(_hFolderMenu, 0, MF_BYCOMMAND, IDM_PROJECT_ADDFILES,      edit_addfiles.c_str());
@@ -324,7 +324,7 @@ void ProjectPanel::initMenus()
 	_hFileMenu = ::CreatePopupMenu();
 	::InsertMenu(_hFileMenu, 0, MF_BYCOMMAND, IDM_PROJECT_MOVEUP, edit_moveup.c_str());
 	::InsertMenu(_hFileMenu, 0, MF_BYCOMMAND, IDM_PROJECT_MOVEDOWN, edit_movedown.c_str());
-	::InsertMenu(_hFileMenu, 0, MF_BYCOMMAND, static_cast<UINT>(-1), 0);
+	::InsertMenu(_hFileMenu, 0, MF_BYCOMMAND, static_cast<UINT>(-1), nullptr);
 	::InsertMenu(_hFileMenu, 0, MF_BYCOMMAND, IDM_PROJECT_RENAME, edit_rename.c_str());
 	::InsertMenu(_hFileMenu, 0, MF_BYCOMMAND, IDM_PROJECT_DELETEFILE, edit_remove.c_str());
 	::InsertMenu(_hFileMenu, 0, MF_BYCOMMAND, IDM_PROJECT_MODIFYFILEPATH, edit_modifyfile.c_str());
@@ -862,14 +862,14 @@ void ProjectPanel::showContextMenu(int x, int y)
 	ScreenToClient(_treeView.getHSelf(), &(tvHitInfo.pt));
 	TreeView_HitTest(_treeView.getHSelf(), &tvHitInfo);
 
-	if (tvHitInfo.hItem != NULL)
+	if (tvHitInfo.hItem != nullptr)
 	{
 		// Make item selected
 		_treeView.selectItem(tvHitInfo.hItem);
 		HMENU hMenu = getMenuHandler(tvHitInfo.hItem);
 		TrackPopupMenu(hMenu,
 			NppParameters::getInstance().getNativeLangSpeaker()->isRTL() ? TPM_RIGHTALIGN | TPM_LAYOUTRTL : TPM_LEFTALIGN,
-			x, y, 0, _hSelf, NULL);
+			x, y, 0, _hSelf, nullptr);
 	}
 }
 
@@ -881,12 +881,12 @@ void ProjectPanel::showContextMenuFromMenuKey(HTREEITEM selectedItem, int x, int
 
 	ClientToScreen(_treeView.getHSelf(), &p);
 
-	if (selectedItem != NULL)
+	if (selectedItem != nullptr)
 	{
 		HMENU hMenu = getMenuHandler(selectedItem);
 		TrackPopupMenu(hMenu,
 			NppParameters::getInstance().getNativeLangSpeaker()->isRTL() ? TPM_RIGHTALIGN | TPM_LAYOUTRTL : TPM_LEFTALIGN,
-			x, y, 0, _hSelf, NULL);
+			x, y, 0, _hSelf, nullptr);
 	}
 }
 
@@ -894,7 +894,7 @@ HMENU ProjectPanel::getMenuHandler(HTREEITEM selectedItem)
 {
 	// get clicked item type
 	NodeType nodeType = getNodeType(selectedItem);
-	HMENU hMenu = NULL;
+	HMENU hMenu = nullptr;
 
 	if (nodeType == nodeType_root)
 		hMenu = _hWorkSpaceMenu;
@@ -978,14 +978,14 @@ void ProjectPanel::popupMenuCmd(int cmdID)
 		  POINT p = getMenuDisplayPoint(0);
 		  TrackPopupMenu(_hWorkSpaceMenu,
 			  NppParameters::getInstance().getNativeLangSpeaker()->isRTL() ? TPM_RIGHTALIGN | TPM_LAYOUTRTL : TPM_LEFTALIGN,
-			  p.x, p.y, 0, _hSelf, NULL);
+			  p.x, p.y, 0, _hSelf, nullptr);
 		}
 		break;
 
 		case IDB_EDIT_BTN:
 		{
 			POINT p = getMenuDisplayPoint(1);
-			HMENU hMenu = NULL;
+			HMENU hMenu = nullptr;
 			NodeType nodeType = getNodeType(hTreeItem);
 			if (nodeType == nodeType_project)
 				hMenu = _hProjectMenu;
@@ -996,7 +996,7 @@ void ProjectPanel::popupMenuCmd(int cmdID)
 			if (hMenu)
 				TrackPopupMenu(hMenu,
 					NppParameters::getInstance().getNativeLangSpeaker()->isRTL() ? TPM_RIGHTALIGN | TPM_LAYOUTRTL : TPM_LEFTALIGN,
-					p.x, p.y, 0, _hSelf, NULL);
+					p.x, p.y, 0, _hSelf, nullptr);
 		}
 		break;
 
@@ -1230,7 +1230,7 @@ void ProjectPanel::popupMenuCmd(int cmdID)
 
 			if (fileRelocalizerDlg.doDialog(fn->c_str()) == 0)
 			{
-				std::wstring newValue = fileRelocalizerDlg.getFullFilePath();
+				const std::wstring& newValue = fileRelocalizerDlg.getFullFilePath();
 				if (*fn == newValue)
 					return;
 
@@ -1274,7 +1274,7 @@ void ProjectPanel::setFileExtFilter(CustomFileDialog & fDlg)
 	const wchar_t *ext = NppParameters::getInstance().getNppGUI()._definedWorkspaceExt.c_str();
 	if (*ext != '\0')
 	{
-		wstring workspaceExt = L"";
+		wstring workspaceExt;
 
 		if (*ext != '.')
 			workspaceExt += L".";

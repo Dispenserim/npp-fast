@@ -50,8 +50,8 @@
 
 using namespace std;
 
-UserLangContainer * SharedParametersDialog::_pUserLang = NULL;
-ScintillaEditView * SharedParametersDialog::_pScintilla = NULL;
+UserLangContainer * SharedParametersDialog::_pUserLang = nullptr;
+ScintillaEditView * SharedParametersDialog::_pScintilla = nullptr;
 std::wstring SharedParametersDialog::_kwlBuffer = std::wstring(max_char, L'\0');
 
 GlobalMappers & globalMappper()
@@ -990,7 +990,7 @@ void UserDefineDialog::changeStyle()
     else
         restorePosSize();
 
-    ::SetParent(_hSelf, (_status == DOCK)?_hParent:NULL);
+    ::SetParent(_hSelf, (_status == DOCK)?_hParent:nullptr);
 }
 
 void UserDefineDialog::enableLangAndControlsBy(size_t index)
@@ -1557,7 +1557,7 @@ intptr_t CALLBACK UserDefineDialog::run_dlgProc(UINT message, WPARAM wParam, LPA
                 {
                     _yScrollPos -= diff;
                     ::SetScrollPos(_hSelf, SB_VERT, _yScrollPos, TRUE);
-                    ::ScrollWindow(_hSelf, 0, diff, NULL, NULL);
+                    ::ScrollWindow(_hSelf, 0, diff, nullptr, nullptr);
                 }
             }
             return TRUE;
@@ -1606,7 +1606,7 @@ intptr_t CALLBACK UserDefineDialog::run_dlgProc(UINT message, WPARAM wParam, LPA
                     return FALSE;
             }
             ::SetScrollPos(_hSelf, SB_VERT, _yScrollPos, TRUE);
-            ::ScrollWindow(_hSelf, 0, oldy-_yScrollPos, NULL, NULL);
+            ::ScrollWindow(_hSelf, 0, oldy-_yScrollPos, nullptr, nullptr);
 
             break;
         }

@@ -175,8 +175,8 @@ void Notepad_plus::command(int id)
 			wchar_t timeStr[128] = { '\0' };
 
 			int dateFlag = (id == IDM_EDIT_INSERT_DATETIME_SHORT) ? DATE_SHORTDATE : DATE_LONGDATE;
-			GetDateFormatEx(LOCALE_NAME_USER_DEFAULT, dateFlag, &currentTime, NULL, dateStr, sizeof(dateStr) / sizeof(dateStr[0]), NULL);
-			GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, TIME_NOSECONDS, &currentTime, NULL, timeStr, sizeof(timeStr) / sizeof(timeStr[0]));
+			GetDateFormatEx(LOCALE_NAME_USER_DEFAULT, dateFlag, &currentTime, nullptr, dateStr, sizeof(dateStr) / sizeof(dateStr[0]), nullptr);
+			GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, TIME_NOSECONDS, &currentTime, nullptr, timeStr, sizeof(timeStr) / sizeof(timeStr[0]));
 
 			wstring dateTimeStr;
 			if (NppParameters::getInstance().getNppGUI()._dateTimeReverseDefaultOrder)
@@ -299,7 +299,7 @@ void Notepad_plus::command(int id)
 			// Opens file in its default viewer. 
             // Has the same effect as double–clicking this file in Windows Explorer.
             BufferID buf = _pEditView->getCurrentBufferID();
-			HINSTANCE res = ::ShellExecute(NULL, L"open", buf->getFullPathName(), NULL, NULL, SW_SHOW);
+			HINSTANCE res = ::ShellExecute(nullptr, L"open", buf->getFullPathName(), nullptr, nullptr, SW_SHOW);
 
 			// As per MSDN (https://msdn.microsoft.com/en-us/library/windows/desktop/bb762153(v=vs.85).aspx)
 			// If the function succeeds, it returns a value greater than 32.
@@ -385,6 +385,7 @@ void Notepad_plus::command(int id)
 			{
 				std::vector<Buffer*> buffers;
 				auto files = _pDocumentListPanel->getSelectedFiles(false);
+				buffers.reserve(files.size());
 				for (auto&& sel : files)
 					buffers.push_back(MainFileManager.getBufferByID(sel._bufID));
 				buf2Clipboard(buffers, id == IDM_DOCLIST_COPYPATHS, _pDocumentListPanel->getHSelf());
@@ -566,7 +567,7 @@ void Notepad_plus::command(int id)
 			_pEditView->getSelectedTextToMultiChar(pBinText.get(), textLen + 1);
 
 			// Open the clipboard and empty it.
-			if (!::OpenClipboard(NULL))
+			if (!::OpenClipboard(nullptr))
 				return;
 			if (!::EmptyClipboard())
 			{
@@ -668,23 +669,23 @@ void Notepad_plus::command(int id)
 			if (!IsClipboardFormatAvailable(CF_TEXT))
 				return;
 
-			if (!OpenClipboard(NULL))
+			if (!OpenClipboard(nullptr))
 				return;
 
 			HGLOBAL hglb = GetClipboardData(CF_TEXT);
-			if (hglb != NULL)
+			if (hglb != nullptr)
 			{
 				char *lpchar = (char *)GlobalLock(hglb);
-				if (lpchar != NULL)
+				if (lpchar != nullptr)
 				{
 					UINT cf_nppTextLen = RegisterClipboardFormat(CF_NPPTEXTLEN);
 					if (IsClipboardFormatAvailable(cf_nppTextLen))
 					{
 						HGLOBAL hglbLen = GetClipboardData(cf_nppTextLen);
-						if (hglbLen != NULL)
+						if (hglbLen != nullptr)
 						{
 							unsigned long *lpLen = (unsigned long *)GlobalLock(hglbLen);
-							if (lpLen != NULL)
+							if (lpLen != nullptr)
 							{
 								SIZE_T actualSize = GlobalSize(hglb);
 								unsigned long safeLen = (*lpLen <= actualSize) ? *lpLen : static_cast<unsigned long>(actualSize);
@@ -901,14 +902,14 @@ void Notepad_plus::command(int id)
 			if (!IsClipboardFormatAvailable(f))
 				return;
 
-			if (!OpenClipboard(NULL))
+			if (!OpenClipboard(nullptr))
 				return;
 
 			HGLOBAL hglb = GetClipboardData(f);
-			if (hglb != NULL)
+			if (hglb != nullptr)
 			{
 				LPSTR lptstr = (LPSTR)GlobalLock(hglb);
-				if (lptstr != NULL)
+				if (lptstr != nullptr)
 				{
 					// Call the application-defined ReplaceSelection
 					// function to insert the text and repaint the
@@ -1052,7 +1053,7 @@ void Notepad_plus::command(int id)
 					L"Sorting Error",
 					MB_OK | MB_ICONINFORMATION | MB_APPLMODAL,
 					static_cast<int>(lineNo),
-					0);
+					nullptr);
 			}
 			_pEditView->execute(SCI_ENDUNDOACTION);
 
@@ -1568,7 +1569,7 @@ void Notepad_plus::command(int id)
 
 			_findReplaceDlg.setSearchTextWithSettings();
 
-			setFindReplaceFolderFilter(NULL, NULL);
+			setFindReplaceFolderFilter(nullptr, nullptr);
 
 			if (isFirstTime)
 				_nativeLangSpeaker.changeFindReplaceDlgLang(_findReplaceDlg);
@@ -1645,7 +1646,7 @@ void Notepad_plus::command(int id)
 
 			_findReplaceDlg._env->_str2Search = str;
 
-			setFindReplaceFolderFilter(NULL, NULL);
+			setFindReplaceFolderFilter(nullptr, nullptr);
 			if (isFirstTime)
 				_nativeLangSpeaker.changeFindReplaceDlgLang(_findReplaceDlg);
 
@@ -2539,7 +2540,7 @@ void Notepad_plus::command(int id)
 
 				if (hKey2Check && valData[0] != '\0')
 				{
-					::ShellExecute(NULL, L"open", valData, fullCurrentPath.c_str(), NULL, SW_SHOWNORMAL);
+					::ShellExecute(nullptr, L"open", valData, fullCurrentPath.c_str(), nullptr, SW_SHOWNORMAL);
 				}
 				else if (id == IDM_VIEW_IN_EDGE)
 				{
@@ -2550,7 +2551,7 @@ void Notepad_plus::command(int id)
 					fullCurrentPath = currentBuf->getFullPathName();
 					//fullCurrentPath += L"\"";
 
-					::ShellExecute(NULL, L"open", L"shell:Appsfolder\\Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge", fullCurrentPath.c_str(), NULL, SW_SHOW);
+					::ShellExecute(nullptr, L"open", L"shell:Appsfolder\\Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge", fullCurrentPath.c_str(), nullptr, SW_SHOW);
 				} 
 				else 
 				{
@@ -2837,7 +2838,7 @@ void Notepad_plus::command(int id)
 			NativeLangSpeaker *pNativeSpeaker = (NppParameters::getInstance()).getNativeLangSpeaker();
 			if (pNativeSpeaker)
 			{
-				wstring characterNumber = L"";
+				wstring characterNumber;
 
 				if (fileLen != -1)
 				{
@@ -3325,7 +3326,7 @@ void Notepad_plus::command(int id)
 			if (idEncoding != -1)
 			{
 				// try to save the current clipboard text content 1st
-				HGLOBAL hglbClipboardCopy = NULL;
+				HGLOBAL hglbClipboardCopy = nullptr;
 				if (::OpenClipboard(_pPublicInterface->getHSelf()))
 				{
 					HANDLE hClipboardData = ::GetClipboardData(CF_UNICODETEXT); // system itself ensures possible CF_TEXT or CF_OEMTEXT conversion
@@ -3347,7 +3348,7 @@ void Notepad_plus::command(int id)
 								else
 								{
 									::GlobalFree(hglbClipboardCopy);
-									hglbClipboardCopy = NULL;
+									hglbClipboardCopy = nullptr;
 								}
 							}
 							::GlobalUnlock(hClipboardData);
@@ -3404,7 +3405,7 @@ void Notepad_plus::command(int id)
 						// when we failed to pass the data back to the Clipboard,
 						// we have to free our copy here otherwise there will be memory leak
 						::GlobalFree(hglbClipboardCopy);
-						hglbClipboardCopy = NULL;
+						hglbClipboardCopy = nullptr;
 					}
 				}
 				else
@@ -3490,7 +3491,7 @@ void Notepad_plus::command(int id)
 			const wchar_t* pluginHomePath = NppParameters::getInstance().getPluginRootDir();
 			if (pluginHomePath && pluginHomePath[0])
 			{
-				::ShellExecute(NULL, NULL, pluginHomePath, NULL, NULL, SW_SHOWNORMAL);
+				::ShellExecute(nullptr, nullptr, pluginHomePath, nullptr, nullptr, SW_SHOWNORMAL);
 			}
 			break;
 		}
@@ -3786,18 +3787,18 @@ void Notepad_plus::command(int id)
 
 		case IDM_HOMESWEETHOME :
 		{
-			::ShellExecute(NULL, L"open", L"https://notepad-plus-plus.org/", NULL, NULL, SW_SHOWNORMAL);
+			::ShellExecute(nullptr, L"open", L"https://notepad-plus-plus.org/", nullptr, nullptr, SW_SHOWNORMAL);
 			break;
 		}
 		case IDM_PROJECTPAGE :
 		{
-			::ShellExecute(NULL, L"open", L"https://github.com/notepad-plus-plus/notepad-plus-plus/", NULL, NULL, SW_SHOWNORMAL);
+			::ShellExecute(nullptr, L"open", L"https://github.com/notepad-plus-plus/notepad-plus-plus/", nullptr, nullptr, SW_SHOWNORMAL);
 			break;
 		}
 
 		case IDM_ONLINEDOCUMENT:
 		{
-			::ShellExecute(NULL, L"open", L"https://npp-user-manual.org/", NULL, NULL, SW_SHOWNORMAL);
+			::ShellExecute(nullptr, L"open", L"https://npp-user-manual.org/", nullptr, nullptr, SW_SHOWNORMAL);
 			break;
 		}
 
@@ -3809,7 +3810,7 @@ void Notepad_plus::command(int id)
 
 		case IDM_FORUM:
 		{
-			::ShellExecute(NULL, L"open", L"https://community.notepad-plus-plus.org/", NULL, NULL, SW_SHOWNORMAL);
+			::ShellExecute(nullptr, L"open", L"https://community.notepad-plus-plus.org/", nullptr, nullptr, SW_SHOWNORMAL);
 			break;
 		}
 
@@ -3829,7 +3830,7 @@ void Notepad_plus::command(int id)
 
 				if (res == IDYES)
 				{
-					::ShellExecute(NULL, L"open", L"https://notepad-plus-plus.org/downloads/", NULL, NULL, SW_SHOWNORMAL);
+					::ShellExecute(nullptr, L"open", L"https://notepad-plus-plus.org/downloads/", nullptr, nullptr, SW_SHOWNORMAL);
 				}
 			}
 			else
@@ -4024,13 +4025,13 @@ void Notepad_plus::command(int id)
 		case IDM_LANG_OPENUDLDIR:
 		{
 			wstring userDefineLangFolderPath = NppParameters::getInstance().getUserDefineLangFolderPath();
-			::ShellExecute(_pPublicInterface->getHSelf(), L"open", userDefineLangFolderPath.c_str(), NULL, NULL, SW_SHOW);
+			::ShellExecute(_pPublicInterface->getHSelf(), L"open", userDefineLangFolderPath.c_str(), nullptr, nullptr, SW_SHOW);
 			break;
 		}
 
 		case IDM_LANG_UDLCOLLECTION_PROJECT_SITE:
 		{
-			::ShellExecute(NULL, L"open", L"https://github.com/notepad-plus-plus/userDefinedLanguages", NULL, NULL, SW_SHOWNORMAL);
+			::ShellExecute(nullptr, L"open", L"https://github.com/notepad-plus-plus/userDefinedLanguages", nullptr, nullptr, SW_SHOWNORMAL);
 			break;
 		}
 
@@ -4347,7 +4348,7 @@ void Notepad_plus::command(int id)
 						switchToFile(shortcutsBufId);
 
 						nppParams.getNativeLangSpeaker()->messageBox("ShortcutsXmlHMACMissing",
-							NULL,
+							nullptr,
 							L"The security information for shortcuts.xml is missing in config.xml.\r\rFor security reasons, the integrity of shortcuts.xml will be checked. To run your customized command, please review the opened shortcuts.xml. If the file content is OK, use \"Validate shortcuts.xml\" from the \"Run\" menu to confirm it.",
 							L"Security Warning",
 							MB_OK);
@@ -4369,7 +4370,7 @@ void Notepad_plus::command(int id)
 							switchToFile(shortcutsBufId);
 
 							nppParams.getNativeLangSpeaker()->messageBox("ShortcutsXmlTampered",
-								NULL,
+								nullptr,
 								L"The shortcuts.xml file appears to have been modified manually.\r\rFor security reasons, please review the opened shortcuts.xml. If the file content is OK, use \"Validate shortcuts.xml\" from the \"Run\" menu to confirm it.",
 								L"Security Warning",
 								MB_OK);

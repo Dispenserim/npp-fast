@@ -60,7 +60,7 @@ void TreeView::destroy()
 	HTREEITEM root = TreeView_GetRoot(_hSelf);
 	cleanSubEntries(root);
 	::DestroyWindow(_hSelf);
-	_hSelf = NULL;
+	_hSelf = nullptr;
 }
 
 LRESULT TreeView::staticProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
@@ -251,7 +251,7 @@ void TreeView::removeItem(HTREEITEM hTreeItem)
 void TreeView::removeAllItems()
 {
 	for (HTREEITEM tvProj = getRoot();
-		tvProj != NULL;
+		tvProj != nullptr;
 		tvProj = getNextSibling(tvProj))
 	{
 		cleanSubEntries(tvProj);
@@ -262,7 +262,7 @@ void TreeView::removeAllItems()
 
 void TreeView::dupTree(HTREEITEM hTree2Dup, HTREEITEM hParentItem)
 {
-	for (HTREEITEM hItem = getChildFrom(hTree2Dup); hItem != NULL; hItem = getNextSibling(hItem))
+	for (HTREEITEM hItem = getChildFrom(hTree2Dup); hItem != nullptr; hItem = getNextSibling(hItem))
 	{
 		wchar_t textBuffer[MAX_PATH]{};
 		TVITEM tvItem{};
@@ -390,7 +390,7 @@ std::vector<int> TreeView::getImageIds(std::vector<int> stdIds, std::vector<int>
 
 void TreeView::cleanSubEntries(HTREEITEM hTreeItem)
 {
-	for (HTREEITEM hItem = getChildFrom(hTreeItem); hItem != NULL; hItem = getNextSibling(hItem))
+	for (HTREEITEM hItem = getChildFrom(hTreeItem); hItem != nullptr; hItem = getNextSibling(hItem))
 	{
 		TVITEM tvItem{};
 		tvItem.hItem = hItem;
@@ -408,7 +408,7 @@ void TreeView::foldExpandRecursively(HTREEITEM hParentItem, bool isFold) const
 
 	HTREEITEM hItem = getChildFrom(hParentItem);
 
-	for (; hItem != NULL; hItem = getNextSibling(hItem))
+	for (; hItem != nullptr; hItem = getNextSibling(hItem))
 	{
 		foldExpandRecursively(hItem, isFold);
 		if (isFold)
@@ -425,7 +425,7 @@ void TreeView::foldExpandRecursively(HTREEITEM hParentItem, bool isFold) const
 void TreeView::foldExpandAll(bool isFold) const
 {
 	for (HTREEITEM tvProj = getRoot();
-		tvProj != NULL;
+		tvProj != nullptr;
 		tvProj = getNextSibling(tvProj))
 	{
 		foldExpandRecursively(tvProj, isFold);
@@ -528,15 +528,15 @@ bool TreeView::dropItem()
 	SendMessage(_hSelf,TVM_SELECTITEM,TVGN_DROPHILITE,0);
 
 	// clear global variables
-	_draggedItem = 0;
-	_draggedImageList = 0;
+	_draggedItem = nullptr;
+	_draggedImageList = nullptr;
 	_isItemDragged = false;
 	return isFilesMoved;
 }
 
 bool TreeView::canBeDropped(HTREEITEM draggedItem, HTREEITEM targetItem)
 {
-	if (targetItem == NULL)
+	if (targetItem == nullptr)
 		return false;
 	if (draggedItem == targetItem)
 		return false;
@@ -555,7 +555,7 @@ bool TreeView::canBeDropped(HTREEITEM draggedItem, HTREEITEM targetItem)
 
 bool TreeView::isDescendant(HTREEITEM targetItem, HTREEITEM draggedItem)
 {
-	if (targetItem == NULL)
+	if (targetItem == nullptr)
 		return false;
 
 	if (TreeView_GetRoot(_hSelf) == targetItem)
@@ -748,7 +748,7 @@ bool TreeView::searchLeafRecusivelyAndBuildTree(HTREEITEM tree2Build, const wstr
 	}
 
 	bool isOk = true;
-	for (HTREEITEM hItem = getChildFrom(tree2Search); hItem != NULL; hItem = getNextSibling(hItem))
+	for (HTREEITEM hItem = getChildFrom(tree2Search); hItem != nullptr; hItem = getNextSibling(hItem))
 	{
 		isOk = searchLeafRecusivelyAndBuildTree(tree2Build, text2Search, index2Search, hItem);
 		if (!isOk)
@@ -781,7 +781,7 @@ bool TreeView::retrieveFoldingStateTo(TreeStateNode & treeState2Construct, HTREE
 	}
 
 	int i = 0;
-	for (HTREEITEM hItem = getChildFrom(treeviewNode); hItem != NULL; hItem = getNextSibling(hItem))
+	for (HTREEITEM hItem = getChildFrom(treeviewNode); hItem != nullptr; hItem = getNextSibling(hItem))
 	{
 		treeState2Construct._children.push_back(TreeStateNode());
 		retrieveFoldingStateTo(treeState2Construct._children.at(i), hItem);
@@ -805,7 +805,7 @@ bool TreeView::restoreFoldingStateFrom(const TreeStateNode & treeState2Compare, 
 
 	size_t i = 0;
 	bool isOk = true;
-	for (HTREEITEM hItem = getChildFrom(treeviewNode); hItem != NULL; hItem = getNextSibling(hItem))
+	for (HTREEITEM hItem = getChildFrom(treeviewNode); hItem != nullptr; hItem = getNextSibling(hItem))
 	{
 		if (i >= treeState2Compare._children.size())
 			return false;
@@ -823,7 +823,7 @@ void TreeView::sort(HTREEITEM hTreeItem, bool isRecusive)
 	if (!isRecusive)
 		return;
 
-	for (HTREEITEM hItem = getChildFrom(hTreeItem); hItem != NULL; hItem = getNextSibling(hItem))
+	for (HTREEITEM hItem = getChildFrom(hTreeItem); hItem != nullptr; hItem = getNextSibling(hItem))
 		sort(hItem, isRecusive);
 }
 
@@ -839,6 +839,6 @@ void TreeView::customSorting(HTREEITEM hTreeItem, PFNTVCOMPARE sortingCallbackFu
 	if (!isRecusive)
 		return;
 
-	for (HTREEITEM hItem = getChildFrom(hTreeItem); hItem != NULL; hItem = getNextSibling(hItem))
+	for (HTREEITEM hItem = getChildFrom(hTreeItem); hItem != nullptr; hItem = getNextSibling(hItem))
 		customSorting(hItem, sortingCallbackFunc, lParam, isRecusive);
 }

@@ -27,6 +27,7 @@
 #include <shlwapi.h>
 
 #include <algorithm>
+#include <atomic>
 #include <cassert>
 #include <cerrno>
 #include <cstdint>
@@ -60,13 +61,13 @@ void printInt(int int2print)
 {
 	wchar_t str[32];
 	wsprintf(str, L"%d", int2print);
-	::MessageBox(NULL, str, L"", MB_OK);
+	::MessageBox(nullptr, str, L"", MB_OK);
 }
 
 
 void printStr(const wchar_t *str2print)
 {
-	::MessageBox(NULL, str2print, L"", MB_OK);
+	::MessageBox(nullptr, str2print, L"", MB_OK);
 }
 
 wstring commafyInt(size_t n)
@@ -114,7 +115,7 @@ std::string getFileContent(const wchar_t* file2read, bool* pbFailed)
 		if (pbFailed)
 			*pbFailed = true;
 		std::string().swap(wholeFileContent); // to immediately release all the allocated memory
-		::MessageBoxW(NULL, L"std::bad_alloc exception caught!\n\nProbably not enough contiguous memory to complete the operation.",
+		::MessageBoxW(nullptr, L"std::bad_alloc exception caught!\n\nProbably not enough contiguous memory to complete the operation.",
 			L"Notepad++ - getFileContent", MB_OK | MB_ICONWARNING | MB_APPLMODAL);
 	}
 	catch (...)
@@ -150,7 +151,7 @@ wstring relativeFilePathToFullFilePath(const wchar_t *relativeFilePath)
 	if (isRelative)
 	{
 		wchar_t fullFileName[MAX_PATH];
-		::GetFullPathName(relativeFilePath, MAX_PATH, fullFileName, NULL);
+		::GetFullPathName(relativeFilePath, MAX_PATH, fullFileName, nullptr);
 		fullFilePathName += fullFileName;
 	}
 	else
@@ -191,13 +192,13 @@ void writeLog(const wchar_t* logFileName, const char* log2write)
 	const DWORD shareParam{ FILE_SHARE_READ | FILE_SHARE_WRITE };
 	const DWORD dispParam{ OPEN_ALWAYS }; // Open existing file for writing without destroying it or create new
 	const DWORD attribParam{ FILE_ATTRIBUTE_NORMAL };
-	HANDLE hFile = ::CreateFileW(logFileName, accessParam, shareParam, NULL, dispParam, attribParam, NULL);
+	HANDLE hFile = ::CreateFileW(logFileName, accessParam, shareParam, nullptr, dispParam, attribParam, nullptr);
 
 	if (hFile != INVALID_HANDLE_VALUE)
 	{
 		LARGE_INTEGER offset{};
 		offset.QuadPart = 0;
-		::SetFilePointerEx(hFile, offset, NULL, FILE_END);
+		::SetFilePointerEx(hFile, offset, nullptr, FILE_END);
 
 		SYSTEMTIME currentTime = {};
 		::GetLocalTime(&currentTime);
@@ -208,7 +209,7 @@ void writeLog(const wchar_t* logFileName, const char* log2write)
 		log2writeStr += "\n";
 
 		DWORD bytes_written = 0;
-		::WriteFile(hFile, log2writeStr.c_str(), static_cast<DWORD>(log2writeStr.length()), &bytes_written, NULL);
+		::WriteFile(hFile, log2writeStr.c_str(), static_cast<DWORD>(log2writeStr.length()), &bytes_written, nullptr);
 
 		::FlushFileBuffers(hFile);
 		::CloseHandle(hFile);
@@ -413,7 +414,7 @@ const wchar_t* WcharMbcsConvertor::char2wchar(const char* mbcs2Convert, size_t c
 	// If length not specified, simply convert without checking
 	if (lenMbcs == -1)
 	{
-		lenWc = MultiByteToWideChar(cp, 0, mbcs2Convert, lenMbcs, NULL, 0);
+		lenWc = MultiByteToWideChar(cp, 0, mbcs2Convert, lenMbcs, nullptr, 0);
 	}
 	// Otherwise, test if we are cutting a multi-byte character at end of buffer
 	else if (cp == CP_UTF8) // For UTF-8, we know how to test it
@@ -423,20 +424,20 @@ const wchar_t* WcharMbcsConvertor::char2wchar(const char* mbcs2Convert, size_t c
 		{
 			bytesNotProcessed = lenMbcs - indexOfLastChar;
 		}
-		lenWc = MultiByteToWideChar(cp, 0, mbcs2Convert, lenMbcs - bytesNotProcessed, NULL, 0);
+		lenWc = MultiByteToWideChar(cp, 0, mbcs2Convert, lenMbcs - bytesNotProcessed, nullptr, 0);
 	}
 	else // For other encodings, ask system if there are any invalid characters; note that it will not correctly know if last character is cut when there are invalid characters inside the text
 	{
-		lenWc = MultiByteToWideChar(cp, MB_ERR_INVALID_CHARS, mbcs2Convert, lenMbcs, NULL, 0);
+		lenWc = MultiByteToWideChar(cp, MB_ERR_INVALID_CHARS, mbcs2Convert, lenMbcs, nullptr, 0);
 		if (lenWc == 0 && GetLastError() == ERROR_NO_UNICODE_TRANSLATION)
 		{
 			// Test without last byte
-			if (lenMbcs > 1) lenWc = MultiByteToWideChar(cp, MB_ERR_INVALID_CHARS, mbcs2Convert, lenMbcs - 1, NULL, 0);
+			if (lenMbcs > 1) lenWc = MultiByteToWideChar(cp, MB_ERR_INVALID_CHARS, mbcs2Convert, lenMbcs - 1, nullptr, 0);
 			if (lenWc == 0) // don't have to check that the error is still ERROR_NO_UNICODE_TRANSLATION, since only the length parameter changed
 			{
 				// TODO: should warn user about incorrect loading due to invalid characters
 				// We still load the file, but the system will either strip or replace invalid characters (including the last character, if cut in half)
-				lenWc = MultiByteToWideChar(cp, 0, mbcs2Convert, lenMbcs, NULL, 0);
+				lenWc = MultiByteToWideChar(cp, 0, mbcs2Convert, lenMbcs, nullptr, 0);
 			}
 			else
 			{
@@ -446,7 +447,7 @@ const wchar_t* WcharMbcsConvertor::char2wchar(const char* mbcs2Convert, size_t c
 		}
 		else if (lenWc == 0)
 		{
-			lenWc = MultiByteToWideChar(cp, 0, mbcs2Convert, lenMbcs, NULL, 0);
+			lenWc = MultiByteToWideChar(cp, 0, mbcs2Convert, lenMbcs, nullptr, 0);
 		}
 	}
 
@@ -476,7 +477,7 @@ const wchar_t* WcharMbcsConvertor::char2wchar(const char* mbcs2Convert, size_t c
 const wchar_t* WcharMbcsConvertor::char2wchar(const char* mbcs2Convert, size_t codepage, intptr_t* mstart, intptr_t* mend, int mbcsLen)
 {
 	// Do not process NULL pointer
-	if (!mbcs2Convert) return NULL;
+	if (!mbcs2Convert) return nullptr;
 
 	if (mbcsLen == 0 || (mbcsLen == -1 && mbcs2Convert[0] == 0))
 	{
@@ -487,7 +488,7 @@ const wchar_t* WcharMbcsConvertor::char2wchar(const char* mbcs2Convert, size_t c
 	}
 
 	UINT cp = static_cast<UINT>(codepage);
-	int len = MultiByteToWideChar(cp, 0, mbcs2Convert, mbcsLen ? mbcsLen : -1, NULL, 0);
+	int len = MultiByteToWideChar(cp, 0, mbcs2Convert, mbcsLen ? mbcsLen : -1, nullptr, 0);
 
 	if (len > 0)
 	{
@@ -532,11 +533,11 @@ const char* WcharMbcsConvertor::wchar2char(const wchar_t* wcharStr2Convert, size
 	}
 
 	UINT cp = static_cast<UINT>(codepage);
-	int lenMbcs = WideCharToMultiByte(cp, 0, wcharStr2Convert, lenWc, NULL, 0, NULL, NULL);
+	int lenMbcs = WideCharToMultiByte(cp, 0, wcharStr2Convert, lenWc, nullptr, 0, nullptr, nullptr);
 	if (lenMbcs > 0)
 	{
 		_multiByteStr.sizeTo(lenMbcs);
-		WideCharToMultiByte(cp, 0, wcharStr2Convert, lenWc, _multiByteStr, lenMbcs, NULL, NULL);
+		WideCharToMultiByte(cp, 0, wcharStr2Convert, lenWc, _multiByteStr, lenMbcs, nullptr, nullptr);
 		if (lenWc == -1)
 			_multiByteStr[lenMbcs - 1] = '\0';
 		else
@@ -566,12 +567,12 @@ const char* WcharMbcsConvertor::wchar2char(const wchar_t* wcharStr2Convert, size
 
 	UINT cp = static_cast<UINT>(codepage);
 
-	int len = WideCharToMultiByte(cp, 0, wcharStr2Convert, wcharLenIn ? wcharLenIn : -1, NULL, 0, NULL, NULL);
+	int len = WideCharToMultiByte(cp, 0, wcharStr2Convert, wcharLenIn ? wcharLenIn : -1, nullptr, 0, nullptr, nullptr);
 
 	if (len > 0)
 	{
 		_multiByteStr.sizeTo(len);
-		len = WideCharToMultiByte(cp, 0, wcharStr2Convert, wcharLenIn ? wcharLenIn : -1, _multiByteStr, len, NULL, NULL);
+		len = WideCharToMultiByte(cp, 0, wcharStr2Convert, wcharLenIn ? wcharLenIn : -1, _multiByteStr, len, nullptr, nullptr);
 		if (wcharLenIn == -1)
 			_multiByteStr[len - 1] = '\0';
 		else
@@ -848,7 +849,7 @@ void stringSplit(const wstring& input, const wstring& delimiter, std::vector<wst
 }
 
 
-bool str2numberVector(wstring str2convert, std::vector<size_t>& numVect)
+bool str2numberVector(const wstring& str2convert, std::vector<size_t>& numVect)
 {
 	numVect.clear();
 
@@ -926,7 +927,7 @@ double stodLocale(const wstring& str, [[maybe_unused]] _locale_t loc, size_t* id
 		throw std::invalid_argument("invalid stod argument");
 	if (errno == ERANGE)
 		throw std::out_of_range("stod argument out of range");
-	if (idx != NULL)
+	if (idx != nullptr)
 		*idx = static_cast<size_t>(eptr - ptr);
 	return ans;
 }
@@ -950,7 +951,7 @@ bool str2Clipboard(const wstring &str2cpy, HWND hwnd)
 {
 	size_t len2Allocate = (str2cpy.size() + 1) * sizeof(wchar_t);
 	HGLOBAL hglbCopy = ::GlobalAlloc(GMEM_MOVEABLE, len2Allocate);
-	if (hglbCopy == NULL)
+	if (hglbCopy == nullptr)
 	{
 		return false;
 	}
@@ -998,7 +999,7 @@ bool str2Clipboard(const wstring &str2cpy, HWND hwnd)
 std::wstring strFromClipboard()
 {
 	std::wstring clipboardText;
-	if (::OpenClipboard(NULL))
+	if (::OpenClipboard(nullptr))
 	{
 		if (::IsClipboardFormatAvailable(CF_UNICODETEXT))
 		{
@@ -1136,7 +1137,7 @@ bool allPatternsAreExclusion(const std::vector<wstring>& patterns)
 
 wstring GetLastErrorAsString(DWORD errorCode)
 {
-	wstring errorMsg(L"");
+	wstring errorMsg;
 	// Get the error message, if any.
 	// If both error codes (passed error n GetLastError) are 0, then return empty
 	if (errorCode == 0)
@@ -1229,27 +1230,27 @@ HWND createToolTip(int toolID, HWND hDlg, HINSTANCE hInst, wchar_t* pszText, boo
 {
 	if (!toolID || !hDlg || !pszText)
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	// Get the window of the tool.
 	HWND hwndTool = GetDlgItem(hDlg, toolID);
 	if (!hwndTool)
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	// Create the tooltip. g_hInst is the global instance handle.
-	HWND hwndTip = CreateWindowEx(isRTL ? WS_EX_LAYOUTRTL : 0, TOOLTIPS_CLASS, NULL,
+	HWND hwndTip = CreateWindowEx(isRTL ? WS_EX_LAYOUTRTL : 0, TOOLTIPS_CLASS, nullptr,
 		WS_POPUP | TTS_ALWAYSTIP | TTS_BALLOON,
 		CW_USEDEFAULT, CW_USEDEFAULT,
 		CW_USEDEFAULT, CW_USEDEFAULT,
-		hDlg, NULL,
-		hInst, NULL);
+		hDlg, nullptr,
+		hInst, nullptr);
 
 	if (!hwndTip)
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	NppDarkMode::setDarkTooltips(hwndTip, NppDarkMode::ToolTipsType::tooltip);
@@ -1264,7 +1265,7 @@ HWND createToolTip(int toolID, HWND hDlg, HINSTANCE hInst, wchar_t* pszText, boo
 	if (!SendMessage(hwndTip, TTM_ADDTOOL, 0, reinterpret_cast<LPARAM>(&toolInfo)))
 	{
 		DestroyWindow(hwndTip);
-		return NULL;
+		return nullptr;
 	}
 
 	SendMessage(hwndTip, TTM_ACTIVATE, TRUE, 0);
@@ -1293,20 +1294,20 @@ HWND createToolTipRect(int toolID, HWND hWnd, HINSTANCE hInst, wchar_t* pszText,
 {
 	if (!toolID || !hWnd || !pszText)
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	// Create the tooltip. g_hInst is the global instance handle.
-	HWND hwndTip = CreateWindowEx(0, TOOLTIPS_CLASS, NULL,
+	HWND hwndTip = CreateWindowEx(0, TOOLTIPS_CLASS, nullptr,
 		WS_POPUP | TTS_ALWAYSTIP | TTS_BALLOON,
 		CW_USEDEFAULT, CW_USEDEFAULT,
 		CW_USEDEFAULT, CW_USEDEFAULT,
-		hWnd, NULL,
-		hInst, NULL);
+		hWnd, nullptr,
+		hInst, nullptr);
 
 	if (!hwndTip)
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	// Associate the tooltip with the tool.
@@ -1320,7 +1321,7 @@ HWND createToolTipRect(int toolID, HWND hWnd, HINSTANCE hInst, wchar_t* pszText,
 	if (!SendMessage(hwndTip, TTM_ADDTOOL, 0, reinterpret_cast<LPARAM>(&toolInfo)))
 	{
 		DestroyWindow(hwndTip);
-		return NULL;
+		return nullptr;
 	}
 
 	SendMessage(hwndTip, TTM_ACTIVATE, TRUE, 0);
@@ -1335,17 +1336,17 @@ HWND createToolTipRect(int toolID, HWND hWnd, HINSTANCE hInst, wchar_t* pszText,
 bool isCertificateValidated(const wstring & fullFilePath, const wstring & subjectName2check)
 {
 	bool isOK = false;
-	HCERTSTORE hStore = NULL;
-	HCRYPTMSG hMsg = NULL;
-	PCCERT_CONTEXT pCertContext = NULL;
+	HCERTSTORE hStore = nullptr;
+	HCRYPTMSG hMsg = nullptr;
+	PCCERT_CONTEXT pCertContext = nullptr;
 	BOOL result = FALSE;
 	DWORD dwEncoding = 0;
 	DWORD dwContentType = 0;
 	DWORD dwFormatType = 0;
-	PCMSG_SIGNER_INFO pSignerInfo = NULL;
+	PCMSG_SIGNER_INFO pSignerInfo = nullptr;
 	DWORD dwSignerInfo = 0;
 	CERT_INFO CertInfo{};
-	LPWSTR szName = NULL;
+	LPWSTR szName = nullptr;
 
 	try {
 		// Get message handle and store handle from the signed file.
@@ -1359,7 +1360,7 @@ bool isCertificateValidated(const wstring & fullFilePath, const wstring & subjec
 			&dwFormatType,
 			&hStore,
 			&hMsg,
-			NULL);
+			nullptr);
 
 		if (!result)
 		{
@@ -1369,7 +1370,7 @@ bool isCertificateValidated(const wstring & fullFilePath, const wstring & subjec
 		}
 
 		// Get signer information size.
-		result = CryptMsgGetParam(hMsg, CMSG_SIGNER_INFO_PARAM, 0, NULL, &dwSignerInfo);
+		result = CryptMsgGetParam(hMsg, CMSG_SIGNER_INFO_PARAM, 0, nullptr, &dwSignerInfo);
 		if (!result)
 		{
 			wstring errorMessage = L"CryptMsgGetParam first call: ";
@@ -1411,7 +1412,7 @@ bool isCertificateValidated(const wstring & fullFilePath, const wstring & subjec
 		DWORD dwData;
 
 		// Get Subject name size.
-		dwData = CertGetNameString(pCertContext, CERT_NAME_SIMPLE_DISPLAY_TYPE, 0, NULL, NULL, 0);
+		dwData = CertGetNameString(pCertContext, CERT_NAME_SIMPLE_DISPLAY_TYPE, 0, nullptr, nullptr, 0);
 		if (dwData <= 1)
 		{
 			throw wstring(L"Certificate checking error: getting data size problem.");
@@ -1425,7 +1426,7 @@ bool isCertificateValidated(const wstring & fullFilePath, const wstring & subjec
 		}
 
 		// Get subject name.
-		if (CertGetNameString(pCertContext, CERT_NAME_SIMPLE_DISPLAY_TYPE, 0, NULL, szName, dwData) <= 1)
+		if (CertGetNameString(pCertContext, CERT_NAME_SIMPLE_DISPLAY_TYPE, 0, nullptr, szName, dwData) <= 1)
 		{
 			throw wstring(L"Cannot get certificate info.");
 		}
@@ -1442,22 +1443,22 @@ bool isCertificateValidated(const wstring & fullFilePath, const wstring & subjec
 	catch (const wstring& s)
 	{
 		// display error message
-		MessageBox(NULL, s.c_str(), L"Certificate checking", MB_OK);
+		MessageBox(nullptr, s.c_str(), L"Certificate checking", MB_OK);
 	}
 	catch (...)
 	{
 		// Unknown error
 		wstring errorMessage = L"Unknown exception occurred. ";
 		errorMessage += GetLastErrorAsString(GetLastError());
-		MessageBox(NULL, errorMessage.c_str(), L"Certificate checking", MB_OK);
+		MessageBox(nullptr, errorMessage.c_str(), L"Certificate checking", MB_OK);
 	}
 
 	// Clean up.
-	if (pSignerInfo != NULL) LocalFree(pSignerInfo);
-	if (pCertContext != NULL) CertFreeCertificateContext(pCertContext);
-	if (hStore != NULL) CertCloseStore(hStore, 0);
-	if (hMsg != NULL) CryptMsgClose(hMsg);
-	if (szName != NULL) LocalFree(szName);
+	if (pSignerInfo != nullptr) LocalFree(pSignerInfo);
+	if (pCertContext != nullptr) CertFreeCertificateContext(pCertContext);
+	if (hStore != nullptr) CertCloseStore(hStore, 0);
+	if (hMsg != nullptr) CryptMsgClose(hMsg);
+	if (szName != nullptr) LocalFree(szName);
 
 	return isOK;
 }
@@ -1477,10 +1478,10 @@ bool isAssoCommandExisting(LPCWSTR FullPathName)
 		DWORD bufferLen = MAX_PATH;
 
 		// check if association exist
-		hres = AssocQueryString(ASSOCF_VERIFY|ASSOCF_INIT_IGNOREUNKNOWN, ASSOCSTR_COMMAND, ext, NULL, buffer, &bufferLen);
+		hres = AssocQueryString(ASSOCF_VERIFY|ASSOCF_INIT_IGNOREUNKNOWN, ASSOCSTR_COMMAND, ext, nullptr, buffer, &bufferLen);
 
 		isAssoCmdExist = (hres == S_OK)                  // check if association exist and no error
-			&& (wcsstr(buffer, L"notepad++.exe")) == NULL;   // check association with notepad++
+			&& (wcsstr(buffer, L"notepad++.exe")) == nullptr;   // check association with notepad++
 
 	}
 	return isAssoCmdExist;
@@ -1816,13 +1817,13 @@ bool isUnsupportedFileName(const wstring& fileName)
 				// strip input string to a filename without a possible path and/or ending dot-char
 				wstring fileNameOnly;
 				if (fileName.ends_with(L'.'))
-					fileNameOnly = fileName.substr(0, fileName.rfind(L"."));
+					fileNameOnly = fileName.substr(0, fileName.rfind(L'.'));
 				else
 					fileNameOnly = fileName;
 
-				size_t pos = fileNameOnly.find_last_of(L"\\");
+				size_t pos = fileNameOnly.find_last_of(L'\\');
 				if (pos == std::string::npos)
-					pos = fileNameOnly.find_last_of(L"/");
+					pos = fileNameOnly.find_last_of(L'/');
 				if (pos != std::string::npos)
 					fileNameOnly = fileNameOnly.substr(pos + 1);
 
@@ -2140,7 +2141,7 @@ BOOL getDiskFreeSpaceWithTimeout(const wchar_t* dirPath, ULARGE_INTEGER* freeByt
 {
 	GetDiskFreeSpaceParamResult data(dirPath);
 
-	HANDLE hThread = ::CreateThread(NULL, 0, getDiskFreeSpaceExWorker, &data, 0, NULL);
+	HANDLE hThread = ::CreateThread(nullptr, 0, getDiskFreeSpaceExWorker, &data, 0, nullptr);
 	if (!hThread)
 	{
 		return FALSE;
@@ -2197,12 +2198,63 @@ static DWORD WINAPI getFileAttributesExWorker(void* data)
 	return ERROR_SUCCESS;
 }
 
+// True for a plain "X:\..." path on a local fixed (or RAM) drive. Those can't hang the way network shares,
+// removable or optical drives can, so they don't need the thread-with-timeout protection below.
+// The drive type is cached for a few seconds per drive letter, since querying it isn't free either.
+static bool isLocalFixedDrivePath(const wchar_t* path)
+{
+	if (!path || !path[0] || path[1] != L':' || (path[2] != L'\\' && path[2] != L'/'))
+		return false;
+
+	const wchar_t letter = static_cast<wchar_t>(::towupper(path[0]));
+	if (letter < L'A' || letter > L'Z')
+		return false;
+
+	constexpr ULONGLONG cacheLifetimeMs = 5000;
+	static std::atomic<ULONGLONG> lastChecked[26]{};
+	static std::atomic<UINT> driveTypes[26]{};
+
+	const size_t idx = static_cast<size_t>(letter - L'A');
+	const ULONGLONG now = ::GetTickCount64();
+	const ULONGLONG checked = lastChecked[idx].load(std::memory_order_acquire);
+	UINT driveType = driveTypes[idx].load(std::memory_order_relaxed);
+	if (checked == 0 || now - checked > cacheLifetimeMs)
+	{
+		const wchar_t root[4] = { letter, L':', L'\\', L'\0' };
+		driveType = ::GetDriveTypeW(root);
+		driveTypes[idx].store(driveType, std::memory_order_relaxed);
+		lastChecked[idx].store(now == 0 ? 1 : now, std::memory_order_release);
+	}
+	return driveType == DRIVE_FIXED || driveType == DRIVE_RAMDISK;
+}
+
 BOOL getFileAttributesExWithTimeout(const wchar_t* filePath, WIN32_FILE_ATTRIBUTE_DATA* fileAttr,
 	DWORD milliSec2wait, bool* isTimeoutReached, DWORD* pdwWin32ApiError)
 {
+	// Fast path: spawning (and waiting for) a thread per query made every file existence check cost about
+	// a millisecond, and Notepad++ does several per opened/closed file plus one per buffer on every
+	// file-change detection pass. Local fixed drives can't stall, so query them directly.
+	if (isLocalFixedDrivePath(filePath))
+	{
+		fileAttr->dwFileAttributes = INVALID_FILE_ATTRIBUTES;
+		::SetLastError(NO_ERROR);
+		const BOOL result = ::GetFileAttributesExW(filePath, GetFileExInfoStandard, fileAttr);
+		const DWORD error = result ? NO_ERROR : ::GetLastError();
+		if (!result)
+			fileAttr->dwFileAttributes = INVALID_FILE_ATTRIBUTES;
+
+		if (isTimeoutReached != nullptr)
+			*isTimeoutReached = false;
+
+		if (pdwWin32ApiError != nullptr)
+			*pdwWin32ApiError = error;
+
+		return result;
+	}
+
 	GetAttrExParamResult data(filePath);
 
-	HANDLE hThread = ::CreateThread(NULL, 0, getFileAttributesExWorker, &data, 0, NULL);
+	HANDLE hThread = ::CreateThread(nullptr, 0, getFileAttributesExWorker, &data, 0, nullptr);
 	if (!hThread)
 	{
 		return FALSE;
@@ -2310,7 +2362,7 @@ bool isWindowVisibleOnAnyMonitor(const RECT& rectWndIn)
 	// 2) Using the EnumDisplayMonitors WINAPI to check each present monitor's visible area, we ensure that we are only looking
 	//    at monitors that are part of the Virtual Screen but not at Virtual Space coordinates where is NOT a monitor present.
 	Param4InOut param4InOut{ rectWndIn, false };
-	::EnumDisplayMonitors(NULL, &rectVirtualScreen, callback, reinterpret_cast<LPARAM>(&param4InOut));
+	::EnumDisplayMonitors(nullptr, &rectVirtualScreen, callback, reinterpret_cast<LPARAM>(&param4InOut));
 	return param4InOut.isWndVisibleOut;
 }
 
@@ -2377,12 +2429,12 @@ bool isCoreWindows()
 
 bool ControlInfoTip::init(HINSTANCE hInst, HWND ctrl2attached, HWND ctrl2attachedParent, const wstring& tipStr, bool isRTL, unsigned int remainTimeMillisecond /* = 0 */, int maxWidth /* = 200 */)
 {
-	_hWndInfoTip = CreateWindowEx(isRTL ? WS_EX_LAYOUTRTL : 0, TOOLTIPS_CLASS, NULL,
+	_hWndInfoTip = CreateWindowEx(isRTL ? WS_EX_LAYOUTRTL : 0, TOOLTIPS_CLASS, nullptr,
 		WS_POPUP | TTS_ALWAYSTIP | TTS_BALLOON,
 		CW_USEDEFAULT, CW_USEDEFAULT,
 		CW_USEDEFAULT, CW_USEDEFAULT,
-		ctrl2attachedParent, NULL,
-		hInst, NULL);
+		ctrl2attachedParent, nullptr,
+		hInst, nullptr);
 
 	if (!_hWndInfoTip)
 		return false;
@@ -2404,7 +2456,7 @@ bool ControlInfoTip::init(HINSTANCE hInst, HWND ctrl2attached, HWND ctrl2attache
 	SendMessage(_hWndInfoTip, TTM_ACTIVATE, TRUE, 0);
 
 	if (remainTimeMillisecond)
-		SetTimer(ctrl2attachedParent, IDT_HIDE_TOOLTIP, remainTimeMillisecond, NULL);
+		SetTimer(ctrl2attachedParent, IDT_HIDE_TOOLTIP, remainTimeMillisecond, nullptr);
 
 	return true;
 }
@@ -2455,7 +2507,7 @@ DWORD invokeNppUacOp(const std::wstring& strCmdLineParams)
 
 	wchar_t wszNppFullPath[MAX_PATH]{};
 	::SetLastError(NO_ERROR);
-	if (!::GetModuleFileName(NULL, wszNppFullPath, MAX_PATH) || (::GetLastError() == ERROR_INSUFFICIENT_BUFFER))
+	if (!::GetModuleFileName(nullptr, wszNppFullPath, MAX_PATH) || (::GetLastError() == ERROR_INSUFFICIENT_BUFFER))
 	{
 		return ::GetLastError();
 	}
@@ -2490,7 +2542,7 @@ bool fileTimeToYMD(const FILETIME& ft, int& yyyymmdd)
 	if (!FileTimeToSystemTime(&ft, &stUtc))
 		return false;
 
-	if (!SystemTimeToTzSpecificLocalTime(NULL, &stUtc, &stLocal))
+	if (!SystemTimeToTzSpecificLocalTime(nullptr, &stUtc, &stLocal))
 		return false;
 
 	yyyymmdd = (stLocal.wYear * 10000) + (stLocal.wMonth * 100) + stLocal.wDay;

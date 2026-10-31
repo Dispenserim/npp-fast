@@ -347,7 +347,7 @@ void DisplayTitle(HWND hWnd, int SI, HFONT hfont)
 	HFONT holdfont = (HFONT)SelectObject(gdc, hfont);
 	rect.bottom = BGHS[SI].titleheight;
 	DrawEdge(gdc, &rect, EDGE_ETCHED, BF_MIDDLE | BF_RECT | BF_ADJUST);
-	DrawTextEx(gdc, BGHS[SI].title, -1, &rect, DT_END_ELLIPSIS | DT_CENTER | DT_WORDBREAK | DT_NOPREFIX, NULL);
+	DrawTextEx(gdc, BGHS[SI].title, -1, &rect, DT_END_ELLIPSIS | DT_CENTER | DT_WORDBREAK | DT_NOPREFIX, nullptr);
 	SelectObject(gdc, holdfont);
 	ReleaseDC(hWnd, gdc);
 }
@@ -442,7 +442,7 @@ void DisplayColumn(HWND hWnd, int SI, int c, int offset, HFONT hfont, HFONT hcol
 	SelectObject(gdc, holdpentitle);
 	DeleteObject(hbrushtitle);
 	DeleteObject(hpentitle);
-	DrawTextEx(gdc, buffer, -1, &rect, DT_END_ELLIPSIS | DT_CENTER | DT_WORDBREAK | DT_NOPREFIX, NULL);
+	DrawTextEx(gdc, buffer, -1, &rect, DT_END_ELLIPSIS | DT_CENTER | DT_WORDBREAK | DT_NOPREFIX, nullptr);
 	rect = rectsave;
 
 	r = BGHS[SI].topvisiblerow;
@@ -572,17 +572,17 @@ void DisplayColumn(HWND hWnd, int SI, int c, int offset, HFONT hfont, HFONT hcol
 		{
 			if (BGHS[SI].ELLIPSIS)
 			{
-				DrawTextEx(gdc, buffer, -1, &rect, DT_END_ELLIPSIS | DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX, NULL);
+				DrawTextEx(gdc, buffer, -1, &rect, DT_END_ELLIPSIS | DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX, nullptr);
 			}
 			else
 			{
-				DrawTextEx(gdc, buffer, -1, &rect, DT_LEFT | DT_WORDBREAK | DT_EDITCONTROL | DT_NOPREFIX, NULL);
+				DrawTextEx(gdc, buffer, -1, &rect, DT_LEFT | DT_WORDBREAK | DT_EDITCONTROL | DT_NOPREFIX, nullptr);
 			}
 		}
 
 		if (iDataType == 2)//NUMERIC
 		{
-			DrawTextEx(gdc, buffer, -1, &rect, DT_END_ELLIPSIS | DT_RIGHT | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX, NULL);
+			DrawTextEx(gdc, buffer, -1, &rect, DT_END_ELLIPSIS | DT_RIGHT | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX, nullptr);
 		}
 
 		if (iDataType == 3)//BOOLEAN TRUE
@@ -1102,12 +1102,12 @@ ATOM RegisterGridClass(HINSTANCE hInstance)
 	wclass.cbClsExtra = 0;
 	wclass.cbWndExtra = 0;
 	wclass.hInstance = hInstance;
-	wclass.hIcon = NULL;
-	wclass.hCursor = ::LoadCursor(NULL, IDC_ARROW);
+	wclass.hIcon = nullptr;
+	wclass.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
 
 	wclass.hbrBackground = (HBRUSH)(GetStockObject(GRAY_BRUSH));
 	wclass.lpszClassName = L"BABYGRID";
-	wclass.lpszMenuName = NULL;
+	wclass.lpszMenuName = nullptr;
 
 	return RegisterClass(&wclass);
 }
@@ -2032,7 +2032,7 @@ LRESULT CALLBACK GridProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				if ((BGHS[SelfIndex].cursortype != 2) && (BGHS[SelfIndex].ALLOWCOLUMNRESIZING))
 				{
 					BGHS[SelfIndex].cursortype = 2;
-					SetCursor(LoadCursor(NULL, IDC_SIZEWE));
+					SetCursor(LoadCursor(nullptr, IDC_SIZEWE));
 				}
 
 			}
@@ -2041,7 +2041,7 @@ LRESULT CALLBACK GridProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				if ((BGHS[SelfIndex].cursortype != 1) && (!BGHS[SelfIndex].COLUMNSIZING))
 				{
 					BGHS[SelfIndex].cursortype = 1;
-					SetCursor(LoadCursor(NULL, IDC_ARROW));
+					SetCursor(LoadCursor(nullptr, IDC_ARROW));
 				}
 			}
 		}
@@ -2051,7 +2051,7 @@ LRESULT CALLBACK GridProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if (BGHS[SelfIndex].COLUMNSIZING)
 			{
 				BGHS[SelfIndex].COLUMNSIZING = FALSE;
-				SetCursor(LoadCursor(NULL, IDC_ARROW));
+				SetCursor(LoadCursor(nullptr, IDC_ARROW));
 				BGHS[SelfIndex].cursortype = 1;
 				BGHS[SelfIndex].SHOWINTEGRALROWS = BGHS[SelfIndex].REMEMBERINTEGRALROWS;
 				SizeGrid(hWnd);
@@ -2682,9 +2682,9 @@ LRESULT CALLBACK GridProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			SendMessage(BGHS[SelfIndex].hlist1, LB_RESETCONTENT, 0, 0);
 			DestroyWindow(BGHS[SelfIndex].hlist1);
-			BGHS[SelfIndex].gridmenu = 0;
-			BGHS[SelfIndex].hlist1 = NULL;
-			BGHS[SelfIndex].hfont = NULL;
+			BGHS[SelfIndex].gridmenu = nullptr;
+			BGHS[SelfIndex].hlist1 = nullptr;
+			BGHS[SelfIndex].hfont = nullptr;
 			wcscpy_s(BGHS[SelfIndex].protect, L"U");
 			BGHS[SelfIndex].rows = 100;
 			BGHS[SelfIndex].cols = 255;
@@ -2729,7 +2729,7 @@ LRESULT CALLBACK GridProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				GetTextMetrics(hdc, &tm);
 				ReleaseDC(hWnd, hdc);
 				BGHS[SelfIndex].fontascentheight = (int)tm.tmAscent;
-				CreateCaret(hWnd, NULL, 3, tm.tmAscent);
+				CreateCaret(hWnd, nullptr, 3, tm.tmAscent);
 			}
 			RefreshGrid(hWnd);
 			break;
@@ -2842,7 +2842,7 @@ LRESULT CALLBACK GridProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				BGHS[BG_GridIndex].gridmenu = GetMenu(hWnd);
 
 				BGHS[BG_GridIndex].hlist1 = CreateWindowEx(WS_EX_CLIENTEDGE, L"LISTBOX", L"",
-					WS_CHILD | LBS_STANDARD, 50, 150, 200, 100, hWnd, NULL, hInst, NULL);
+					WS_CHILD | LBS_STANDARD, 50, 150, 200, 100, hWnd, nullptr, hInst, nullptr);
 
 				BGHS[BG_GridIndex].hfont = g_hfontbody;
 				BGHS[BG_GridIndex].htitlefont = g_hfonttitle;
@@ -2869,7 +2869,7 @@ int CountGrids()
 {
 	int count = 0;
 	for (int j = 0; j < MAX_GRIDS; j++)
-		if (BGHS[j].gridmenu != 0)
+		if (BGHS[j].gridmenu != nullptr)
 			count++;
 	return count;
 }
@@ -2889,7 +2889,7 @@ int AddGrid(HMENU menuid)
 			MATCH = TRUE;
 			returnvalue = j;
 		}
-		if (BGHS[j].gridmenu == 0)
+		if (BGHS[j].gridmenu == nullptr)
 		{
 			empty_space = j;
 		}

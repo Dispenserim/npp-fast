@@ -290,7 +290,7 @@ void WindowsDlg::init(HINSTANCE hInst, HWND parent)
 {
 	assert(false && "Call other initialize method");
 	MyBaseClass::init(hInst, parent);
-	_pTab = NULL;
+	_pTab = nullptr;
 }
 
 LRESULT CALLBACK WindowsDlg::getMsgProc(int code, WPARAM wParam, LPARAM lParam) 
@@ -814,7 +814,7 @@ BOOL WindowsDlg::onInitDialog()
 
 	if (_lastKnownLocation.bottom > 0 && _lastKnownLocation.right > 0)
 	{
-		SetWindowPos(_hSelf, NULL, _lastKnownLocation.left, _lastKnownLocation.top,
+		SetWindowPos(_hSelf, nullptr, _lastKnownLocation.left, _lastKnownLocation.top,
 			_lastKnownLocation.right-_lastKnownLocation.left, _lastKnownLocation.bottom-_lastKnownLocation.top, SWP_SHOWWINDOW);
 	}
 	else
@@ -957,11 +957,11 @@ LRESULT WindowsDlg::onWinMgr(WPARAM wp, LPARAM lp)
 
 void WindowsDlg::doRefresh()
 {
-	if (_hSelf != NULL && isVisible())
+	if (_hSelf != nullptr && isVisible())
 	{
-		if (_hList != NULL)
+		if (_hList != nullptr)
 		{
-			size_t count = (_pTab != NULL) ? _pTab->nbItem() : 0;
+			size_t count = (_pTab != nullptr) ? _pTab->nbItem() : 0;
 			size_t oldSize = _idxMap.size();
 			if (count == oldSize)
 				return;
@@ -1049,7 +1049,7 @@ void WindowsDlg::destroy()
 	::GetWindowRect(_hSelf, &_lastKnownLocation);
 
 	HWND hSelf = _hSelf;
-	_hSelf = NULL;
+	_hSelf = nullptr;
 	::DestroyWindow(hSelf);
 }
 
@@ -1252,7 +1252,7 @@ void WindowsDlg::sortDateTimeDSC()
 
 void WindowsDlg::refreshMap()
 {
-	size_t count = (_pTab != NULL) ? _pTab->nbItem() : 0;
+	size_t count = (_pTab != nullptr) ? _pTab->nbItem() : 0;
 	size_t oldSize = _idxMap.size();
 	if (count == oldSize)
 		return;

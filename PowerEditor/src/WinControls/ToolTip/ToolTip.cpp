@@ -22,12 +22,12 @@
 
 void ToolTip::init(HINSTANCE hInst, HWND hParent)
 {
-	if (_hSelf == NULL)
+	if (_hSelf == nullptr)
 	{
 		Window::init(hInst, hParent);
 
-		_hSelf = CreateWindowEx( 0, TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, 
-             CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, NULL, NULL );
+		_hSelf = CreateWindowEx( 0, TOOLTIPS_CLASS, nullptr, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, 
+             CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, nullptr, nullptr, nullptr, nullptr );
 		if (!_hSelf)
 		{
 			throw std::runtime_error("ToolTip::init : CreateWindowEx() function return null");

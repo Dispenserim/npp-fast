@@ -27,9 +27,9 @@ using namespace std;
 BOOL DockingManager::_isRegistered = FALSE;
 
 //Window of event handling DockingManager (can only be one)
-static	HWND			hWndServer	= NULL;
+static	HWND			hWndServer	= nullptr;
 //Next hook in line
-static	HHOOK			gWinCallHook = NULL;
+static	HHOOK			gWinCallHook = nullptr;
 LRESULT CALLBACK focusWndProc(int nCode, WPARAM wParam, LPARAM lParam);
 
 // Callback function that handles messages (to test focus)
@@ -103,10 +103,10 @@ void DockingManager::init(HINSTANCE hInst, HWND hParent, Window ** ppWin)
 		clz.cbClsExtra = 0;
 		clz.cbWndExtra = 0;
 		clz.hInstance = _hInst;
-		clz.hIcon = NULL;
-		clz.hCursor = ::LoadCursor(NULL, IDC_ARROW);
-		clz.hbrBackground = NULL;
-		clz.lpszMenuName = NULL;
+		clz.hIcon = nullptr;
+		clz.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
+		clz.hbrBackground = nullptr;
+		clz.lpszMenuName = nullptr;
 		clz.lpszClassName = DSPC_CLASS_NAME;
 
 		if (!::RegisterClass(&clz))
@@ -124,7 +124,7 @@ void DockingManager::init(HINSTANCE hInst, HWND hParent, Window ** ppWin)
 					CW_USEDEFAULT, CW_USEDEFAULT,
 					CW_USEDEFAULT, CW_USEDEFAULT,
 					_hParent,
-					NULL,
+					nullptr,
 					_hInst,
 					(LPVOID)this);
 
@@ -150,7 +150,7 @@ void DockingManager::init(HINSTANCE hInst, HWND hParent, Window ** ppWin)
 	// register window event hooking
 	if (!hWndServer)
 		hWndServer = _hSelf;
-	CoInitialize(NULL);
+	CoInitialize(nullptr);
 	if (!gWinCallHook)	//only set if not already done
 		gWinCallHook = ::SetWindowsHookEx(WH_CALLWNDPROC, focusWndProc, hInst, GetCurrentThreadId());
 
@@ -171,7 +171,7 @@ void DockingManager::destroy()
 
 LRESULT CALLBACK DockingManager::staticWinProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	DockingManager *pDockingManager = NULL;
+	DockingManager *pDockingManager = nullptr;
 	switch (message)
 	{
 		case WM_NCCREATE :
@@ -255,8 +255,8 @@ LRESULT DockingManager::runProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM l
 			if (hWndServer == hwnd)
 			{
 				UnhookWindowsHookEx(gWinCallHook);
-				gWinCallHook = NULL;
-				hWndServer = NULL;
+				gWinCallHook = nullptr;
+				hWndServer = nullptr;
 			}
 
 			// destroy containers
@@ -518,7 +518,7 @@ void DockingManager::reSizeTo(RECT & rc)
 	// set window positions of container
 	if (_vContainer[CONT_BOTTOM]->isVisible())
 	{
-		::SetWindowPos(_vContainer[CONT_BOTTOM]->getHSelf(), NULL,
+		::SetWindowPos(_vContainer[CONT_BOTTOM]->getHSelf(), nullptr,
 					   rcBottom.left  ,
 					   rcBottom.top   ,
 					   rcBottom.right ,
@@ -529,7 +529,7 @@ void DockingManager::reSizeTo(RECT & rc)
 
 	if (_vContainer[CONT_TOP]->isVisible())
 	{
-		::SetWindowPos(_vContainer[CONT_TOP]->getHSelf(), NULL,
+		::SetWindowPos(_vContainer[CONT_TOP]->getHSelf(), nullptr,
 					   _dockData.rcRegion[CONT_TOP].left  ,
 					   _dockData.rcRegion[CONT_TOP].top   ,
 					   _dockData.rcRegion[CONT_TOP].right ,
@@ -540,7 +540,7 @@ void DockingManager::reSizeTo(RECT & rc)
 
 	if (_vContainer[CONT_RIGHT]->isVisible())
 	{
-		::SetWindowPos(_vContainer[CONT_RIGHT]->getHSelf(), NULL,
+		::SetWindowPos(_vContainer[CONT_RIGHT]->getHSelf(), nullptr,
 					   rcRight.left  ,
 					   rcRight.top   ,
 					   rcRight.right ,
@@ -551,7 +551,7 @@ void DockingManager::reSizeTo(RECT & rc)
 
 	if (_vContainer[CONT_LEFT]->isVisible())
 	{
-		::SetWindowPos(_vContainer[CONT_LEFT]->getHSelf(), NULL,
+		::SetWindowPos(_vContainer[CONT_LEFT]->getHSelf(), nullptr,
 					   _dockData.rcRegion[CONT_LEFT].left  ,
 					   _dockData.rcRegion[CONT_LEFT].top   ,
 					   _dockData.rcRegion[CONT_LEFT].right ,
@@ -582,7 +582,7 @@ void DockingManager::createDockableDlg(DockedWidgetData data, int iCont, bool is
 
 	// create additional containers if necessary
 	RECT				rc			= {0,0,0,0};
-	DockingCont*		pCont		= NULL;
+	DockingCont*		pCont		= nullptr;
 
 	// if floated rect not set
 	if (memcmp(&data.rcFloat, &rc, sizeof(RECT)) == 0)
@@ -717,7 +717,7 @@ void DockingManager::showDockableDlg(HWND hDlg, BOOL view)
 	for (size_t i = 0, len = _vContainer.size(); i < len; ++i)
 	{
 		DockedWidgetData *pTbData = _vContainer[i]->findDockedWidgetByWnd(hDlg);
-		if (pTbData != NULL)
+		if (pTbData != nullptr)
 		{
 			_vContainer[i]->showDockedWidget(pTbData, view);
 			return;
@@ -730,7 +730,7 @@ void DockingManager::showDockableDlg(wchar_t* pszName, BOOL view)
 	for (size_t i = 0, len = _vContainer.size(); i < len; ++i)
 	{
 		DockedWidgetData *pTbData = _vContainer[i]->findDockedWidgetByName(pszName);
-		if (pTbData != NULL)
+		if (pTbData != nullptr)
 		{
 			_vContainer[i]->showDockedWidget(pTbData, view);
 			return;
@@ -775,10 +775,10 @@ DockingCont* DockingManager::toggleActiveWidget(DockingCont* pContSrc, UINT mess
 	int				iContSrc	= getContainerIndex(pContSrc);
 	int				iContPrev	= TbData.iPrevCont;
 	BOOL			isCont		= doesContExist(iContPrev);
-	DockingCont*	pContTgt	= NULL;
+	DockingCont*	pContTgt	= nullptr;
 
 	// if new float position is given
-	if (prcFloat != NULL)
+	if (prcFloat != nullptr)
 	{
 		TbData.rcFloat = *prcFloat;
 	}
@@ -841,7 +841,7 @@ DockingCont* DockingManager::toggleVisWidget(DockingCont* pContSrc, UINT message
 	int					iContSrc	= getContainerIndex(pContSrc);
 	int					iContPrev	= pTbData->iPrevCont;
 	BOOL				isCont		= doesContExist(iContPrev);
-	DockingCont*		pContTgt	= NULL;
+	DockingCont*		pContTgt	= nullptr;
 
 	// at first hide container and resize
 	pContSrc->doDialog(false);
@@ -853,7 +853,7 @@ DockingCont* DockingManager::toggleVisWidget(DockingCont* pContSrc, UINT message
 		DockedWidgetData		TbData = *vTbData[iTb];
 
 		// if new float position is given
-		if (prcFloat != NULL)
+		if (prcFloat != nullptr)
 		{
 			TbData.rcFloat = *prcFloat;
 		}

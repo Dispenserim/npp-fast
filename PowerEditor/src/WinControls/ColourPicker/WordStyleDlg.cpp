@@ -1259,7 +1259,7 @@ void WordStyleDlg::setVisualFromStyleList()
 			isEnable = true;
 	}
 	::EnableWindow(_pFgColour->getHSelf(), isEnable);
-	InvalidateRect(_hFgColourStaticText, NULL, FALSE);
+	InvalidateRect(_hFgColourStaticText, nullptr, FALSE);
 
 	isEnable = false;
 	if (HIBYTE(HIWORD(style._bgColor)) != 0xFF)
@@ -1269,7 +1269,7 @@ void WordStyleDlg::setVisualFromStyleList()
 		isEnable = true;
 	}
 	::EnableWindow(_pBgColour->getHSelf(), isEnable);
-	InvalidateRect(_hBgColourStaticText, NULL, FALSE);
+	InvalidateRect(_hBgColourStaticText, nullptr, FALSE);
 
 	//-- font name
 	LRESULT iFontName = 0;
@@ -1283,7 +1283,7 @@ void WordStyleDlg::setVisualFromStyleList()
 	::SendMessage(_hFontNameCombo, CB_SETCURSEL, iFontName, 0);
 	::EnableWindow(_hFontNameCombo, style._isFontEnabled);
 	::RedrawWindow(_hFontNameCombo, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
-	InvalidateRect(_hFontNameStaticText, NULL, FALSE);
+	InvalidateRect(_hFontNameStaticText, nullptr, FALSE);
 
 	//-- font size
 	static constexpr size_t intStrLen = 3;
@@ -1297,7 +1297,7 @@ void WordStyleDlg::setVisualFromStyleList()
 	::SendMessage(_hFontSizeCombo, CB_SETCURSEL, iFontSize, 0);
 	::EnableWindow(_hFontSizeCombo, style._isFontEnabled);
 	::RedrawWindow(_hFontSizeCombo, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
-	InvalidateRect(_hFontSizeStaticText, NULL, FALSE);
+	InvalidateRect(_hFontSizeStaticText, nullptr, FALSE);
 	
 	//-- font style : bold & italic
 	if (style._fontStyle != STYLE_NOT_USED)
@@ -1412,7 +1412,7 @@ void WordStyleDlg::redraw(bool forceUpdate) const
 {
 	_pFgColour->redraw(forceUpdate);
 	_pBgColour->redraw(forceUpdate);
-	::InvalidateRect(_hStyleInfoStaticText, NULL, TRUE);
+	::InvalidateRect(_hStyleInfoStaticText, nullptr, TRUE);
 	::UpdateWindow(_hStyleInfoStaticText);
 }
 

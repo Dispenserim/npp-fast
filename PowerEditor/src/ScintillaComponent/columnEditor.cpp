@@ -839,8 +839,8 @@ int ColumnEditorDlg::sendValidationErrorMessage(int whichFlashRed, NumBase forma
 		return nullptr;
 	}(::GetDlgItem(_hSelf, whichFlashRed));
 
-	SetTimer(_hSelf, IDT_COL_FLASH_TIMER, 250, NULL);
-	SetTimer(_hSelf, IDC_COL_BALLONTIP_TIMER, 3500, NULL);
+	SetTimer(_hSelf, IDT_COL_FLASH_TIMER, 250, nullptr);
+	SetTimer(_hSelf, IDC_COL_BALLONTIP_TIMER, 3500, nullptr);
 
 	redrawDlgItem(whichFlashRed);
 

@@ -201,6 +201,7 @@ public:
 	bool fileReload();
 	bool fileClose(BufferID id = BUFFER_INVALID, int curView = -1);	//use curView to override view to close from
 	bool fileCloseAll(bool doDeleteBackup, bool isSnapshotMode = false);
+	void showBufferForSavePrompt(BufferID id, int whichView);
 	bool fileCloseAllButCurrent();
 	void fileCloseAllButPinned();
 	bool fileCloseAllGiven(const std::vector<BufferViewInfo>& krvecBuffer);

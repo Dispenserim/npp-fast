@@ -63,13 +63,13 @@ void SplitterContainer::create(Window *pWin0, Window *pWin1, int splitterSize, S
 		splitterContainerClass.cbClsExtra = 0;
 		splitterContainerClass.cbWndExtra = 0;
 		splitterContainerClass.hInstance = _hInst;
-		splitterContainerClass.hIcon = NULL;
-		splitterContainerClass.hCursor = ::LoadCursor(NULL, IDC_ARROW);
+		splitterContainerClass.hIcon = nullptr;
+		splitterContainerClass.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
 
 		// hbrBackground must be NULL,
 		// otherwise this window will hide some parts of 2 windows
-		splitterContainerClass.hbrBackground = NULL;
-		splitterContainerClass.lpszMenuName = NULL;
+		splitterContainerClass.hbrBackground = nullptr;
+		splitterContainerClass.lpszMenuName = nullptr;
 		splitterContainerClass.lpszClassName = SPC_CLASS_NAME;
 
 		if (!::RegisterClass(&splitterContainerClass))
@@ -82,7 +82,7 @@ void SplitterContainer::create(Window *pWin0, Window *pWin1, int splitterSize, S
 		0, SPC_CLASS_NAME, L"a koi sert?",
 		WS_CHILD | WS_CLIPCHILDREN,
 		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-		_hParent, NULL, _hInst, this);
+		_hParent, nullptr, _hInst, this);
 
 	if (!_hSelf)
 		throw std::runtime_error(" SplitterContainer::create : CreateWindowEx() function return null");
@@ -241,7 +241,7 @@ LRESULT SplitterContainer::runProc(UINT message, WPARAM wParam, LPARAM lParam)
 			_pWin0->reSizeTo(rc0);
 			_pWin1->reSizeTo(rc1);
 
-			::InvalidateRect(_splitter.getHSelf(), NULL, TRUE);
+			::InvalidateRect(_splitter.getHSelf(), nullptr, TRUE);
 			return TRUE;
 		}
 
@@ -266,7 +266,7 @@ LRESULT SplitterContainer::runProc(UINT message, WPARAM wParam, LPARAM lParam)
 					::InsertMenu(_hPopupMenu, 0, MF_BYPOSITION, ROTATION_RIGHT, textRight.c_str());
 				}
 
-				::TrackPopupMenu(_hPopupMenu, TPM_LEFTALIGN, p.x, p.y, 0, _hSelf, NULL);
+				::TrackPopupMenu(_hPopupMenu, TPM_LEFTALIGN, p.x, p.y, 0, _hSelf, nullptr);
 			}
 			return TRUE;
 		}

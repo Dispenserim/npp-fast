@@ -1153,7 +1153,7 @@ namespace NppDarkMode
 		GetWindowText(hwnd, szText, _countof(szText));
 
 		SIZE szBox = { 13, 13 };
-		GetThemePartSize(hTheme, hdc, iPartID, iStateID, NULL, TS_DRAW, &szBox);
+		GetThemePartSize(hTheme, hdc, iPartID, iStateID, nullptr, TS_DRAW, &szBox);
 
 		RECT rcText = rcClient;
 		GetThemeBackgroundContentRect(hTheme, hdc, iPartID, iStateID, &rcClient, &rcText);

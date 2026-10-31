@@ -197,12 +197,12 @@ SortLocale::Result SortLocale::sort(ScintillaEditView* sci, bool descending) con
 				constexpr unsigned int safeSize = std::numeric_limits<int>::max() / 2;
 				size_t textLength = keyText.length();
 				int sortableLength = textLength > safeSize ? safeSize : static_cast<int>(textLength);
-				int wideLength = MultiByteToWideChar(codepage, 0, keyText.data(), sortableLength, 0, 0);
+				int wideLength = MultiByteToWideChar(codepage, 0, keyText.data(), sortableLength, nullptr, 0);
 				std::wstring wideText(wideLength, 0);
 				MultiByteToWideChar(codepage, 0, keyText.data(), sortableLength, wideText.data(), wideLength);
-				int m = LCMapStringEx(locale, options, wideText.data(), wideLength, 0, 0, 0, 0, 0);
+				int m = LCMapStringEx(locale, options, wideText.data(), wideLength, nullptr, 0, nullptr, nullptr, 0);
 				sl.key.resize(m, 0);
-				LCMapStringEx(locale, options, wideText.data(), wideLength, reinterpret_cast<LPWSTR>(sl.key.data()), m, 0, 0, 0);
+				LCMapStringEx(locale, options, wideText.data(), wideLength, reinterpret_cast<LPWSTR>(sl.key.data()), m, nullptr, nullptr, 0);
 			}
 		}
 
@@ -256,7 +256,7 @@ SortLocale::Result SortLocale::sort(ScintillaEditView* sci, bool descending) con
 	catch (const std::exception& e)
 	{
 		try {
-			int errlen = MultiByteToWideChar(CP_ACP, 0, e.what(), -1, 0, 0);
+			int errlen = MultiByteToWideChar(CP_ACP, 0, e.what(), -1, nullptr, 0);
 			if (errlen < 2) return errorUnknown;
 			std::wstring errmsg(errlen - 1, 0);
 			MultiByteToWideChar(CP_ACP, 0, e.what(), -1, errmsg.data(), errlen);

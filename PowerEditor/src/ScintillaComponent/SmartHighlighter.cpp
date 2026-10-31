@@ -83,12 +83,12 @@ void SmartHighlighter::highlightViewWithWord(ScintillaEditView * pHighlightView,
 		if (endPos == -1)
 		{	//past EOF
 			frInfo._endRange = pHighlightView->getCurrentDocLen() - 1;
-			_pFRDlg->processRange(ProcessHighLightAll, frInfo, NULL, &fo, -1, pHighlightView);
+			_pFRDlg->processRange(ProcessHighLightAll, frInfo, nullptr, &fo, -1, pHighlightView);
 			break;
 		}
 		else
 		{
-			_pFRDlg->processRange(ProcessHighLightAll, frInfo, NULL, &fo, -1, pHighlightView);
+			_pFRDlg->processRange(ProcessHighLightAll, frInfo, nullptr, &fo, -1, pHighlightView);
 		}
 	}
 

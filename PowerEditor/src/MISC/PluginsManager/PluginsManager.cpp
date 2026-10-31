@@ -55,21 +55,21 @@ Do you want to remove this plugin from the plugins directory to prevent this mes
 
 static WORD getBinaryArchitectureType(const wchar_t *filePath)
 {
-	HANDLE hFile = CreateFile(filePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_READONLY, NULL);
+	HANDLE hFile = CreateFile(filePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_READONLY, nullptr);
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
 		return IMAGE_FILE_MACHINE_UNKNOWN;
 	}
 
-	HANDLE hMapping = CreateFileMapping(hFile, NULL, PAGE_READONLY | SEC_IMAGE, 0, 0, NULL);
-	if (hMapping == NULL)
+	HANDLE hMapping = CreateFileMapping(hFile, nullptr, PAGE_READONLY | SEC_IMAGE, 0, 0, nullptr);
+	if (hMapping == nullptr)
 	{
 		CloseHandle(hFile);
 		return IMAGE_FILE_MACHINE_UNKNOWN;
 	}
 
 	LPVOID addrHeader = MapViewOfFile(hMapping, FILE_MAP_READ, 0, 0, 0);
-	if (addrHeader == NULL) // couldn't memory map the file
+	if (addrHeader == nullptr) // couldn't memory map the file
 	{
 		CloseHandle(hFile);
 		CloseHandle(hMapping);
@@ -79,7 +79,7 @@ static WORD getBinaryArchitectureType(const wchar_t *filePath)
 	PIMAGE_NT_HEADERS peHdr = ImageNtHeader(addrHeader);
 
 	// Found the binary and architecture type, if peHdr is !NULL
-	WORD machine_type = (peHdr == NULL) ? IMAGE_FILE_MACHINE_UNKNOWN : peHdr->FileHeader.Machine;
+	WORD machine_type = (peHdr == nullptr) ? IMAGE_FILE_MACHINE_UNKNOWN : peHdr->FileHeader.Machine;
 
 	// release all of our handles
 	UnmapViewOfFile(addrHeader);
@@ -127,8 +127,8 @@ int PluginsManager::loadPluginFromPath(const wchar_t *pluginFilePath)
 			throw wstring(archErrMsg);
 		}
 
-        const DWORD dwFlags = GetProcAddress(GetModuleHandle(L"kernel32.dll"), "AddDllDirectory") != NULL ? LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_DEFAULT_DIRS : 0;
-        pi->_hLib = ::LoadLibraryEx(pluginFilePath, NULL, dwFlags);
+        const DWORD dwFlags = GetProcAddress(GetModuleHandle(L"kernel32.dll"), "AddDllDirectory") != nullptr ? LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_DEFAULT_DIRS : 0;
+        pi->_hLib = ::LoadLibraryEx(pluginFilePath, nullptr, dwFlags);
         if (!pi->_hLib)
         {
 			wstring lastErrorMsg = GetLastErrorAsString();
@@ -343,7 +343,7 @@ bool PluginsManager::loadPlugins(const wchar_t* dir, const PluginViewList* plugi
 
 	// Get Notepad++ current version
 	wchar_t nppFullPathName[MAX_PATH];
-	GetModuleFileName(NULL, nppFullPathName, MAX_PATH);
+	GetModuleFileName(nullptr, nppFullPathName, MAX_PATH);
 	Version nppVer;
 	nppVer.setVersionFrom(nppFullPathName);
 
@@ -581,7 +581,7 @@ void PluginsManager::addInMenuFromPMIndex(int i)
     unsigned short j = 0;
 	for ( ; j < _pluginInfos[i]->_nbFuncItem ; ++j)
 	{
-		if (_pluginInfos[i]->_funcItems[j]._pFunc == NULL)
+		if (_pluginInfos[i]->_funcItems[j]._pFunc == nullptr)
 		{
 			::InsertMenu(_pluginInfos[i]->_pluginMenu, j, MF_BYPOSITION | MF_SEPARATOR, 0, L"");
 			continue;
@@ -645,14 +645,14 @@ void PluginsManager::runPluginCommand(size_t i)
 {
 	if (i < _pluginsCommands.size())
 	{
-		if (_pluginsCommands[i]._pFunc != NULL)
+		if (_pluginsCommands[i]._pFunc != nullptr)
 		{
 			try {
 				_pluginsCommands[i]._pFunc();
 			}
 			catch (std::exception& e)
 			{
-				::MessageBoxA(NULL, e.what(), "PluginsManager::runPluginCommand Exception", MB_OK);
+				::MessageBoxA(nullptr, e.what(), "PluginsManager::runPluginCommand Exception", MB_OK);
 			}
 			catch (...)
 			{

@@ -132,7 +132,7 @@ intptr_t CALLBACK RunMacroDlg::run_dlgProc(UINT message, WPARAM wParam, LPARAM l
 					if (isRunMulti)
 					{
 						::EnableWindow(::GetDlgItem(_hSelf, IDC_M_RUN_TIMES), TRUE);
-						_times = ::GetDlgItemInt(_hSelf, IDC_M_RUN_TIMES, NULL, FALSE);
+						_times = ::GetDlgItemInt(_hSelf, IDC_M_RUN_TIMES, nullptr, FALSE);
 					}
 					else
 					{

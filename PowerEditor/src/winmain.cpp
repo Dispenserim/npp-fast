@@ -90,10 +90,10 @@ void allowForbidPrivilegeMessages(const Notepad_plus_Window& notepad_plus_plus, 
 
 				if (funcEx)
 				{
-					funcEx(notepad_plus_plus.getHSelf(), WM_COPYDATA, MSGFLT_ALLOW, NULL);
-					funcEx(notepad_plus_plus.getHSelf(), NPPM_INTERNAL_RESTOREFROMMINIMIZED, MSGFLT_ALLOW, NULL);
+					funcEx(notepad_plus_plus.getHSelf(), WM_COPYDATA, MSGFLT_ALLOW, nullptr);
+					funcEx(notepad_plus_plus.getHSelf(), NPPM_INTERNAL_RESTOREFROMMINIMIZED, MSGFLT_ALLOW, nullptr);
 
-					funcEx(notepad_plus_plus.getHSelf(), WM_COMMAND, MSGFLT_DISALLOW, NULL); // Disallow WM_COMMAND messages from lower integrity processes (for security reasons)
+					funcEx(notepad_plus_plus.getHSelf(), WM_COMMAND, MSGFLT_DISALLOW, nullptr); // Disallow WM_COMMAND messages from lower integrity processes (for security reasons)
 				}
 			}
 		}
@@ -330,7 +330,7 @@ int getGhostTypingSpeedFromParam(ParamVector & params)
 	if (!getParamValFromString(L"-qSpeed", params, speedStr))
 		return -1;
 	
-	int speed = std::stoi(speedStr, 0);
+	int speed = std::stoi(speedStr, nullptr);
 	if (speed <= 0 || speed > 3)
 		return -1;
 
@@ -434,7 +434,7 @@ DWORD nppUacSave(const wchar_t* protectedFilePath2Save, HANDLE hParent, HANDLE r
 		return ERROR_INVALID_PARAMETER;
 
 	// remote = handle VALUE in the parent process: get our own read-only, non-inheritable handle on that section
-	HANDLE hLocal = NULL;
+	HANDLE hLocal = nullptr;
 	const BOOL isDup = ::DuplicateHandle(hParent, remote, ::GetCurrentProcess(), &hLocal, FILE_MAP_READ, FALSE, 0);
 	DWORD dwRetCode = isDup ? NO_ERROR : ::GetLastError();
 
@@ -701,7 +701,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstance
 
 	bool TheFirstOne = true;
 	::SetLastError(NO_ERROR);
-	::CreateMutex(NULL, false, L"nppFastInstance");
+	::CreateMutex(nullptr, false, L"nppFastInstance");
 	if (::GetLastError() == ERROR_ALREADY_EXISTS)
 		TheFirstOne = false;
 
@@ -848,7 +848,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstance
 			cmdLineParams._isNoSession = true;
 	}
 
-	std::wstring quotFileNames = L"";
+	std::wstring quotFileNames;
     // tell the running instance the FULL path to the new files to load
 	size_t nbFilesToOpen = params.size();
 
@@ -870,11 +870,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstance
 
 	if ((!isMultiInst) && (!TheFirstOne))
 	{
-		HWND hNotepad_plus = ::FindWindow(Notepad_plus_Window::getClassName(), NULL);
+		HWND hNotepad_plus = ::FindWindow(Notepad_plus_Window::getClassName(), nullptr);
 		for (int i = 0 ;!hNotepad_plus && i < 5 ; ++i)
 		{
 			Sleep(100);
-			hNotepad_plus = ::FindWindow(Notepad_plus_Window::getClassName(), NULL);
+			hNotepad_plus = ::FindWindow(Notepad_plus_Window::getClassName(), nullptr);
 		}
 
         if (hNotepad_plus)
@@ -910,7 +910,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstance
 				RegisterClassW(&wc);
 
 				// HWND_MESSAGE: message-only window, never visible, no taskbar entry
-				HWND hIpcSender = CreateWindowExW(0, className, L"", 0, 0, 0, 0, 0,	HWND_MESSAGE, NULL, hInstance, NULL);
+				HWND hIpcSender = CreateWindowExW(0, className, L"", 0, 0, 0, 0, 0,	HWND_MESSAGE, nullptr, hInstance, nullptr);
 				::ChangeWindowMessageFilterEx(hIpcSender, WM_COPYDATA, MSGFLT_ALLOW, nullptr);
 
 				CmdLineParamsDTO dto = CmdLineParamsDTO::FromCmdLineParams(cmdLineParams);
@@ -978,12 +978,12 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstance
 	MiniDumper mdump;	//for debugging purposes.
 	bool isException = false;
 	try {
-		notepad_plus_plus.init(hInstance, NULL, quotFileNames.c_str(), &cmdLineParams);
+		notepad_plus_plus.init(hInstance, nullptr, quotFileNames.c_str(), &cmdLineParams);
 		allowForbidPrivilegeMessages(notepad_plus_plus, ver);
 		bool going = true;
 		while (going)
 		{
-			going = ::GetMessageW(&msg, NULL, 0, 0) != 0;
+			going = ::GetMessageW(&msg, nullptr, 0, 0) != 0;
 			if (going)
 			{
 				// if the message doesn't belong to the notepad_plus_plus's dialog

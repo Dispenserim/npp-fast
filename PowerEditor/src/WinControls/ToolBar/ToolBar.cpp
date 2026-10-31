@@ -454,7 +454,7 @@ void ToolBar::reset(bool create)
 			_pTBB[i].fsState = tempBtn.fsState;
 		}
 		::DestroyWindow(_hSelf);
-		_hSelf = NULL;
+		_hSelf = nullptr;
 	}
 
 	if (!_hSelf)
@@ -473,9 +473,9 @@ void ToolBar::reset(bool create)
 			0, 0,
 			0, 0,
 			_hParent,
-			NULL,
+			nullptr,
 			_hInst,
-			0);
+			nullptr);
 
 		NppDarkMode::setDarkTooltips(_hSelf, NppDarkMode::ToolTipsType::toolbar);
 
@@ -534,8 +534,8 @@ void ToolBar::reset(bool create)
 		int iconDpiDynamicalSize = _dpiManager.scale(16);
 		::SendMessage(_hSelf, TB_SETBITMAPSIZE, 0, MAKELPARAM(iconDpiDynamicalSize, iconDpiDynamicalSize));
 
-		TBADDBITMAP addbmp = { 0, 0 };
-		TBADDBITMAP addbmpdyn = { 0, 0 };
+		TBADDBITMAP addbmp = { nullptr, 0 };
+		TBADDBITMAP addbmpdyn = { nullptr, 0 };
 		for (size_t i = 0; i < _nbButtons; ++i)
 		{
 			const int icoID = _toolBarIcons.getStdIconAt(static_cast<int>(i));
@@ -686,7 +686,7 @@ void ToolBar::doPopup(POINT chevPoint)
 			
 			++start;
 		}
-		TrackPopupMenu(menu, 0, chevPoint.x, chevPoint.y, 0, _hSelf, NULL);
+		TrackPopupMenu(menu, 0, chevPoint.x, chevPoint.y, 0, _hSelf, nullptr);
 	}
 }
 
@@ -728,9 +728,9 @@ void ReBar::init(HINSTANCE hInst, HWND hPere)
 	Window::init(hInst, hPere);
 	_hSelf = CreateWindowEx(WS_EX_TOOLWINDOW,
 							REBARCLASSNAME,
-							NULL,
+							nullptr,
 							WS_CHILD|WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | RBS_VARHEIGHT | CCS_NODIVIDER | CCS_NOPARENTALIGN,
-							0,0,0,0, _hParent, NULL, _hInst, NULL);
+							0,0,0,0, _hParent, nullptr, _hInst, nullptr);
 
 	NppDarkMode::autoSubclassCtlColor(_hSelf);
 

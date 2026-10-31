@@ -42,13 +42,13 @@ void DockingSplitter::create()
 	if (_flags & DMS_HORIZONTAL)
 	{
 		//double sided arrow pointing north-south as cursor
-		wc.hCursor = ::LoadCursor(NULL, IDC_SIZENS);
+		wc.hCursor = ::LoadCursor(nullptr, IDC_SIZENS);
 		wc.lpszClassName = L"nsdockspliter";
 	}
 	else
 	{
 		// double sided arrow pointing east-west as cursor
-		wc.hCursor = ::LoadCursor(NULL, IDC_SIZEWE);
+		wc.hCursor = ::LoadCursor(nullptr, IDC_SIZEWE);
 		wc.lpszClassName = L"wedockspliter";
 	}
 
@@ -60,9 +60,9 @@ void DockingSplitter::create()
 		wc.cbClsExtra = 0;
 		wc.cbWndExtra = 0;
 		wc.hInstance = _hInst;
-		wc.hIcon = NULL;
+		wc.hIcon = nullptr;
 		wc.hbrBackground = ::GetSysColorBrush(COLOR_3DFACE);
-		wc.lpszMenuName = NULL;
+		wc.lpszMenuName = nullptr;
 
 		if (!::RegisterClass(&wc))
 		{
@@ -82,7 +82,7 @@ void DockingSplitter::create()
 	// Create without WS_VISIBLE to avoid initial flashing before positioning
 	_hSelf = ::CreateWindowEx(0, wc.lpszClassName, L"", WS_CHILD,
 		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-		_hParent, NULL, _hInst, static_cast<LPVOID>(this));
+		_hParent, nullptr, _hInst, static_cast<LPVOID>(this));
 
 	if (!_hSelf)
 	{
@@ -102,7 +102,7 @@ void DockingSplitter::reSizeTo(RECT& rc)
 
 LRESULT CALLBACK DockingSplitter::staticWinProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	DockingSplitter *pDockingSplitter = NULL;
+	DockingSplitter *pDockingSplitter = nullptr;
 	switch (message)
 	{
 		case WM_NCCREATE :

@@ -88,7 +88,7 @@ void VerticalFileSwitcherListView::destroy()
 		delete tlfs;
 	}
 	::DestroyWindow(_hSelf);
-	_hSelf = NULL;
+	_hSelf = nullptr;
 } 
 
 void VerticalFileSwitcherListView::initList()
@@ -164,7 +164,7 @@ void VerticalFileSwitcherListView::initList()
 		if (isPathColumn)
 		{
 			wchar_t dir[MAX_PATH] = { '\0' }, drive[MAX_PATH] = { '\0' };
-			_wsplitpath_s(fileNameStatus._fn.c_str(), drive, MAX_PATH, dir, MAX_PATH, NULL, 0, NULL, 0);
+			_wsplitpath_s(fileNameStatus._fn.c_str(), drive, MAX_PATH, dir, MAX_PATH, nullptr, 0, nullptr, 0);
 			wcscat_s(drive, dir);
 			ListView_SetItemText(_hSelf, i, ++colIndex2, drive);
 		}
@@ -261,7 +261,7 @@ void VerticalFileSwitcherListView::setItemIconStatus(BufferID bufferID)
 			if (isPathColumn)
 			{
 				wchar_t dir[MAX_PATH] = { '\0' }, drive[MAX_PATH] = { '\0' };
-				_wsplitpath_s(buf->getFullPathName(), drive, MAX_PATH, dir, MAX_PATH, NULL, 0, NULL, 0);
+				_wsplitpath_s(buf->getFullPathName(), drive, MAX_PATH, dir, MAX_PATH, nullptr, 0, nullptr, 0);
 				wcscat_s(drive, dir);
 				ListView_SetItemText(_hSelf, i, ++colIndex, drive);
 			}
@@ -368,7 +368,7 @@ int VerticalFileSwitcherListView::add(BufferID bufferID, int iView)
 	if (isPathColumn)
 	{
 		wchar_t dir[MAX_PATH] = { '\0' }, drive[MAX_PATH] = { '\0' };
-		_wsplitpath_s(buf->getFullPathName(), drive, MAX_PATH, dir, MAX_PATH, NULL, 0, NULL, 0);
+		_wsplitpath_s(buf->getFullPathName(), drive, MAX_PATH, dir, MAX_PATH, nullptr, 0, nullptr, 0);
 		wcscat_s(drive, dir);
 		ListView_SetItemText(_hSelf, _currentIndex, ++colIndex, drive);
 	}

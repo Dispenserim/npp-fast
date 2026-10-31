@@ -402,7 +402,7 @@ private:
 					int ctrlId = GetDlgCtrlID(_hwndButton);
 					if (ctrlId != 0)
 					{
-						_hwndButtonTooltip = createToolTip(ctrlId, hwndDlg, 0, tipText.data(), pNativeSpeaker->isRTL());
+						_hwndButtonTooltip = createToolTip(ctrlId, hwndDlg, nullptr, tipText.data(), pNativeSpeaker->isRTL());
 					}
 				}
 			}
@@ -720,7 +720,7 @@ public:
 			_fileTypeIndex = 0;
 
 		HRESULT hr = CoCreateInstance(id,
-			NULL,
+			nullptr,
 			CLSCTX_INPROC_SERVER,
 			IID_PPV_ARGS(&_dialog));
 		_customize = _dialog;

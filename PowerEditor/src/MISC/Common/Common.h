@@ -139,7 +139,7 @@ std::wstring stringToUpper(std::wstring strToConvert);
 std::wstring stringToLower(std::wstring strToConvert);
 std::wstring stringReplace(std::wstring subject, const std::wstring& search, const std::wstring& replace);
 void stringSplit(const std::wstring& input, const std::wstring& delimiter, std::vector<std::wstring>& output);
-bool str2numberVector(std::wstring str2convert, std::vector<size_t>& numVect);
+bool str2numberVector(const std::wstring& str2convert, std::vector<size_t>& numVect);
 void stringJoin(const std::vector<std::wstring>& strings, const std::wstring& separator, std::wstring& joinedString);
 std::wstring stringTakeWhileAdmissable(const std::wstring& input, const std::wstring& admissable);
 double stodLocale(const std::wstring& str, _locale_t loc, size_t* idx = NULL);

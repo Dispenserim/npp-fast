@@ -46,29 +46,29 @@ ClipboardDataInfo ClipboardHistoryPanel::getClipboadData()
 	if (!IsClipboardFormatAvailable(CF_UNICODETEXT))
 		return clipboardData;
 
-	if (!OpenClipboard(NULL))
+	if (!OpenClipboard(nullptr))
 		return clipboardData;
 	 
 	HGLOBAL hglb = GetClipboardData(CF_UNICODETEXT);
-	if (hglb != NULL)
+	if (hglb != nullptr)
 	{ 
 		unsigned char* pData = static_cast<unsigned char*>(GlobalLock(hglb));
-		if (pData != NULL)
+		if (pData != nullptr)
 		{
 			UINT cf_nppTextLen = RegisterClipboardFormat(CF_NPPTEXTLEN);
 			if (IsClipboardFormatAvailable(cf_nppTextLen))
 			{
 				HGLOBAL hglbLen = GetClipboardData(cf_nppTextLen); 
-				if (hglbLen != NULL) 
+				if (hglbLen != nullptr) 
 				{
 					HGLOBAL hglb_binText = GetClipboardData(CF_TEXT);
-					if (hglb_binText != NULL)
+					if (hglb_binText != nullptr)
 					{
 						unsigned char* pData_bin = static_cast<unsigned char*>(GlobalLock(hglb_binText));
-						if (pData_bin != NULL)
+						if (pData_bin != nullptr)
 						{
 							const unsigned long* lpLen = static_cast<unsigned long*>(::GlobalLock(hglbLen));
-							if (lpLen != NULL) // Special copy-paste: Binary data
+							if (lpLen != nullptr) // Special copy-paste: Binary data
 							{
 								SIZE_T availableBytes = GlobalSize(hglb_binText);
 								size_t nbBytes = (*lpLen <= availableBytes) ? static_cast<size_t>(*lpLen) : static_cast<size_t>(availableBytes);

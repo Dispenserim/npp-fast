@@ -60,7 +60,7 @@ Win32_IO_File::Win32_IO_File(const wchar_t *fname)
 			}
 		}
 
-		_hFile = ::CreateFileW(fname, _accessParam, _shareParam, NULL, dispParam, _attribParam, NULL);
+		_hFile = ::CreateFileW(fname, _accessParam, _shareParam, nullptr, dispParam, _attribParam, nullptr);
 
 		// Race condition management:
 		//  If file didn't exist while calling getFileAttributesExWithTimeout, but before calling CreateFileW, file is created: use CREATE_ALWAYS is OK
@@ -68,7 +68,7 @@ Win32_IO_File::Win32_IO_File(const wchar_t *fname)
 		if (dispParam == TRUNCATE_EXISTING && _hFile == INVALID_HANDLE_VALUE && ::GetLastError() == ERROR_FILE_NOT_FOUND)
 		{
 			dispParam = CREATE_ALWAYS;
-			_hFile = ::CreateFileW(fname, _accessParam, _shareParam, NULL, dispParam, _attribParam, NULL);
+			_hFile = ::CreateFileW(fname, _accessParam, _shareParam, nullptr, dispParam, _attribParam, nullptr);
 		}
 
 		if (_hFile == INVALID_HANDLE_VALUE)
@@ -77,7 +77,7 @@ Win32_IO_File::Win32_IO_File(const wchar_t *fname)
 		if (fileExists && (dispParam == CREATE_ALWAYS) && (_hFile != INVALID_HANDLE_VALUE))
 		{
 			// restore back the original creation date & attributes
-			::SetFileTime(_hFile, &(attributes_original.ftCreationTime), NULL, NULL);
+			::SetFileTime(_hFile, &(attributes_original.ftCreationTime), nullptr, nullptr);
 			::SetFileAttributesW(fname, (_attribParam | attributes_original.dwFileAttributes));
 		}
 	}
@@ -131,7 +131,7 @@ void Win32_IO_File::close()
 This is probably a storage driver or hardware issue, beyond the control of the Notepad++. \
 Please try using another storage and also check if your saved data is not corrupted.\n\nError Code reported: ";
 					errMsg += errNumberMsg;
-					::MessageBoxW(NULL, errMsg.c_str(), L"WARNING - filebuffer flushing fail!", MB_OK | MB_ICONWARNING | MB_SYSTEMMODAL);
+					::MessageBoxW(nullptr, errMsg.c_str(), L"WARNING - filebuffer flushing fail!", MB_OK | MB_ICONWARNING | MB_SYSTEMMODAL);
 				}
 				else
 				{
@@ -182,7 +182,7 @@ bool Win32_IO_File::write(const void *wbuf, size_t buf_size)
 		DWORD bytes_written = 0;
 
 		success = ::WriteFile(_hFile, static_cast<const char*>(wbuf) + total_bytes_written,
-			bytes_to_write, &bytes_written, NULL);
+			bytes_to_write, &bytes_written, nullptr);
 
 		if (success)
 		{

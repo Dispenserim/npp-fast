@@ -43,7 +43,7 @@ ScintillaEditView * ScintillaCtrls::getScintillaEditViewFrom(HWND handle2Find)
 {
 	int i = getIndexFrom(handle2Find);
 	if (i == -1 || size_t(i) >= _scintVector.size())
-		return NULL;
+		return nullptr;
 	return _scintVector[i];
 }
 

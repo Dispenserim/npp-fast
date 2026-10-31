@@ -35,7 +35,7 @@ static constexpr int HEIGHT_MINIMAL = 15;
 
 void Splitter::init( HINSTANCE hInst, HWND hPere, int splitterSize, double iSplitRatio, DWORD dwFlags)
 {
-	if (hPere == NULL)
+	if (hPere == nullptr)
 		throw std::runtime_error("Splitter::init : Parameter hPere is null");
 
 	if (iSplitRatio < 0)
@@ -114,7 +114,7 @@ void Splitter::init( HINSTANCE hInst, HWND hPere, int splitterSize, double iSpli
 
 	if (_isFixed)
 	{
-		wcex.hCursor		= ::LoadCursor(NULL, IDC_ARROW);
+		wcex.hCursor		= ::LoadCursor(nullptr, IDC_ARROW);
 		// if fixed spliter then choose default cursor type.
 		if (_dwFlags & SV_HORIZONTAL)
 			wcex.lpszClassName	= L"fxdnsspliter";
@@ -126,13 +126,13 @@ void Splitter::init( HINSTANCE hInst, HWND hPere, int splitterSize, double iSpli
 		if (_dwFlags & SV_HORIZONTAL)
 		{
 			//double sided arrow pointing north-south as cursor
-			wcex.hCursor		= ::LoadCursor(NULL,IDC_SIZENS);
+			wcex.hCursor		= ::LoadCursor(nullptr,IDC_SIZENS);
 			wcex.lpszClassName	= L"nsspliter";
 		}
 		else
 		{
 			// double sided arrow pointing east-west as cursor
-			wcex.hCursor		= ::LoadCursor(NULL,IDC_SIZEWE);
+			wcex.hCursor		= ::LoadCursor(nullptr,IDC_SIZEWE);
 			wcex.lpszClassName	= L"wespliter";
 		}
 	}
@@ -166,7 +166,7 @@ void Splitter::init( HINSTANCE hInst, HWND hPere, int splitterSize, double iSpli
 		L"",
 		dwStyle,
 		_rect.left, _rect.top, _rect.right, _rect.bottom,
-		_hParent, NULL, _hInst, this);
+		_hParent, nullptr, _hInst, this);
 
 	if (!_hSelf)
 		throw std::runtime_error("Splitter::init : CreateWindowEx() function return null");
@@ -288,7 +288,7 @@ LRESULT CALLBACK Splitter::spliterWndProc(UINT uMsg, WPARAM wParam, LPARAM lPara
 			if (isInLeftTopZone(p) || isInRightBottomZone(p))
 			{
 				//::SetCursor(::LoadCursor(_hInst, MAKEINTRESOURCE(IDC_UP_ARROW)));
-				::SetCursor(::LoadCursor(NULL, IDC_HAND));
+				::SetCursor(::LoadCursor(nullptr, IDC_HAND));
 				return 0;
 			}
 
@@ -673,7 +673,7 @@ void Splitter::paintArrow(HDC hdc, const RECT &rect, Arrow arrowDir)
 
 			for (; (x > rc.left) && (y != rc.bottom) ; --x)
 			{
-				::MoveToEx(hdc, x, y++, NULL);
+				::MoveToEx(hdc, x, y++, nullptr);
 				::LineTo(hdc, x, rc.bottom--);
 			}
 			break;
@@ -686,7 +686,7 @@ void Splitter::paintArrow(HDC hdc, const RECT &rect, Arrow arrowDir)
 
 			for (; (x < rc.right) && (y != rc.bottom) ; ++x)
 			{
-				::MoveToEx(hdc, x, y++, NULL);
+				::MoveToEx(hdc, x, y++, nullptr);
 				::LineTo(hdc, x, rc.bottom--);
 			}
 			break;
@@ -699,7 +699,7 @@ void Splitter::paintArrow(HDC hdc, const RECT &rect, Arrow arrowDir)
 
 			for (; (y > rc.top) && (x != rc.right) ; --y)
 			{
-				::MoveToEx(hdc, x++, y, NULL);
+				::MoveToEx(hdc, x++, y, nullptr);
 				::LineTo(hdc, rc.right--, y);
 			}
 			break;
@@ -712,7 +712,7 @@ void Splitter::paintArrow(HDC hdc, const RECT &rect, Arrow arrowDir)
 
 			for (; (y < rc.bottom) && (x != rc.right) ; ++y)
 			{
-				::MoveToEx(hdc, x++, y, NULL);
+				::MoveToEx(hdc, x++, y, nullptr);
 				::LineTo(hdc, rc.right--, y);
 			}
 			break;

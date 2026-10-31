@@ -134,7 +134,7 @@ private:
 	using DockingDlgInterface::init;
 
 	void notified(LPNMHDR notification);
-	void addInStateArray(TreeStateNode tree2Update, const wchar_t *searchText, bool isSorted);
+	void addInStateArray(const TreeStateNode& tree2Update, const wchar_t *searchText, bool isSorted);
 	TreeParams* getFromStateArray(const std::wstring& fullFilePath);
 	bool openSelection(const TreeView &treeView);
 	bool shouldSort();

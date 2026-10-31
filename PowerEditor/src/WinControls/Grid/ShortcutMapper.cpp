@@ -228,7 +228,7 @@ wstring ShortcutMapper::getTextFromCombo(HWND hCombo)
 	return stringToLower(res);
 }
 
-bool ShortcutMapper::isFilterValid(Shortcut sc)
+bool ShortcutMapper::isFilterValid(const Shortcut& sc)
 {
 	// all words in _shortcutFilter must be in the name or keycombo
 	// For example, the shortcut with name "foo bar baz" and keycombo "Ctrl+A"
@@ -252,7 +252,7 @@ bool ShortcutMapper::isFilterValid(Shortcut sc)
 	return true;
 }
 
-bool ShortcutMapper::isFilterValid(PluginCmdShortcut sc)
+bool ShortcutMapper::isFilterValid(const PluginCmdShortcut& sc)
 {
 	// all words in _shortcutFilter must be in the name or the keycombo or the plugin name
 	// For example, the shortcut with name "foo bar baz" and keycombo "Ctrl+A" and plugin "BlahLint"
@@ -278,7 +278,7 @@ bool ShortcutMapper::isFilterValid(PluginCmdShortcut sc)
 	return true;
 }
 
-bool ShortcutMapper::isFilterValid(ScintillaKeyMap sc)
+bool ShortcutMapper::isFilterValid(const ScintillaKeyMap& sc)
 {
 	// all words in _shortcutFilter must be in the name or the list of keycombos
 	// For example, the shortcut with name "foo bar baz" and keycombo "Ctrl+A or Alt+G"

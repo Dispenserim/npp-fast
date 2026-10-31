@@ -313,7 +313,7 @@ intptr_t CALLBACK DebugInfoDlg::run_dlgProc(UINT message, WPARAM wParam, LPARAM 
 			// Binary path
 			_debugInfoStr += L"Path: ";
 			wchar_t nppFullPath[MAX_PATH]{};
-			::GetModuleFileName(NULL, nppFullPath, MAX_PATH);
+			::GetModuleFileName(nullptr, nppFullPath, MAX_PATH);
 			_debugInfoStr += nppFullPath;
 			_debugInfoStr += L"\r\n";
 
@@ -480,23 +480,23 @@ intptr_t CALLBACK DebugInfoDlg::run_dlgProc(UINT message, WPARAM wParam, LPARAM 
 			if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", 0, KEY_READ, &hKey) == ERROR_SUCCESS)
 			{
 				dataSize = sizeof(szProductName);
-				RegQueryValueExW(hKey, L"ProductName", NULL, NULL, reinterpret_cast<LPBYTE>(szProductName), &dataSize);
+				RegQueryValueExW(hKey, L"ProductName", nullptr, nullptr, reinterpret_cast<LPBYTE>(szProductName), &dataSize);
 				szProductName[sizeof(szProductName) / sizeof(wchar_t) - 1] = '\0';
 
 				dataSize = sizeof(szReleaseId);
-				if(RegQueryValueExW(hKey, L"DisplayVersion", NULL, NULL, reinterpret_cast<LPBYTE>(szReleaseId), &dataSize) != ERROR_SUCCESS)
+				if(RegQueryValueExW(hKey, L"DisplayVersion", nullptr, nullptr, reinterpret_cast<LPBYTE>(szReleaseId), &dataSize) != ERROR_SUCCESS)
 				{
 					dataSize = sizeof(szReleaseId);
-					RegQueryValueExW(hKey, L"ReleaseId", NULL, NULL, reinterpret_cast<LPBYTE>(szReleaseId), &dataSize);
+					RegQueryValueExW(hKey, L"ReleaseId", nullptr, nullptr, reinterpret_cast<LPBYTE>(szReleaseId), &dataSize);
 				}
 				szReleaseId[sizeof(szReleaseId) / sizeof(wchar_t) - 1] = '\0';
 
 				dataSize = sizeof(szCurrentBuildNumber);
-				RegQueryValueExW(hKey, L"CurrentBuildNumber", NULL, NULL, reinterpret_cast<LPBYTE>(szCurrentBuildNumber), &dataSize);
+				RegQueryValueExW(hKey, L"CurrentBuildNumber", nullptr, nullptr, reinterpret_cast<LPBYTE>(szCurrentBuildNumber), &dataSize);
 				szCurrentBuildNumber[sizeof(szCurrentBuildNumber) / sizeof(wchar_t) - 1] = '\0';
 
 				dataSize = sizeof(DWORD);
-				if (RegQueryValueExW(hKey, L"UBR", NULL, NULL, reinterpret_cast<LPBYTE>(&dwUBR), &dataSize) == ERROR_SUCCESS)
+				if (RegQueryValueExW(hKey, L"UBR", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwUBR), &dataSize) == ERROR_SUCCESS)
 				{
 					swprintf(szUBR, bufSizeUBR, L"%u", dwUBR);
 				}
@@ -1219,7 +1219,7 @@ intptr_t CALLBACK NetworkPathWarningBox::run_dlgProc(UINT message, WPARAM wParam
 
 				case IDC_BUTTON_SERVERWHITELIST_NOTE:
 				{
-					::ShellExecuteW(NULL, L"open", L"https://npp-user-manual.org/docs/session/#session-network-security", NULL, NULL, SW_SHOWNORMAL);
+					::ShellExecuteW(nullptr, L"open", L"https://npp-user-manual.org/docs/session/#session-network-security", nullptr, nullptr, SW_SHOWNORMAL);
 					return TRUE;
 				}
 			}

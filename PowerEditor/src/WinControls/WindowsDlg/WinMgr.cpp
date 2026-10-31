@@ -90,10 +90,10 @@ void CWinMgr::SetWindowPositions(HWND hWnd)
 					const RECT& rc = wrc->GetRect();
 					::DeferWindowPos(hdwp,
 						hwndChild,
-						NULL,		// HWND insert after
+						nullptr,		// HWND insert after
 						rc.left,rc.top,RectWidth(rc),RectHeight(rc),
 						SWP_NOZORDER);
-					InvalidateRect(hwndChild,NULL,TRUE); // repaint
+					InvalidateRect(hwndChild,nullptr,TRUE); // repaint
 #if !defined(NDEBUG)
 					++count;
 #endif
@@ -132,7 +132,7 @@ WINRECT* CWinMgr::FindRect(int nID)
 		if (w->GetID() == static_cast<UINT>(nID))
 			return w;
 	}
-	return NULL;
+	return nullptr;
 }
 
 //////////////////
@@ -175,7 +175,7 @@ void CWinMgr::CalcGroup(WINRECT* pGroup, HWND hWnd)
 	}
 
 	// Now adjust all rects upward to desired size. Save REST rect for last.
-	WINRECT* pRestRect = NULL;
+	WINRECT* pRestRect = nullptr;
 	for (it=pGroup; it; it.Next()) {
 		WINRECT* wrc = it;
 		if (wrc->Type()==WRCT_REST) {

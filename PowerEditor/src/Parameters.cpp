@@ -1020,7 +1020,7 @@ bool DynamicMenu::createMenu() const
 	if (!_hMenu) return false;
 
 	bool lastIsSep = false;
-	HMENU hParentFolder = NULL;
+	HMENU hParentFolder = nullptr;
 	std::wstring currentParentFolderStr;
 	int j = 0;
 
@@ -1032,7 +1032,7 @@ bool DynamicMenu::createMenu() const
 		if (item._parentFolderName.empty())
 		{
 			currentParentFolderStr.clear();
-			hParentFolder = NULL;
+			hParentFolder = nullptr;
 			j = 0;
 		}
 		else
@@ -1203,7 +1203,7 @@ NppParameters::NppParameters()
 
 	// Prepare for default path
 	wchar_t nppPath[MAX_PATH];
-	::GetModuleFileName(NULL, nppPath, MAX_PATH);
+	::GetModuleFileName(nullptr, nppPath, MAX_PATH);
 
 	PathRemoveFileSpec(nppPath);
 	_nppPath = nppPath;
@@ -1387,17 +1387,17 @@ bool NppParameters::load()
 
 		pathAppend(_userPath, L"Notepad++");
 		if (!doesDirectoryExist(_userPath.c_str()))
-			::CreateDirectory(_userPath.c_str(), NULL);
+			::CreateDirectory(_userPath.c_str(), nullptr);
 
 		_appdataNppDir = _userPluginConfDir = _userPath;
 
 		pathAppend(_userPluginConfDir, L"plugins");
 		if (!doesDirectoryExist(_userPluginConfDir.c_str()))
-			::CreateDirectory(_userPluginConfDir.c_str(), NULL);
+			::CreateDirectory(_userPluginConfDir.c_str(), nullptr);
 
 		pathAppend(_userPluginConfDir, L"Config");
 		if (!doesDirectoryExist(_userPluginConfDir.c_str()))
-			::CreateDirectory(_userPluginConfDir.c_str(), NULL);
+			::CreateDirectory(_userPluginConfDir.c_str(), nullptr);
 
 		// For PluginAdmin to launch the wingup with UAC
 		setElevationRequired(true);
@@ -1407,9 +1407,9 @@ bool NppParameters::load()
 	pathAppend(_pluginConfDir, L"Config");
 
 	if (!doesDirectoryExist(nppPluginRootParent.c_str()))
-		::CreateDirectory(nppPluginRootParent.c_str(), NULL);
+		::CreateDirectory(nppPluginRootParent.c_str(), nullptr);
 	if (!doesDirectoryExist(_pluginRootDir.c_str()))
-		::CreateDirectory(_pluginRootDir.c_str(), NULL);
+		::CreateDirectory(_pluginRootDir.c_str(), nullptr);
 
 	_sessionPath = _userPath; // Session stores the absolute file path, it should never be on cloud
 
@@ -1424,7 +1424,7 @@ bool NppParameters::load()
 	if (_isCloud)
 	{
 		// Read cloud choice
-		std::wstring cloudChoiceStrW = L"";
+		std::wstring cloudChoiceStrW;
 		bool bLoadingFailed = false;
 		std::string cloudChoiceStr = getFileContent(cloudChoicePath.c_str(), &bLoadingFailed);
 		if (!bLoadingFailed)
@@ -1486,7 +1486,7 @@ bool NppParameters::load()
 				if (_pNativeLangSpeaker)
 				{
 					doRecover = _pNativeLangSpeaker->messageBox("LoadLangsFailed",
-						NULL,
+						nullptr,
 						L"Load langs.xml failed!\rDo you want to recover your langs.xml?",
 						L"Configurator",
 						MB_YESNO);
@@ -1515,7 +1515,7 @@ bool NppParameters::load()
 		if (_pNativeLangSpeaker)
 		{
 			_pNativeLangSpeaker->messageBox("LoadLangsFailedFinal",
-				NULL,
+				nullptr,
 				L"Load langs.xml failed!",
 				L"Configurator",
 				MB_OK);
@@ -1584,7 +1584,7 @@ bool NppParameters::load()
 		if (_pNativeLangSpeaker)
 		{
 			_pNativeLangSpeaker->messageBox("LoadStylersFailed",
-				NULL,
+				nullptr,
 				L"Load \"$STR_REPLACE$\" failed!",
 				L"Load stylers.xml failed",
 				MB_OK,
@@ -1895,7 +1895,7 @@ bool NppParameters::load()
 				{
 					// an invalid session.xml file exists
 					bFileSwapOk = ::ReplaceFile(_sessionPath.c_str(), sessionInCaseOfCorruption_bak.c_str(), nullptr,
-						REPLACEFILE_IGNORE_MERGE_ERRORS | REPLACEFILE_IGNORE_ACL_ERRORS, 0, 0);
+						REPLACEFILE_IGNORE_MERGE_ERRORS | REPLACEFILE_IGNORE_ACL_ERRORS, nullptr, nullptr);
 				}
 				else
 				{
@@ -3485,7 +3485,7 @@ bool NppParameters::getSessionFromXmlTree(const NppXml::Document& pSessionDoc, S
 	};
 
 	HINSTANCE hInst = ::GetModuleHandle(nullptr);
-	HWND nppHwnd = ::FindWindow(Notepad_plus_Window::getClassName(), NULL);
+	HWND nppHwnd = ::FindWindow(Notepad_plus_Window::getClassName(), nullptr);
 
 	bool isNppExit = false;
 	if (g_bNppExitFlag.load())
@@ -3633,7 +3633,7 @@ bool NppParameters::getSessionFromXmlTree(const NppXml::Document& pSessionDoc, S
 					std::wstring currentBackupFilePath = NppParameters::getInstance().getUserPath() + L"\\backup\\";
 
 					wchar_t normalizedBackupDir[MAX_PATH]{};
-					if (::GetFullPathNameW(currentBackupFilePath.c_str(), MAX_PATH, normalizedBackupDir, NULL) == 0)
+					if (::GetFullPathNameW(currentBackupFilePath.c_str(), MAX_PATH, normalizedBackupDir, nullptr) == 0)
 						static_cast<void>(::StringCchCopyW(normalizedBackupDir, MAX_PATH, currentBackupFilePath.c_str()));
 
 					if (normalizedBackupFilePath[0])
@@ -3761,7 +3761,7 @@ bool NppParameters::getSessionFromXmlTree(const NppXml::Document& pSessionDoc, S
 				}
 
 				std::wstring lowerRoot = stringToLower(rootFolder);
-				FileBrowserRootsInfo fileRootInfo(std::move(rootFolder));
+				FileBrowserRootsInfo fileRootInfo(rootFolder);
 
 				std::unordered_set<std::wstring> seenLower;
 				for (NppXml::Element expNode = NppXml::firstChildElement(childNode, "expanded");
@@ -3844,7 +3844,7 @@ void NppParameters::feedFileBrowserParameters(const NppXml::Element& element)
 		{
 			std::wstring rootFolder = string2wstring(filePath);
 			std::wstring lowerRoot = stringToLower(rootFolder);
-			FileBrowserRootsInfo fileRootInfo(std::move(rootFolder));
+			FileBrowserRootsInfo fileRootInfo(rootFolder);
 
 			std::unordered_set<std::wstring> seenLower;
 			for (NppXml::Element expNode = NppXml::firstChildElement(childNode, "expanded");
@@ -4529,7 +4529,7 @@ void NppParameters::setCloudChoice(const wchar_t* pathChoice) const
 
 	if (!doesDirectoryExist(cloudChoicePath.c_str()))
 	{
-		::CreateDirectory(cloudChoicePath.c_str(), NULL);
+		::CreateDirectory(cloudChoicePath.c_str(), nullptr);
 	}
 	cloudChoicePath += L"choice";
 
@@ -5036,7 +5036,7 @@ void NppParameters::writeSession(const Session& session, const wchar_t* fileName
 
 			std::wstring sessionPathNameFail2Load = sessionPathName;
 			sessionPathNameFail2Load += L".fail2Load";
-			ReplaceFile(sessionPathName, backupPathName.c_str(), sessionPathNameFail2Load.c_str(), REPLACEFILE_IGNORE_MERGE_ERRORS | REPLACEFILE_IGNORE_ACL_ERRORS, 0, 0);
+			ReplaceFile(sessionPathName, backupPathName.c_str(), sessionPathNameFail2Load.c_str(), REPLACEFILE_IGNORE_MERGE_ERRORS | REPLACEFILE_IGNORE_ACL_ERRORS, nullptr, nullptr);
 		}
 	}
 	/*
@@ -7405,7 +7405,7 @@ void NppParameters::feedDockingManager(const NppXml::Element& element)
 {
 	SIZE maxMonitorSize{ ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN) }; // use primary monitor as the default
 	SIZE nppSize = maxMonitorSize;
-	HWND hwndNpp = ::FindWindow(Notepad_plus_Window::getClassName(), NULL);
+	HWND hwndNpp = ::FindWindow(Notepad_plus_Window::getClassName(), nullptr);
 	if (hwndNpp)
 	{
 		// this code-branch is currently reached only if the Notepad++ multi-instance mode is ON and it is not the 1st Notepad++ instance

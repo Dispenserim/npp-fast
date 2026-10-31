@@ -21,7 +21,7 @@
 
 using namespace std;
 
-void replaceStr(wstring & str, wstring str2BeReplaced, wstring replacement)
+void replaceStr(wstring & str, const wstring& str2BeReplaced, const wstring& replacement)
 {
 	size_t pos = str.find(str2BeReplaced);
 
@@ -44,16 +44,16 @@ void Printer::init(HINSTANCE hInst, HWND hwnd, ScintillaEditView *pSEView, bool 
 	_pdlg.nMaxPage = 0xffffU; // We do not know how many pages in the
 							// document until the printer is selected and the paper size is known.
 	_pdlg.nCopies = 1;
-	_pdlg.hDC = 0;
-	_pdlg.hDevMode = NULL;
-	_pdlg.hDevNames = NULL;
+	_pdlg.hDC = nullptr;
+	_pdlg.hDevMode = nullptr;
+	_pdlg.hDevNames = nullptr;
 	_pdlg.lCustData = 0;
-	_pdlg.lpfnPrintHook = NULL;
-	_pdlg.lpfnSetupHook = NULL;
-	_pdlg.lpPrintTemplateName = NULL;
-	_pdlg.lpSetupTemplateName = NULL;
-	_pdlg.hPrintTemplate = NULL;
-	_pdlg.hSetupTemplate = NULL;
+	_pdlg.lpfnPrintHook = nullptr;
+	_pdlg.lpfnSetupHook = nullptr;
+	_pdlg.lpPrintTemplateName = nullptr;
+	_pdlg.lpSetupTemplateName = nullptr;
+	_pdlg.hPrintTemplate = nullptr;
+	_pdlg.hSetupTemplate = nullptr;
 
 	// See if a range has been selected
 	_pdlg.Flags |= (_startPos != _endPos)?PD_SELECTION:PD_NOSELECTION;
@@ -178,8 +178,8 @@ size_t Printer::doPrint(bool justDoIt)
 	docInfo.cbSize = sizeof(DOCINFO);
 	docInfo.fwType = 0;
 	docInfo.lpszDocName = _pSEView->getCurrentBuffer()->getFullPathName();
-	docInfo.lpszOutput = NULL;
-	docInfo.lpszDatatype = NULL;
+	docInfo.lpszOutput = nullptr;
+	docInfo.lpszDatatype = nullptr;
 
 	if (::StartDoc(_pdlg.hDC, &docInfo) < 0)
 	{
@@ -253,9 +253,9 @@ size_t Printer::doPrint(bool justDoIt)
 
 	SYSTEMTIME st{};
 	::GetLocalTime(&st);
-	::GetDateFormat(LOCALE_USER_DEFAULT, DATE_SHORTDATE, &st, NULL, shortDate, bufferSize);
-	::GetDateFormat(LOCALE_USER_DEFAULT, DATE_LONGDATE, &st, NULL, longDate, bufferSize);
-	::GetTimeFormat(LOCALE_USER_DEFAULT, TIME_NOSECONDS, &st, NULL, time, bufferSize);
+	::GetDateFormat(LOCALE_USER_DEFAULT, DATE_SHORTDATE, &st, nullptr, shortDate, bufferSize);
+	::GetDateFormat(LOCALE_USER_DEFAULT, DATE_LONGDATE, &st, nullptr, longDate, bufferSize);
+	::GetTimeFormat(LOCALE_USER_DEFAULT, TIME_NOSECONDS, &st, nullptr, time, bufferSize);
 
 	if (nppGUI._printSettings.isHeaderPresent())
 	{
@@ -371,7 +371,7 @@ size_t Printer::doPrint(bool justDoIt)
 						headerLeft.replace(pos, lstrlen(pageVar), pageString);
 
 					::ExtTextOut(_pdlg.hDC, frPrint.rc.left + 5, frPrint.rc.top - headerLineHeight / 2,
-						ETO_OPAQUE, &rcw, headerLeft.c_str(), static_cast<int>(headerLeft.length()), NULL);
+						ETO_OPAQUE, &rcw, headerLeft.c_str(), static_cast<int>(headerLeft.length()), nullptr);
 				}
 
 				// Middle part
@@ -384,7 +384,7 @@ size_t Printer::doPrint(bool justDoIt)
 
 					::GetTextExtentPoint32(_pdlg.hDC, headerMiddle.c_str(), static_cast<int>(headerMiddle.length()), &size);
 					::ExtTextOut(_pdlg.hDC, ((frPrint.rc.right - frPrint.rc.left)/2 + frPrint.rc.left) - (size.cx/2), frPrint.rc.top - headerLineHeight / 2,
-						ETO_CLIPPED, &rcw, headerMiddle.c_str(), static_cast<int>(headerMiddle.length()), NULL);
+						ETO_CLIPPED, &rcw, headerMiddle.c_str(), static_cast<int>(headerMiddle.length()), nullptr);
 				}
 				// Right part
 				if (headerR[0] != '\0')
@@ -396,13 +396,13 @@ size_t Printer::doPrint(bool justDoIt)
 
 					::GetTextExtentPoint32(_pdlg.hDC, headerRight.c_str(), static_cast<int>(headerRight.length()), &size);
 					::ExtTextOut(_pdlg.hDC, frPrint.rc.right - size.cx, frPrint.rc.top - headerLineHeight / 2,
-						ETO_CLIPPED, &rcw, headerRight.c_str(), static_cast<int>(headerRight.length()), NULL);
+						ETO_CLIPPED, &rcw, headerRight.c_str(), static_cast<int>(headerRight.length()), nullptr);
 				}
 
 				::SetTextAlign(_pdlg.hDC, oldTASettings);
 				HPEN pen = ::CreatePen(0, 1, 0x00000000);
 				HPEN penOld = static_cast<HPEN>(::SelectObject(_pdlg.hDC, pen));
-				::MoveToEx(_pdlg.hDC, frPrint.rc.left, frPrint.rc.top - headerLineHeight / 4, NULL);
+				::MoveToEx(_pdlg.hDC, frPrint.rc.left, frPrint.rc.top - headerLineHeight / 4, nullptr);
 				::LineTo(_pdlg.hDC, frPrint.rc.right, frPrint.rc.top - headerLineHeight / 4);
 				::SelectObject(_pdlg.hDC, penOld);
 				::DeleteObject(pen);
@@ -458,7 +458,7 @@ size_t Printer::doPrint(bool justDoIt)
 						footerLeft.replace(pos, lstrlen(pageVar), pageString);
 
 					::ExtTextOut(_pdlg.hDC, frPrint.rc.left + 5, frPrint.rc.bottom + footerLineHeight / 2,
-						ETO_OPAQUE, &rcw, footerLeft.c_str(), static_cast<int>(footerLeft.length()), NULL);
+						ETO_OPAQUE, &rcw, footerLeft.c_str(), static_cast<int>(footerLeft.length()), nullptr);
 				}
 
 				// Middle part
@@ -471,7 +471,7 @@ size_t Printer::doPrint(bool justDoIt)
 
 					::GetTextExtentPoint32(_pdlg.hDC, footerMiddle.c_str(), static_cast<int>(footerMiddle.length()), &size);
 					::ExtTextOut(_pdlg.hDC, ((frPrint.rc.right - frPrint.rc.left)/2 + frPrint.rc.left) - (size.cx/2), frPrint.rc.bottom + footerLineHeight / 2,
-									ETO_CLIPPED, &rcw, footerMiddle.c_str(), static_cast<int>(footerMiddle.length()), NULL);
+									ETO_CLIPPED, &rcw, footerMiddle.c_str(), static_cast<int>(footerMiddle.length()), nullptr);
 				}
 				// Right part
 				if (footerR[0] != '\0')
@@ -482,14 +482,14 @@ size_t Printer::doPrint(bool justDoIt)
 						footerRight.replace(pos, lstrlen(pageVar), pageString);
 					::GetTextExtentPoint32(_pdlg.hDC, footerRight.c_str(), static_cast<int>(footerRight.length()), &size);
 					::ExtTextOut(_pdlg.hDC, frPrint.rc.right - size.cx, frPrint.rc.bottom + footerLineHeight / 2,
-									ETO_CLIPPED, &rcw, footerRight.c_str(), static_cast<int>(footerRight.length()), NULL);
+									ETO_CLIPPED, &rcw, footerRight.c_str(), static_cast<int>(footerRight.length()), nullptr);
 				}
 
 				::SetTextAlign(_pdlg.hDC, oldta);
 				HPEN pen = ::CreatePen(0, 1, 0x00000000);
 				HPEN penOld = static_cast<HPEN>(::SelectObject(_pdlg.hDC, pen));
 
-				::MoveToEx(_pdlg.hDC, frPrint.rc.left, frPrint.rc.bottom + footerLineHeight / 4, NULL);
+				::MoveToEx(_pdlg.hDC, frPrint.rc.left, frPrint.rc.bottom + footerLineHeight / 4, nullptr);
 				::LineTo(_pdlg.hDC, frPrint.rc.right, frPrint.rc.bottom + footerLineHeight / 4);
 				::SelectObject(_pdlg.hDC, penOld);
 				::DeleteObject(pen);

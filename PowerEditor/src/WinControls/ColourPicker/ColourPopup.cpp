@@ -187,7 +187,7 @@ intptr_t CALLBACK ColourPopup::run_dlgProc(UINT message, WPARAM wParam, LPARAM l
 						// Draw the lighted side.
 						HPEN hpen = CreatePen(PS_SOLID, 1, NppDarkMode::isEnabled() ? NppDarkMode::getEdgeColor() : GetSysColor(COLOR_BTNSHADOW));
 						auto holdPen = static_cast<HPEN>(::SelectObject(hdc, hpen));
-						MoveToEx(hdc, rc.left, rc.bottom, NULL);
+						MoveToEx(hdc, rc.left, rc.bottom, nullptr);
 						LineTo(hdc, rc.left, rc.top);
 						LineTo(hdc, rc.right, rc.top);
 						SelectObject(hdc, holdPen);

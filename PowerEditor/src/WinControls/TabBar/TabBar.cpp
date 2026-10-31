@@ -49,7 +49,7 @@ COLORREF TabBarPlus::_activeTopBarUnfocusedColour = RGB(250, 210, 150);
 COLORREF TabBarPlus::_inactiveTextColour = grey;
 COLORREF TabBarPlus::_inactiveBgColour = RGB(192, 192, 192);
 
-HWND TabBarPlus::_tabbrPlusInstanceHwndArray[nbCtrlMax] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+HWND TabBarPlus::_tabbrPlusInstanceHwndArray[nbCtrlMax] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 int TabBarPlus::_nbCtrl = 0;
 
 void TabBar::init(HINSTANCE hInst, HWND parent, bool isVertical, bool isMultiLine)
@@ -73,9 +73,9 @@ void TabBar::init(HINSTANCE hInst, HWND parent, bool isVertical, bool isMultiLin
 				style,
 				0, 0, 0, 0,
 				_hParent,
-				NULL,
+				nullptr,
 				_hInst,
-				0);
+				nullptr);
 
 	if (!_hSelf)
 	{
@@ -249,7 +249,7 @@ void TabBarPlus::destroy()
 {
 	TabBar::destroy();
 	::DestroyWindow(_tooltips);
-	_tooltips = NULL;
+	_tooltips = nullptr;
 
 	if (_hCloseBtnImgLst != nullptr)
 	{
@@ -310,14 +310,14 @@ void TabBarPlus::init(HINSTANCE hInst, HWND parent, bool isVertical, bool isMult
 	int style = WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE | TCS_FOCUSNEVER | TCS_TABS | vertical | multiLine;
 	style |= TCS_OWNERDRAWFIXED;
 
-	_hSelf = ::CreateWindowEx(0, WC_TABCONTROL,	L"Tab", style,	0, 0, 0, 0, _hParent, NULL, _hInst, 0);
+	_hSelf = ::CreateWindowEx(0, WC_TABCONTROL,	L"Tab", style,	0, 0, 0, 0, _hParent, nullptr, _hInst, nullptr);
 
 	if (!_hSelf)
 	{
 		throw std::runtime_error("TabBarPlus::init : CreateWindowEx() function return null");
 	}
 
-	_tooltips = ::CreateWindowEx(0, TOOLTIPS_CLASS, NULL, TTS_ALWAYSTIP | TTS_NOPREFIX, 0, 0, 0, 0, _hParent, NULL, _hInst, 0);
+	_tooltips = ::CreateWindowEx(0, TOOLTIPS_CLASS, nullptr, TTS_ALWAYSTIP | TTS_NOPREFIX, 0, 0, 0, 0, _hParent, nullptr, _hInst, nullptr);
 
 	if (!_tooltips)
 	{
@@ -433,7 +433,7 @@ void TabBarPlus::triggerOwnerDrawTabbar(DPIManagerV2* pDPIManager)
 	{
 		if (_tabbrPlusInstanceHwndArray[i])
 		{
-			::InvalidateRect(_tabbrPlusInstanceHwndArray[i], NULL, TRUE); // needed by "Change inactive tab color" & "Draw a couloued bar on active tab"
+			::InvalidateRect(_tabbrPlusInstanceHwndArray[i], nullptr, TRUE); // needed by "Change inactive tab color" & "Draw a couloued bar on active tab"
 
 			if (pDPIManager)
 			{
@@ -698,7 +698,7 @@ LRESULT TabBarPlus::runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPara
 				style &= ~lParam;
 
 			::SetWindowLongPtr(hwnd, GWL_STYLE, style);
-			::InvalidateRect(hwnd, NULL, TRUE);
+			::InvalidateRect(hwnd, nullptr, TRUE);
 
 			return TRUE;
 		}
@@ -1836,7 +1836,7 @@ void TabBarPlus::draggingCursor(POINT screenPoint)
 {
 	HWND hWin = ::WindowFromPoint(screenPoint);
 	if (_hSelf == hWin)
-		::SetCursor(::LoadCursor(NULL, IDC_ARROW));
+		::SetCursor(::LoadCursor(nullptr, IDC_ARROW));
 	else
 	{
 		wchar_t className[256] = { '\0' };

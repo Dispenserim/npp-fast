@@ -45,9 +45,9 @@ using namespace std;
 BOOL Gripper::_isRegistered	= FALSE;
 bool Gripper::_isOverlayClassRegistered = false;
 
-static HWND		hWndServer		= NULL;
-static HHOOK	hookMouse		= NULL;
-static HHOOK	hookKeyboard	= NULL;
+static HWND		hWndServer		= nullptr;
+static HHOOK	hookMouse		= nullptr;
+static HHOOK	hookKeyboard	= nullptr;
 
 static LRESULT CALLBACK hookProcMouse(int nCode, WPARAM wParam, LPARAM lParam)
 {
@@ -103,11 +103,11 @@ void Gripper::startGrip(DockingCont* pCont, DockingManager* pDockMgr)
 		clz.cbClsExtra = 0;
 		clz.cbWndExtra = 0;
 		clz.hInstance = _hInst;
-		clz.hIcon = NULL;
-		clz.hCursor = ::LoadCursor(NULL, IDC_ARROW);
+		clz.hIcon = nullptr;
+		clz.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
 
-		clz.hbrBackground = NULL;
-		clz.lpszMenuName = NULL;
+		clz.hbrBackground = nullptr;
+		clz.lpszMenuName = nullptr;
 		clz.lpszClassName = MDLG_CLASS_NAME;
 
 		if (!::RegisterClass(&clz))
@@ -123,8 +123,8 @@ void Gripper::startGrip(DockingCont* pCont, DockingManager* pDockMgr)
 					L"", 0,
 					CW_USEDEFAULT, CW_USEDEFAULT,
 					CW_USEDEFAULT, CW_USEDEFAULT,
-					NULL,
-					NULL,
+					nullptr,
+					nullptr,
 					_hInst,
 					(LPVOID)this);
 	hWndServer = _hSelf;
@@ -138,7 +138,7 @@ void Gripper::startGrip(DockingCont* pCont, DockingManager* pDockMgr)
 
 LRESULT CALLBACK Gripper::staticWinProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	Gripper *pDlgMoving = NULL;
+	Gripper *pDlgMoving = nullptr;
 	switch (message)
 	{
 		case WM_NCCREATE :
@@ -178,8 +178,8 @@ LRESULT Gripper::runProc(UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				::UnhookWindowsHookEx(hookMouse);
 				::UnhookWindowsHookEx(hookKeyboard);
-				hookMouse = NULL;
-				hookKeyboard = NULL;
+				hookMouse = nullptr;
+				hookKeyboard = nullptr;
 			}
 			onButtonUp();
 			::DestroyWindow(_hSelf);
@@ -194,7 +194,7 @@ LRESULT Gripper::runProc(UINT message, WPARAM wParam, LPARAM lParam)
 			getMousePoints(pt, ptBuf);
 
 			/* erase last drawn rectangle */
-			drawRectangle(NULL);
+			drawRectangle(nullptr);
 
 			/* end hooking */
 			::UnhookWindowsHookEx(hookMouse);
@@ -306,18 +306,18 @@ void Gripper::onButtonUp()
 		return;
 
 	// erase last drawn rectangle
-	drawRectangle(NULL);
+	drawRectangle(nullptr);
 
 	// look if current position is within dockable area
 	DockingCont*	pDockCont = contHitTest(pt);
 
-	if (pDockCont == NULL)
+	if (pDockCont == nullptr)
 	{
 		pDockCont = workHitTest(pt);
 	}
 
 	/* add dependency to other container class */
-	if (pDockCont == NULL)
+	if (pDockCont == nullptr)
 	{
 		/* calculate new position */
 		rc = _pCont->getDataOfActiveTb()->rcFloat;
@@ -332,7 +332,7 @@ void Gripper::onButtonUp()
 		/* correct rectangle position when mouse is not within */
 		DoCalcGripperRect(&rc, rcCorr, pt);
 
-		DockingCont* pContMove	= NULL;
+		DockingCont* pContMove	= nullptr;
 		
 		/* change location of toolbars */
 		if (_startMovingFromTab == TRUE)
@@ -351,7 +351,7 @@ void Gripper::onButtonUp()
 		}
 
 		/* set moving container */
-		if (pContMove == NULL)
+		if (pContMove == nullptr)
 		{
 			pContMove = _pCont;
 		}
@@ -381,7 +381,7 @@ void Gripper::doTabReordering(POINT pt)
 {
 	vector<DockingCont*>	vCont		= _pDockMgr->getContainerInfo();
 	BOOL					inTab		= FALSE;
-	HWND					hTab		= NULL;
+	HWND					hTab		= nullptr;
 	HWND					hTabOld		= _hTab;
 	int						iItemOld	= _iItem;
 
@@ -402,7 +402,7 @@ void Gripper::doTabReordering(POINT pt)
 			{
 				TCHITTESTINFO	info	= {};
 
-				if (_hTab == NULL)
+				if (_hTab == nullptr)
 				{
 					initTabInformation();
 					hTabOld  = _hTab;
@@ -612,7 +612,7 @@ void Gripper::drawRectangle(const POINT* pPt)
 	if (!_hbrush)
 		_hbrush = ::CreatePatternBrush(_hbm);
 
-	if (pPt != NULL)
+	if (pPt != nullptr)
 	{
 		// getMovingRect() returns rect where right/bottom = width/height (not coordinates)
 		getMovingRect(*pPt, &rcNew);
@@ -657,7 +657,7 @@ void Gripper::drawRectangle(const POINT* pPt)
 	}
 
 	// Draw new rectangle
-	if (pPt != NULL)
+	if (pPt != nullptr)
 	{
 		HBRUSH hBrushTransparent = ::CreateSolidBrush(clrMagenta);
 		RECT rcFrame = { newOverlayX, newOverlayY, newOverlayX + newWidth, newOverlayY + newHeight };
@@ -706,7 +706,7 @@ void Gripper::drawRectangle(const POINT* pPt)
 	::BitBlt(_hdcOverlay, copyMinX, copyMinY, copyMaxX - copyMinX, copyMaxY - copyMinY,
 		_hdcOverlayMem, copyMinX, copyMinY, SRCCOPY);
 
-	if (pPt == NULL)
+	if (pPt == nullptr)
 	{
 		destroyOverlayWindow();
 		_bPtOldValid = FALSE;
@@ -727,12 +727,12 @@ void Gripper::getMousePoints(const POINT& pt, POINT& ptPrev)
 void Gripper::getMovingRect(POINT pt, RECT *rc)
 {
 	RECT			rcCorr			= {};
-	DockingCont*	pContHit		= NULL;
+	DockingCont*	pContHit		= nullptr;
 
 	/* test if mouse hits a container */
 	pContHit = contHitTest(pt);
 
-	if (pContHit != NULL)
+	if (pContHit != nullptr)
 	{
 		/* get rect of client */
 		::GetWindowRect(pContHit->getHSelf(), rc);
@@ -755,7 +755,7 @@ void Gripper::getMovingRect(POINT pt, RECT *rc)
 		pContHit = workHitTest(pt, rc);
 
 		/* calcutlates the rect and its position */
-		if (pContHit == NULL)
+		if (pContHit == nullptr)
 		{
 			/* calcutlates the rect and draws it */
 			if (!_pCont->isFloating())
@@ -797,7 +797,7 @@ DockingCont* Gripper::contHitTest(POINT pt)
 					/* when it is the same container start moving immediately */
 					if (vCont[iCont] == _pCont)
 					{
-						return NULL;
+						return nullptr;
 					}
 					else
 					{
@@ -826,7 +826,7 @@ DockingCont* Gripper::contHitTest(POINT pt)
 	}
 
 	/* doesn't hit a container */
-	return NULL;
+	return nullptr;
 }
 
 
@@ -845,7 +845,7 @@ DockingCont* Gripper::workHitTest(POINT pt, RECT *rc)
 			if (::PtInRect(&rcCont, pt) == TRUE)
 			{
 				/* when it does, return with non found docking area */
-				return NULL;
+				return nullptr;
 			}
 		}
 	}
@@ -859,7 +859,7 @@ DockingCont* Gripper::workHitTest(POINT pt, RECT *rc)
 			rcCont.right  += rcCont.left;
 			rcCont.bottom += rcCont.top;
 
-			if (rc != NULL)
+			if (rc != nullptr)
 			{
 				*rc = rcCont;
 			}

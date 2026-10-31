@@ -938,7 +938,7 @@ intptr_t CALLBACK GeneralSubDlg::run_dlgProc(UINT message, WPARAM wParam, LPARAM
 										if (localizationSwitcher.switchToLang(langName))
 										{
 											::SendMessage(::GetParent(_hParent), NPPM_INTERNAL_RELOADNATIVELANG, TRUE, 0);
-											::InvalidateRect(_hParent, NULL, TRUE);
+											::InvalidateRect(_hParent, nullptr, TRUE);
 										}
 									}
 									return TRUE;
@@ -1831,7 +1831,7 @@ static bool hasOnlyNumSpaceInClipboard()
 	if (!::IsClipboardFormatAvailable(clipFormat))
 		return false;
 
-	if (!::OpenClipboard(NULL))
+	if (!::OpenClipboard(nullptr))
 		return false;
 
 	HANDLE clipboardData = ::GetClipboardData(clipFormat);
@@ -2352,7 +2352,7 @@ intptr_t CALLBACK Editing2SubDlg::run_dlgProc(UINT message, WPARAM wParam, LPARA
 
 				case IDC_BUTTON_NPC_NOTE:
 				{
-					::ShellExecute(NULL, L"open", L"https://npp-user-manual.org/docs/views/#show-symbol", NULL, NULL, SW_SHOWNORMAL);
+					::ShellExecute(nullptr, L"open", L"https://npp-user-manual.org/docs/views/#show-symbol", nullptr, nullptr, SW_SHOWNORMAL);
 					return TRUE;
 				}
 
@@ -5371,19 +5371,19 @@ intptr_t CALLBACK PrintSubDlg::run_dlgProc(UINT message, WPARAM wParam, LPARAM l
 				switch (LOWORD(wParam))
 				{
 					case  IDC_EDIT_ML:
-						nppGUI._printSettings._marge.left = ::GetDlgItemInt(_hSelf, IDC_EDIT_ML, NULL, FALSE);
+						nppGUI._printSettings._marge.left = ::GetDlgItemInt(_hSelf, IDC_EDIT_ML, nullptr, FALSE);
 						return TRUE;
 
 					case  IDC_EDIT_MR:
-						nppGUI._printSettings._marge.right = ::GetDlgItemInt(_hSelf, IDC_EDIT_MR, NULL, FALSE);
+						nppGUI._printSettings._marge.right = ::GetDlgItemInt(_hSelf, IDC_EDIT_MR, nullptr, FALSE);
 						return TRUE;
 
 					case IDC_EDIT_MT :
-						nppGUI._printSettings._marge.top = ::GetDlgItemInt(_hSelf, IDC_EDIT_MT, NULL, FALSE);
+						nppGUI._printSettings._marge.top = ::GetDlgItemInt(_hSelf, IDC_EDIT_MT, nullptr, FALSE);
 						return TRUE;
 
 					case IDC_EDIT_MB :
-						nppGUI._printSettings._marge.bottom = ::GetDlgItemInt(_hSelf, IDC_EDIT_MB, NULL, FALSE);
+						nppGUI._printSettings._marge.bottom = ::GetDlgItemInt(_hSelf, IDC_EDIT_MB, nullptr, FALSE);
 						return TRUE;
 
 					default:
@@ -5496,7 +5496,7 @@ intptr_t CALLBACK PrintSubDlg::run_dlgProc(UINT message, WPARAM wParam, LPARAM l
 						if (!intStr[0])
 							*pVal = 0;
 						else
-							*pVal = wcstol(intStr, NULL, 10);
+							*pVal = wcstol(intStr, nullptr, 10);
 					}
 					break;
 
@@ -5714,7 +5714,7 @@ intptr_t CALLBACK BackupSubDlg::run_dlgProc(UINT message, WPARAM wParam, LPARAM 
 						if (lstrcmp(str, L"") == 0)
 							return TRUE;
 
-						nppGUI._snapshotBackupTiming = static_cast<size_t>(::GetDlgItemInt(_hSelf, IDC_BACKUPDIR_RESTORESESSION_EDIT, NULL, FALSE)) * 1000;
+						nppGUI._snapshotBackupTiming = static_cast<size_t>(::GetDlgItemInt(_hSelf, IDC_BACKUPDIR_RESTORESESSION_EDIT, nullptr, FALSE)) * 1000;
 						if (!nppGUI._snapshotBackupTiming)
 						{
 							nppGUI._snapshotBackupTiming = 1000;
@@ -6720,7 +6720,7 @@ intptr_t CALLBACK CloudAndLinkSubDlg::run_dlgProc(UINT message, WPARAM wParam, L
 	{
 		case WM_INITDIALOG:
 		{
-			wstring errMsg = L"";
+			wstring errMsg;
 
 			bool withCloud = nppGUI._cloudPath != L"";
 			if (withCloud)
@@ -7008,7 +7008,7 @@ intptr_t CALLBACK PerformanceSubDlg::run_dlgProc(UINT message , WPARAM wParam, L
 					return TRUE;
 
 				static constexpr int fileLenInMBMax = (INT32_MAX - 1024 * 1024) / 1024 / 1024; // -1MB ... have to to consider also the bufferSizeRequested algo in FileManager::loadFileData
-				int64_t fileLenInMB = ::GetDlgItemInt(_hSelf, IDC_EDIT_PERFORMANCE_FILESIZE, NULL, FALSE);
+				int64_t fileLenInMB = ::GetDlgItemInt(_hSelf, IDC_EDIT_PERFORMANCE_FILESIZE, nullptr, FALSE);
 				if (fileLenInMB > fileLenInMBMax)
 				{
 					fileLenInMB = fileLenInMBMax;
@@ -7031,7 +7031,7 @@ intptr_t CALLBACK PerformanceSubDlg::run_dlgProc(UINT message , WPARAM wParam, L
 					return TRUE;
 				}
 
-				int64_t fileLenInMB = ::GetDlgItemInt(_hSelf, IDC_EDIT_PERFORMANCE_FILESIZE, NULL, FALSE);
+				int64_t fileLenInMB = ::GetDlgItemInt(_hSelf, IDC_EDIT_PERFORMANCE_FILESIZE, nullptr, FALSE);
 
 				if (fileLenInMB == 0)
 				{

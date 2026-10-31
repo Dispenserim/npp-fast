@@ -128,7 +128,7 @@ bool SetOSAppRestart()
 
 static bool isSenderTrusted(HWND hSenderWnd)
 {
-	if (hSenderWnd == NULL || !::IsWindow(hSenderWnd))
+	if (hSenderWnd == nullptr || !::IsWindow(hSenderWnd))
 		return false;
 
 	DWORD dwProcessId = 0;
@@ -145,7 +145,7 @@ static bool isSenderTrusted(HWND hSenderWnd)
 	bool isTrusted = false;
 
 	// Integrity level: require Medium or higher (blocks Low-IL sandboxes)
-	HANDLE hToken = NULL;
+	HANDLE hToken = nullptr;
 	if (::OpenProcessToken(hProcess, TOKEN_QUERY, &hToken))
 	{
 		BYTE tokenBuffer[sizeof(TOKEN_MANDATORY_LABEL) + SECURITY_MAX_SID_SIZE]{};
@@ -195,7 +195,7 @@ static bool isSenderTrusted(HWND hSenderWnd)
 
 LRESULT CALLBACK Notepad_plus_Window::Notepad_plus_Proc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if (hwnd == NULL)
+	if (hwnd == nullptr)
 		return FALSE;
 
 	switch(message)
@@ -346,7 +346,7 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 			::SendMessage(_mainEditView.getHSelf(), WM_SETTINGCHANGE, wParam, lParam);
 			::SendMessage(_subEditView.getHSelf(), WM_SETTINGCHANGE, wParam, lParam);
 			HWND hFindResults = _findReplaceDlg.getHFindResults();
-			if (hFindResults != NULL)
+			if (hFindResults != nullptr)
 			{
 				::SendMessage(hFindResults, WM_SETTINGCHANGE, wParam, lParam);
 			}
@@ -517,7 +517,7 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 			if (isFirstTime)
 				_nativeLangSpeaker.changeFindReplaceDlgLang(_findReplaceDlg);
 
-			_findReplaceDlg.setProjectCheckmarks(NULL, (int) wParam);
+			_findReplaceDlg.setProjectCheckmarks(nullptr, (int) wParam);
 			return TRUE;
 		}
 
@@ -530,7 +530,7 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 			_findInFinderDlg.doDialog(launcher, _nativeLangSpeaker.isRTL());
 
 			_findReplaceDlg.setSearchTextWithSettings();
-			setFindReplaceFolderFilter(NULL, NULL);
+			setFindReplaceFolderFilter(nullptr, nullptr);
 
 			if (isFirstTime)
 				_nativeLangSpeaker.changeFindReplaceDlgLang(_findReplaceDlg);
@@ -1163,7 +1163,7 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 			constexpr int strSize = MAX_PATH;
 			wchar_t str[strSize]{};
 
-			::GetModuleFileName(NULL, str, strSize);
+			::GetModuleFileName(nullptr, str, strSize);
 
 			if (message == NPPM_GETNPPDIRECTORY)
 				PathRemoveFileSpec(str);
@@ -1620,7 +1620,7 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 
 		case WM_FRSAVE_INT:
 		{
-			_macro.push_back(recordedMacroStep(static_cast<int32_t>(wParam), 0, lParam, NULL, recordedMacroStep::mtSavedSnR));
+			_macro.push_back(recordedMacroStep(static_cast<int32_t>(wParam), 0, lParam, nullptr, recordedMacroStep::mtSavedSnR));
 			break;
 		}
 
@@ -1649,7 +1649,7 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 						switchToFile(shortcutsBufId);
 
 						nppParams.getNativeLangSpeaker()->messageBox("ShortcutsXmlHMACMissing",
-							NULL,
+							nullptr,
 							L"The security information for shortcuts.xml is missing in config.xml.\r\rFor security reasons, the integrity of shortcuts.xml will be checked. To run your customized command, please review the opened shortcuts.xml. If the file content is OK, use \"Validate shortcuts.xml\" from the \"Run\" menu to confirm it.",
 							L"Security Warning",
 							MB_OK);
@@ -1671,7 +1671,7 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 							switchToFile(shortcutsBufId);
 
 							nppParams.getNativeLangSpeaker()->messageBox("ShortcutsXmlTampered",
-								NULL,
+								nullptr,
 								L"The shortcuts.xml file appears to have been modified manually.\r\rFor security reasons, please review the opened shortcuts.xml. If the file content is OK, use \"Validate shortcuts.xml\" from the \"Run\" menu to confirm it.",
 								L"Security Warning",
 								MB_OK);
@@ -1864,7 +1864,7 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 
 		case NPPM_SAVECURRENTSESSION:
 		{
-			return (LRESULT)fileSaveSession(0, NULL, reinterpret_cast<const wchar_t *>(lParam));
+			return (LRESULT)fileSaveSession(0, nullptr, reinterpret_cast<const wchar_t *>(lParam));
 		}
 
 		case NPPM_SAVESESSION:
@@ -2529,7 +2529,7 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 
 		case WM_SYNCPAINT:
 		{
-			RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN);
+			RedrawWindow(hwnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN);
 			break;
 		}
 
@@ -2928,7 +2928,7 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 					scnN.nmhdr.code = NPPN_CANCELSHUTDOWN;
 					_pluginsManager.notify(&scnN);
 					if (isSnapshotMode)
-						::LockWindowUpdate(NULL);
+						::LockWindowUpdate(nullptr);
 
 					if (!::IsWindowVisible(hwnd))
 					{
@@ -3014,7 +3014,7 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 				}
 
 				if (isSnapshotMode)
-					::LockWindowUpdate(NULL);
+					::LockWindowUpdate(nullptr);
 
 				//Sends WM_DESTROY, Notepad++ will end
 				::DestroyWindow(hwnd);
@@ -3037,7 +3037,7 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 		{
 			killAllChildren();
 			::PostQuitMessage(0);
-			_pPublicInterface->gNppHWND = NULL;
+			_pPublicInterface->gNppHWND = nullptr;
 			return TRUE;
 		}
 
@@ -3150,7 +3150,7 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 					hTrayIconMenu = ::GetSubMenu(hmenu, 0);
 					_nativeLangSpeaker.changeLangTrayIconContexMenu(hTrayIconMenu);
 					SetForegroundWindow(hwnd);
-					TrackPopupMenu(hTrayIconMenu, TPM_LEFTALIGN, p.x, p.y, 0, hwnd, NULL);
+					TrackPopupMenu(hTrayIconMenu, TPM_LEFTALIGN, p.x, p.y, 0, hwnd, nullptr);
 					PostMessage(hwnd, WM_NULL, 0, 0);
 					DestroyMenu(hmenu);
 					return TRUE;
@@ -3452,7 +3452,7 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 		case NPPM_HIDEMENU:
 		{
 			bool hide = (lParam == TRUE);
-			bool isHidden = ::GetMenu(hwnd) == NULL;
+			bool isHidden = ::GetMenu(hwnd) == nullptr;
 			if (hide == isHidden)
 				return isHidden;
 
@@ -3461,14 +3461,14 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 			if (nppGUI._menuBarShow)
 				::SetMenu(hwnd, _mainMenuHandle);
 			else
-				::SetMenu(hwnd, NULL);
+				::SetMenu(hwnd, nullptr);
 
 			return isHidden;
 		}
 
 		case NPPM_ISMENUHIDDEN:
 		{
-			return (::GetMenu(hwnd) == NULL);
+			return (::GetMenu(hwnd) == nullptr);
 		}
 
 		case NPPM_HIDESTATUSBAR:
@@ -3721,7 +3721,7 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 
 			NppDarkMode::Colors* currentColors = reinterpret_cast<NppDarkMode::Colors*>(lParam);
 
-			if (currentColors != NULL)
+			if (currentColors != nullptr)
 			{
 				currentColors->background = NppDarkMode::getBackgroundColor();
 				currentColors->softerBackground = NppDarkMode::getCtrlBackgroundColor();
@@ -3947,7 +3947,7 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 		{
 			const NppGUI & nppgui = nppParam.getNppGUI();
 			if (!nppgui._menuBarShow && !wParam && !_sysMenuEntering)
-				::SetMenu(hwnd, NULL);
+				::SetMenu(hwnd, nullptr);
 			_sysMenuEntering = false;
 			return FALSE;
 		}
@@ -3993,7 +3993,7 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 			int urlAction = nppParam.getNppGUI()._styleURL;
 			if (urlAction != urlDisable)
 			{
-				if (pView == NULL)
+				if (pView == nullptr)
 				{
 					if (_pEditView->getCurrentBuffer()->allowClickableLink())
 						addHotSpot(_pEditView);
@@ -4419,7 +4419,7 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 			DocTabView* pTab[2] = { &_mainDocTab, &_subDocTab };
 			ScintillaEditView* pView[2] = { &_mainEditView, &_subEditView };
 
-			Buffer* pBuf = NULL;
+			Buffer* pBuf = nullptr;
 			for (size_t v = 0; v < 2; ++v)
 			{
 				for (size_t i = 0, len = pTab[v]->nbItem(); i < len; ++i)

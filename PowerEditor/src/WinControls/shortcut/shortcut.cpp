@@ -261,10 +261,10 @@ void mapOemVirtualKeys()
 				// convert from codepoint to MultiByte UTF8-encoded text
 				wchar_t v2w[2] = { (wchar_t)v2c, 0x00 };
 				char bytes[8] = {0};
-				int len = WideCharToMultiByte(CP_UTF8, 0, &v2w[0], -1, NULL, 0, NULL, NULL);
+				int len = WideCharToMultiByte(CP_UTF8, 0, &v2w[0], -1, nullptr, 0, nullptr, nullptr);
 				if (len > 0)
 				{
-					WideCharToMultiByte(CP_UTF8, 0, &v2w[0], -1, &bytes[0], len, NULL, NULL);
+					WideCharToMultiByte(CP_UTF8, 0, &v2w[0], -1, &bytes[0], len, nullptr, nullptr);
 				}
 				sprintf_s(oemVirtualKeyMap[namedKeyArray[i].id], MAX_MAPSTR_CHARS, "%s", bytes);
 			}
@@ -351,7 +351,7 @@ string ScintillaKeyMap::toString() const
 
 string ScintillaKeyMap::toString(size_t index) const
 {
-	string sc = "";
+	string sc;
 	if (!isEnabled())
 		return sc;
 
@@ -482,7 +482,7 @@ void getNameStrFromCmd(DWORD cmd, wstring & str)
 	}
 	else
 	{
-		HWND hNotepad_plus = ::FindWindow(Notepad_plus_Window::getClassName(), NULL);
+		HWND hNotepad_plus = ::FindWindow(Notepad_plus_Window::getClassName(), nullptr);
 		wchar_t cmdName[menuItemStrLenMax];
 		HMENU m = reinterpret_cast<HMENU>(::SendMessage(hNotepad_plus, NPPM_INTERNAL_GETMENU, 0, 0));
 		int nbChar = ::GetMenuString(m, cmd, cmdName, menuItemStrLenMax, MF_BYCOMMAND);

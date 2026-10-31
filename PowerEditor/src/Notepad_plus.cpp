@@ -224,7 +224,7 @@ Notepad_plus::Notepad_plus()
 		is_admin = AllocateAndInitializeSid(&NtAuthority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0, &AdministratorsGroup);
 		if (is_admin)
 		{
-			if (!CheckTokenMembership(NULL, AdministratorsGroup, &is_admin))
+			if (!CheckTokenMembership(nullptr, AdministratorsGroup, &is_admin))
 				is_admin = FALSE;
 			FreeSid(AdministratorsGroup);
 		}
@@ -555,7 +555,7 @@ LRESULT Notepad_plus::init(HWND hwnd)
 	DynamicMenu& macroMenuItems = nppParam.getMacroMenuItems();
 	size_t nbMacroTopLevelItem = macroMenuItems.getTopLevelItemNumber();
 	if (nbMacroTopLevelItem >= 1)
-		::InsertMenu(hMacroMenu, macroPosBase - 1, MF_BYPOSITION, static_cast<UINT>(-1), 0);
+		::InsertMenu(hMacroMenu, macroPosBase - 1, MF_BYPOSITION, static_cast<UINT>(-1), nullptr);
 
 	macroMenuItems.attach(hMacroMenu, macroPosBase, IDM_SETTING_SHORTCUT_MAPPER_MACRO, L"Modify Shortcut/Delete Macro...");
 
@@ -566,7 +566,7 @@ LRESULT Notepad_plus::init(HWND hwnd)
 	DynamicMenu& runMenuItems = nppParam.getRunMenuItems();
 	size_t nbRunTopLevelItem = runMenuItems.getTopLevelItemNumber();
 	if (nbRunTopLevelItem >= 1)
-		::InsertMenu(hRunMenu, runPosBase - 1, MF_BYPOSITION, static_cast<UINT>(-1), 0);
+		::InsertMenu(hRunMenu, runPosBase - 1, MF_BYPOSITION, static_cast<UINT>(-1), nullptr);
 
 	runMenuItems.attach(hRunMenu, runPosBase, IDM_SETTING_SHORTCUT_MAPPER_RUN, L"Modify Shortcut/Delete Command...");
 
@@ -1003,7 +1003,7 @@ bool Notepad_plus::saveGUIParams()
 	nppGUI._appPos.bottom = posInfo.rcNormalPosition.bottom - posInfo.rcNormalPosition.top;
 	nppGUI._isMaximized = ((IsZoomed(_pPublicInterface->getHSelf()) != 0) || (posInfo.flags & WPF_RESTORETOMAXIMIZED));
 
-	if (_findReplaceDlg.getHSelf() != NULL)
+	if (_findReplaceDlg.getHSelf() != nullptr)
 	{
 		::GetWindowPlacement(_findReplaceDlg.getHSelf(), &posInfo);
 
@@ -1326,7 +1326,7 @@ bool Notepad_plus::replaceInOpenedFiles()
 	Document oldDoc = _invisibleEditView.execute(SCI_GETDOCPOINTER);
 	Buffer * oldBuf = _invisibleEditView.getCurrentBuffer();	//for manually setting the buffer, so notifications can be handled properly
 
-	Buffer * pBuf = NULL;
+	Buffer * pBuf = nullptr;
 
 	int nbTotal = 0;
 	const bool isEntireDoc = true;
@@ -1493,7 +1493,7 @@ void Notepad_plus::wsTabConvert(spaceTab whichWay)
 		dataLength = endPos - startPos + 1;
 
 		char * source = new char[dataLength];
-		if (source == NULL)
+		if (source == nullptr)
 			continue;
 
 		source[dataLength - 1] = '\0'; // make sure to have correct data termination
@@ -1522,7 +1522,7 @@ void Notepad_plus::wsTabConvert(spaceTab whichWay)
 		// allocate tabwidth-1 chars extra per tab, just to be safe
 		size_t newLen = dataLength + count * (tabWidth - 1) + 1;
 		char * destination = new char[newLen];
-		if (destination == NULL)
+		if (destination == nullptr)
 		{
 			delete [] source;
 			continue;
@@ -2029,17 +2029,17 @@ bool Notepad_plus::createFilelistForProjects(vector<wstring> & fileNames)
 
 	if (_findReplaceDlg.isProjectPanel_1() && _pProjectPanel_1 && !_pProjectPanel_1->isClosed())
 	{
-		_pProjectPanel_1->enumWorkSpaceFiles (NULL, patterns2Match, fileNames);
+		_pProjectPanel_1->enumWorkSpaceFiles (nullptr, patterns2Match, fileNames);
 		somethingIsSelected = true;
 	}
 	if (_findReplaceDlg.isProjectPanel_2() && _pProjectPanel_2 && !_pProjectPanel_2->isClosed())
 	{
-		_pProjectPanel_2->enumWorkSpaceFiles (NULL, patterns2Match, fileNames);
+		_pProjectPanel_2->enumWorkSpaceFiles (nullptr, patterns2Match, fileNames);
 		somethingIsSelected = true;
 	}
 	if (_findReplaceDlg.isProjectPanel_3() && _pProjectPanel_3 && !_pProjectPanel_3->isClosed())
 	{
-		_pProjectPanel_3->enumWorkSpaceFiles (NULL, patterns2Match, fileNames);
+		_pProjectPanel_3->enumWorkSpaceFiles (nullptr, patterns2Match, fileNames);
 		somethingIsSelected = true;
 	}
 	return somethingIsSelected;
@@ -2408,7 +2408,7 @@ bool Notepad_plus::findInOpenedFiles()
 	_pEditView = &_invisibleEditView;
 	Document oldDoc = _invisibleEditView.execute(SCI_GETDOCPOINTER);
 
-	Buffer * pBuf = NULL;
+	Buffer * pBuf = nullptr;
 
 	const bool isEntireDoc = true;
 	bool hasInvalidRegExpr = false;
@@ -3042,7 +3042,7 @@ wstring Notepad_plus::getLangDesc(LangType langType, bool getName)
 void Notepad_plus::copyMarkedLines()
 {
 	intptr_t lastLine = _pEditView->lastZeroBasedLineNumber();
-	wstring globalStr = L"";
+	wstring globalStr;
 	for (intptr_t i = lastLine ; i >= 0 ; i--)
 	{
 		if (bookmarkPresent(i))
@@ -3061,7 +3061,7 @@ void Notepad_plus::cutMarkedLines()
 	std::lock_guard<std::mutex> lock(mark_mutex);
 
 	intptr_t lastLine = _pEditView->lastZeroBasedLineNumber();
-	wstring globalStr = L"";
+	wstring globalStr;
 
 	_pEditView->execute(SCI_BEGINUNDOACTION);
 	for (intptr_t i = lastLine ; i >= 0 ; i--)
@@ -3764,7 +3764,7 @@ void Notepad_plus::addHotSpot(ScintillaEditView* view)
 			if (lenWide <= 0)
 				break;
 			assert ((startWide + lenWide) <= wideTextLen);
-			lenEncoded = WideCharToMultiByte(cp, 0, & wideText [startWide], lenWide, NULL, 0, NULL, NULL);
+			lenEncoded = WideCharToMultiByte(cp, 0, & wideText [startWide], lenWide, nullptr, 0, nullptr, nullptr);
 			if (r)
 				pView->execute(SCI_INDICATORFILLRANGE, startEncoded + startPos, lenEncoded);
 			else
@@ -4365,7 +4365,7 @@ void Notepad_plus::setTitle()
 	//Get the buffer
 	Buffer * buf = _pEditView->getCurrentBuffer();
 
-	wstring result = L"";
+	wstring result;
 	if (buf->isDirty())
 	{
 		result += L"*";
@@ -4717,7 +4717,7 @@ void Notepad_plus::dropFiles(HDROP hdrop)
 		//else
 			// do not change the current Notepad++ edit-view
 
-		int filesDropped = ::DragQueryFileW(hdrop, 0xffffffff, NULL, 0);
+		int filesDropped = ::DragQueryFileW(hdrop, 0xffffffff, nullptr, 0);
 
 		vector<wstring> folderPaths;
 		vector<wstring> filePaths;
@@ -5130,7 +5130,7 @@ void Notepad_plus::docOpenInNewInstance(FileTransferMode mode, int x, int y)
 		return;
 
 	wchar_t nppName[MAX_PATH];
-	::GetModuleFileName(NULL, nppName, MAX_PATH);
+	::GetModuleFileName(nullptr, nppName, MAX_PATH);
 	wstring cmdLine = L"\"";
 	cmdLine += nppName;
 	cmdLine += L"\"";
@@ -5579,10 +5579,10 @@ bool Notepad_plus::doBlockComment(comment_mode currCommentMode)
 		commentEnd = buf->getCommentEnd();
 	}
 
-	if ((!commentLineSymbol) || (!commentLineSymbol[0]) || (commentLineSymbol == NULL))
+	if ((!commentLineSymbol) || (!commentLineSymbol[0]) || (commentLineSymbol == nullptr))
 	{
 	// BlockToStreamComment: If there is no block-comment symbol, try the stream comment:
-		if (!(!commentStart || !commentStart[0] || commentStart == NULL || !commentEnd || !commentEnd[0] || commentEnd == NULL))
+		if (!(!commentStart || !commentStart[0] || commentStart == nullptr || !commentEnd || !commentEnd[0] || commentEnd == nullptr))
 		{
 			if (currCommentMode == cm_comment)
 			{
@@ -5881,9 +5881,9 @@ bool Notepad_plus::doStreamComment()
 	}
 
 	// BlockToStreamComment: If there is no stream-comment symbol, try the block comment:
-	if ((!commentStart) || (!commentStart[0]) || (commentStart == NULL) || (!commentEnd) || (!commentEnd[0]) || (commentEnd == NULL))
+	if ((!commentStart) || (!commentStart[0]) || (commentStart == nullptr) || (!commentEnd) || (!commentEnd[0]) || (commentEnd == nullptr))
 	{
-		if (!(!commentLineSymbol || !commentLineSymbol[0] || commentLineSymbol == NULL))
+		if (!(!commentLineSymbol || !commentLineSymbol[0] || commentLineSymbol == nullptr))
 			return doBlockComment(cm_comment);
 		else
 		return false;
@@ -5972,10 +5972,10 @@ bool Notepad_plus::addCurrentMacro()
 		unsigned int posBase = macroMenu.getPosBase();
 		if (nbTopLevelItem == 0)
 		{
-			::InsertMenu(hMacroMenu, posBase - 1, MF_BYPOSITION, static_cast<UINT>(-1), 0);	//no separator yet, add one
+			::InsertMenu(hMacroMenu, posBase - 1, MF_BYPOSITION, static_cast<UINT>(-1), nullptr);	//no separator yet, add one
 
             // Insert the separator and modify/delete command
-			::InsertMenu(hMacroMenu, posBase + nbTopLevelItem + 1, MF_BYPOSITION, static_cast<UINT>(-1), 0);
+			::InsertMenu(hMacroMenu, posBase + nbTopLevelItem + 1, MF_BYPOSITION, static_cast<UINT>(-1), nullptr);
 
 			NativeLangSpeaker *pNativeLangSpeaker = nppParams.getNativeLangSpeaker();
 			wstring nativeLangShortcutMapperMacro = pNativeLangSpeaker->getNativeLangMenuString(IDM_SETTING_SHORTCUT_MAPPER_MACRO);
@@ -6673,7 +6673,7 @@ void Notepad_plus::getCurrentOpenedFiles(Session & session, bool includeUntitled
 //This function is destructive
 bool Notepad_plus::emergency(const wstring& emergencySavedDir)
 {
-    ::CreateDirectory(emergencySavedDir.c_str(), NULL);
+    ::CreateDirectory(emergencySavedDir.c_str(), nullptr);
 	return dumpFiles(emergencySavedDir.c_str(), L"File");
 }
 
@@ -7057,8 +7057,8 @@ void Notepad_plus::notifyBufferActivated(BufferID bufid, int view)
 	setWorkingDir(dir.c_str());
 	setTitle();
 	//Make sure the colors of the tab controls match
-	::InvalidateRect(_mainDocTab.getHSelf(), NULL, FALSE);
-	::InvalidateRect(_subDocTab.getHSelf(), NULL, FALSE);
+	::InvalidateRect(_mainDocTab.getHSelf(), nullptr, FALSE);
+	::InvalidateRect(_subDocTab.getHSelf(), nullptr, FALSE);
 
 	SCNotification scnN{};
 	scnN.nmhdr.code = NPPN_BUFFERACTIVATED;
@@ -7234,7 +7234,7 @@ void Notepad_plus::setFindReplaceFolderFilter(const wchar_t *dir, const wchar_t 
 	if (!filter && findHistory._isFilterFollowDoc)
 	{
 		// Get current language file extensions
-		const wchar_t *ext = NULL;
+		const wchar_t *ext = nullptr;
 		LangType lt = _pEditView->getCurrentBuffer()->getLangType();
 
 		if (lt == L_USER)
@@ -7285,7 +7285,7 @@ vector<wstring> Notepad_plus::addNppComponents(const wchar_t *destDir, const wch
 
         if (!doesDirectoryExist(destDirName.c_str()))
         {
-            ::CreateDirectory(destDirName.c_str(), NULL);
+            ::CreateDirectory(destDirName.c_str(), nullptr);
         }
 
         destDirName += L"\\";
@@ -7321,7 +7321,7 @@ vector<wstring> Notepad_plus::addNppPlugins(const wchar_t *extFilterName, const 
 
         if (!doesDirectoryExist(destDirName.c_str()))
         {
-            ::CreateDirectory(destDirName.c_str(), NULL);
+            ::CreateDirectory(destDirName.c_str(), nullptr);
         }
 
         size_t sz = fns.size();
@@ -7333,7 +7333,7 @@ vector<wstring> Notepad_plus::addNppPlugins(const wchar_t *extFilterName, const 
                 wstring destName = destDirName;
 				
 				wstring nameExt = ::PathFindFileName(fns.at(i).c_str());
-				auto pos = nameExt.find_last_of(L".");
+				auto pos = nameExt.find_last_of(L'.');
 				if (pos == wstring::npos)
 					continue;
 
@@ -7341,7 +7341,7 @@ vector<wstring> Notepad_plus::addNppPlugins(const wchar_t *extFilterName, const 
 				pathAppend(destName, name);
 				if (!doesDirectoryExist(destName.c_str()))
 				{
-					::CreateDirectory(destName.c_str(), NULL);
+					::CreateDirectory(destName.c_str(), nullptr);
 				}
 				pathAppend(destName, nameExt);
 
@@ -7360,7 +7360,7 @@ void Notepad_plus::setWorkingDir(const wchar_t *dir)
 		return;
 	if (params.getNppGUI()._openSaveDir == dir_userDef)
 	{
-		params.setWorkingDir(NULL);
+		params.setWorkingDir(nullptr);
 	}
 	else if (dir && doesDirectoryExist(dir))
 	{
@@ -8290,7 +8290,7 @@ bool isInList(int elem, const vector<int>& elemList)
 DWORD WINAPI Notepad_plus::threadTextPlayer(void *params)
 {
 	// random seed generation needs only one time.
-	srand(static_cast<UINT>(time(NULL)));
+	srand(static_cast<UINT>(time(nullptr)));
 
 	TextPlayerParams* textPlayerParams = static_cast<TextPlayerParams*>(params);
 	HWND hNpp = textPlayerParams->_nppHandle;
@@ -8331,7 +8331,7 @@ DWORD WINAPI Notepad_plus::threadTextPlayer(void *params)
 	trollerParams._pCurrentView = pCurrentView;
 	BufferID targetBufID = pCurrentView->getCurrentBufferID();
 	trollerParams._targetBufID = targetBufID;
-	HANDLE mutex = ::CreateMutex(NULL, false, L"nppTextWriter");
+	HANDLE mutex = ::CreateMutex(nullptr, false, L"nppTextWriter");
 	trollerParams._mutex = mutex;
 
     // Get the current scintilla
@@ -8366,7 +8366,7 @@ DWORD WINAPI Notepad_plus::threadTextPlayer(void *params)
 
 				ReleaseMutex(mutex);
 
-				HANDLE hThread = ::CreateThread(NULL, 0, threadTextTroller, &trollerParams, 0, NULL);
+				HANDLE hThread = ::CreateThread(nullptr, 0, threadTextTroller, &trollerParams, 0, nullptr);
 
 				int sleepTime = 1000 / x * y;
 				::Sleep(sleepTime);
@@ -8395,7 +8395,7 @@ DWORD WINAPI Notepad_plus::threadTextPlayer(void *params)
 			return TRUE;
 
 		char charToShow[4] = { '\0' };
-		::WideCharToMultiByte(CP_UTF8, 0, text2display + i, 1, charToShow, sizeof(charToShow), NULL, NULL);
+		::WideCharToMultiByte(CP_UTF8, 0, text2display + i, 1, charToShow, sizeof(charToShow), nullptr, nullptr);
 		::SendMessage(curScintilla, SCI_APPENDTEXT, strlen(charToShow), reinterpret_cast<LPARAM>(charToShow));
 		::SendMessage(curScintilla, SCI_GOTOPOS, ::SendMessage(curScintilla, SCI_GETLENGTH, 0, 0), 0);
 
@@ -8427,7 +8427,7 @@ DWORD WINAPI Notepad_plus::threadTextPlayer(void *params)
 				return ERROR_SUCCESS;
 
 			char charToShow[4] = { '\0' };
-			::WideCharToMultiByte(CP_UTF8, 0, quoter + i, 1, charToShow, sizeof(charToShow), NULL, NULL);
+			::WideCharToMultiByte(CP_UTF8, 0, quoter + i, 1, charToShow, sizeof(charToShow), nullptr, nullptr);
 
 			::SendMessage(curScintilla, SCI_APPENDTEXT, 1, reinterpret_cast<LPARAM>(charToShow));
 			::SendMessage(curScintilla, SCI_GOTOPOS, ::SendMessage(curScintilla, SCI_GETLENGTH, 0, 0), 0);
@@ -8445,7 +8445,7 @@ DWORD WINAPI Notepad_plus::threadTextTroller(void *params)
 	WaitForSingleObject(textTrollerParams->_mutex, INFINITE);
 
 	// random seed generation needs only one time.
-	srand(static_cast<UINT>(time(NULL)));
+	srand(static_cast<UINT>(time(nullptr)));
 
 	ScintillaEditView *pCurrentView = textTrollerParams->_pCurrentView;
 	const wchar_t* text2display = textTrollerParams->_text2display;
@@ -8468,7 +8468,7 @@ DWORD WINAPI Notepad_plus::threadTextTroller(void *params)
 		}
 
 		char charToShow[64] = { '\0' };
-		::WideCharToMultiByte(CP_UTF8, 0, text2display + i, 1, charToShow, sizeof(charToShow), NULL, NULL);
+		::WideCharToMultiByte(CP_UTF8, 0, text2display + i, 1, charToShow, sizeof(charToShow), nullptr, nullptr);
 		::SendMessage(curScintilla, SCI_APPENDTEXT, 1, reinterpret_cast<LPARAM>(charToShow));
 		::SendMessage(curScintilla, SCI_GOTOPOS, ::SendMessage(curScintilla, SCI_GETLENGTH, 0, 0), 0);
     }
@@ -8573,7 +8573,7 @@ int Notepad_plus::getQuoteIndexFrom(const wchar_t* quoter) const
 	int nbQuote = sizeof(quotes) / sizeof(QuoteParams);
 	if (_wcsicmp(quoter, L"random") == 0)
 	{
-		srand(static_cast<UINT>(time(NULL)));
+		srand(static_cast<UINT>(time(nullptr)));
 		return getRandomNumber(nbQuote);
 	}
 
@@ -8605,7 +8605,7 @@ void Notepad_plus::showQuote(const QuoteParams* quote) const
 	params._nppHandle = Notepad_plus::_pPublicInterface->getHSelf();
 	params._pCurrentView = _pEditView;
 
-	HANDLE hThread = ::CreateThread(NULL, 0, threadTextPlayer, &params, 0, NULL);
+	HANDLE hThread = ::CreateThread(nullptr, 0, threadTextPlayer, &params, 0, nullptr);
 	if (hThread)
 		::CloseHandle(hThread);
 }
@@ -8910,7 +8910,7 @@ void Notepad_plus::refreshInternalPanelIcons()
 
 void Notepad_plus::launchDocumentBackupTask()
 {
-	HANDLE hThread = ::CreateThread(NULL, 0, backupDocument, NULL, 0, NULL);
+	HANDLE hThread = ::CreateThread(nullptr, 0, backupDocument, nullptr, 0, nullptr);
 	if (hThread)
 		::CloseHandle(hThread);
 }
@@ -8985,9 +8985,9 @@ bool Notepad_plus::undoStreamComment(bool tryBlockComment)
 
 
 	// BlockToStreamComment: If there is no stream-comment symbol and we came not from doBlockComment, try the block comment:
-	if ((!commentStart) || (!commentStart[0]) || (commentStart == NULL) || (!commentEnd) || (!commentEnd[0]) || (commentEnd == NULL))
+	if ((!commentStart) || (!commentStart[0]) || (commentStart == nullptr) || (!commentEnd) || (!commentEnd[0]) || (commentEnd == nullptr))
 	{
-		if (!(!commentLineSymbol || !commentLineSymbol[0] || commentLineSymbol == NULL) && tryBlockComment)
+		if (!(!commentLineSymbol || !commentLineSymbol[0] || commentLineSymbol == nullptr) && tryBlockComment)
 			return doBlockComment(cm_uncomment);
 		else
 			return false;
@@ -9150,7 +9150,7 @@ bool Notepad_plus::undoStreamComment(bool tryBlockComment)
 		{
 			_pEditView->execute(SCI_SETSEL, selectionStart + selectionStartMove, selectionEnd + selectionEndMove);
 		}
-	} while (1); //do as long as stream-comments are within selection
+	} while (true); //do as long as stream-comments are within selection
 }
 
 void Notepad_plus::monitoringStartOrStopAndUpdateUI(Buffer* pBuf, bool isStarting)
@@ -9171,7 +9171,7 @@ void Notepad_plus::monitoringStartOrStopAndUpdateUI(Buffer* pBuf, bool isStartin
 void Notepad_plus::createMonitoringThread(Buffer* pBuf)
 {
 	MonitorInfo *monitorInfo = new Notepad_plus::MonitorInfo(pBuf, _pPublicInterface->getHSelf());
-	HANDLE hThread = ::CreateThread(NULL, 0, monitorFileOnChange, (void *)monitorInfo, 0, NULL); // will be deallocated while quitting thread
+	HANDLE hThread = ::CreateThread(nullptr, 0, monitorFileOnChange, (void *)monitorInfo, 0, nullptr); // will be deallocated while quitting thread
 	if (hThread != nullptr)
 		::CloseHandle(hThread);
 }

@@ -342,7 +342,7 @@ void FindReplaceDlg::create(int dialogID, bool isRTL, bool msgDestParent, bool t
 	_currentStatus = REPLACE_DLG;
 	initOptionsFromDlg();
 
-	_statusBar.init(GetModuleHandle(NULL), _hSelf, 0);
+	_statusBar.init(GetModuleHandle(nullptr), _hSelf, 0);
 	_statusBar.display();
 
 	setDpi();
@@ -2918,7 +2918,7 @@ intptr_t CALLBACK FindReplaceDlg::run_dlgProc(UINT message, WPARAM wParam, LPARA
 
 					if (!currPath.empty() && doesDirectoryExist(currPath.c_str()))
 					{
-						setFindInFilesDirFilter(currPath.c_str(), NULL);
+						setFindInFilesDirFilter(currPath.c_str(), nullptr);
 					}
 				}
 				return TRUE;
@@ -3327,7 +3327,7 @@ int FindReplaceDlg::markAll(const wchar_t *txt2find, int styleID)
 	markAllOpt._isWholeWord = nppGUI._markAllWordOnly;
 	markAllOpt._str2Search = txt2find;
 
-	int nbFound = processAll(ProcessMarkAllExt, &markAllOpt, true, NULL, styleID);
+	int nbFound = processAll(ProcessMarkAllExt, &markAllOpt, true, nullptr, styleID);
 	return nbFound;
 }
 
@@ -3488,7 +3488,7 @@ int FindReplaceDlg::processRange(ProcessOperation op, FindReplaceInfo& findRepla
 	LRESULT stringSizeFind = 0;
 	LRESULT stringSizeReplace = 0;
 
-	wchar_t *pTextFind = NULL;
+	wchar_t *pTextFind = nullptr;
 	if (!findReplaceInfo._txt2find)
 	{
 		HWND hFindCombo = ::GetDlgItem(_hSelf, IDFINDWHAT);
@@ -3510,7 +3510,7 @@ int FindReplaceDlg::processRange(ProcessOperation op, FindReplaceInfo& findRepla
 		return nbProcessed;
 	}
 
-	wchar_t *pTextReplace = NULL;
+	wchar_t *pTextReplace = nullptr;
 	if (op == ProcessReplaceAll)
 	{
 		if (!findReplaceInfo._txt2replace)
@@ -4370,7 +4370,7 @@ void FindReplaceDlg::getAndValidatePatterns(vector<wstring> & patternVect)
 	getPatterns(patternVect);
 	if (patternVect.size() == 0)
 	{
-		setFindInFilesDirFilter(NULL, L"*.*");
+		setFindInFilesDirFilter(nullptr, L"*.*");
 		getPatterns(patternVect);
 	}
 	else if (allPatternsAreExclusion(patternVect))
@@ -4836,7 +4836,7 @@ void FindReplaceDlg::execSavedCommand(int cmd, uptr_t intValue, const wstring& s
 	}
 	catch (const std::runtime_error& err)
 	{
-		MessageBoxA(NULL, err.what(), "Play Macro Exception", MB_OK);
+		MessageBoxA(nullptr, err.what(), "Play Macro Exception", MB_OK);
 	}
 }
 
@@ -4918,8 +4918,8 @@ void FindReplaceDlg::enableProjectCheckmarks()
 				}
 				else
 				{
-					*opt [i] = 0;
-					*hst [i] = 0;
+					*opt [i] = false;
+					*hst [i] = false;
 					::SendDlgItemMessage(_hSelf, idd [i], BM_SETCHECK, 0, 0);
 					enableFindDlgItem (idd [i], false);
 				}
@@ -5914,7 +5914,7 @@ string Finder::foundLine(FoundInfo fi, SearchResultMarkingLine miLine, const wch
 	size_t totalLineNumberDigit = static_cast<size_t>(nbDigitsFromNbLines(totalLineNumber) + 1);
 	size_t currentLineNumberDigit = static_cast<size_t>(nbDigitsFromNbLines(fi._lineNumber) + 1);
 
-	wstring lineNumberStr = L"";
+	wstring lineNumberStr;
 	lineNumberStr.append(totalLineNumberDigit - currentLineNumberDigit, ' ');
 	lineNumberStr.append(std::to_wstring(fi._lineNumber));
 	headerStr += lineNumberStr;
@@ -6030,7 +6030,7 @@ bool Finder::isLineActualSearchResult(const wstring& s)
 {
 	// actual-search-result lines are the only type that start with a tab character
 	// sample: "\tLine 123: xxxxxxHITxxxxxx"
-	return (s.find(L"\t") == 0);
+	return (s.find(L'\t') == 0);
 }
 
 wstring & Finder::prepareStringForClipboard(wstring & s) const
@@ -6080,7 +6080,7 @@ void Finder::copy()
 	}
 
 	std::vector<wstring> lines;
-	wstring previousResultLineStr(L"");
+	wstring previousResultLineStr;
 	for (size_t line = fromLine; line <= toLine; ++line)
 	{
 		wstring lineStr = _scintView.getLine(line);
@@ -6384,7 +6384,7 @@ intptr_t CALLBACK Finder::run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam
 
 				::TrackPopupMenu(scintillaContextmenu.getMenuHandle(),
 					NppParameters::getInstance().getNativeLangSpeaker()->isRTL() ? TPM_RIGHTALIGN | TPM_LAYOUTRTL : TPM_LEFTALIGN,
-					p.x, p.y, 0, _hSelf, NULL);
+					p.x, p.y, 0, _hSelf, nullptr);
 				return TRUE;
 			}
 			return ::DefWindowProc(_hSelf, message, wParam, lParam);
@@ -6425,7 +6425,7 @@ void FindIncrementDlg::destroy()
 	if (_pRebar)
 	{
 		_pRebar->removeBand(_rbBand.wID);
-		_pRebar = NULL;
+		_pRebar = nullptr;
 	}
 }
 
@@ -6668,7 +6668,7 @@ intptr_t CALLBACK FindIncrementDlg::run_dlgProc(UINT message, WPARAM wParam, LPA
 				::MapWindowPoints(_hSelf, hParent, &pt, 1);
 				::OffsetWindowOrgEx((HDC)wParam, pt.x, pt.y, &ptOrig);
 				LRESULT lResult = SendMessage(hParent, WM_ERASEBKGND, reinterpret_cast<WPARAM>(winDC), 0);
-				::SetWindowOrgEx(winDC, ptOrig.x, ptOrig.y, NULL);
+				::SetWindowOrgEx(winDC, ptOrig.x, ptOrig.y, nullptr);
 				return (BOOL)lResult;
 			}
 		}
@@ -6758,7 +6758,7 @@ void FindIncrementDlg::setFindStatus(FindStatus iStatus, size_t nbCounted, int n
 	HWND hEditor = ::GetDlgItem(_hSelf, IDC_INCFINDTEXT);
 
 	// invalidate the editor rect
-	::InvalidateRect(hEditor, NULL, TRUE);
+	::InvalidateRect(hEditor, nullptr, TRUE);
 
 	::SendDlgItemMessage(_hSelf, IDC_INCFINDSTATUS, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(statusStr2Display.c_str()));
 }
@@ -6806,7 +6806,7 @@ const SIZE Progress::_szClient = { 565, 95 };
 volatile LONG Progress::refCount = 0;
 
 
-Progress::Progress(HINSTANCE hInst) : _hwnd(NULL), _hCallerWnd(NULL)
+Progress::Progress(HINSTANCE hInst) : _hwnd(nullptr), _hCallerWnd(nullptr)
 {
 	if (::InterlockedIncrement(&refCount) == 1)
 	{
@@ -6818,7 +6818,7 @@ Progress::Progress(HINSTANCE hInst) : _hwnd(NULL), _hCallerWnd(NULL)
 		wcex.lpfnWndProc = wndProc;
 		wcex.hInstance = _hInst;
 		wcex.hIcon = ::LoadIcon(hInst, MAKEINTRESOURCE(IDI_M30ICON));
-		wcex.hCursor = ::LoadCursor(NULL, IDC_ARROW);
+		wcex.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
 		wcex.hbrBackground = ::GetSysColorBrush(cBackgroundColor);
 		wcex.lpszClassName = cClassName;
 
@@ -6848,12 +6848,12 @@ HWND Progress::open(HWND hCallerWnd, const wchar_t* header)
 		return _hwnd;
 
 	// Create manually reset non-signalled event
-	_hActiveState = ::CreateEvent(NULL, TRUE, FALSE, NULL);
+	_hActiveState = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
 	if (!_hActiveState)
-		return NULL;
+		return nullptr;
 
 	if (!hCallerWnd)
-		return NULL;
+		return nullptr;
 
 	_hCallerWnd = hCallerWnd;
 
@@ -6865,11 +6865,11 @@ HWND Progress::open(HWND hCallerWnd, const wchar_t* header)
 	else
 		wcscpy_s(_header, _countof(_header), cDefaultHeader);
 
-	_hThread = ::CreateThread(NULL, 0, threadFunc, this, 0, NULL);
+	_hThread = ::CreateThread(nullptr, 0, threadFunc, this, 0, nullptr);
 	if (!_hThread)
 	{
 		::CloseHandle(_hActiveState);
-		return NULL;
+		return nullptr;
 	}
 
 	// Wait for the progress window to be created
@@ -6892,7 +6892,7 @@ void Progress::close()
 	if (_hwnd)
 	{
 		::PostMessage(_hwnd, WM_CLOSE, 0, 0);
-		_hwnd = NULL;
+		_hwnd = nullptr;
 		::WaitForSingleObject(_hThread, INFINITE);
 
 		::CloseHandle(_hThread);
@@ -6951,7 +6951,7 @@ int Progress::thread()
 
 	// Window message loop
 	MSG msg{};
-	while ((r = ::GetMessage(&msg, NULL, 0, 0)) != 0 && r != -1)
+	while ((r = ::GetMessage(&msg, nullptr, 0, 0)) != 0 && r != -1)
 	{
 		::TranslateMessage(&msg);
 		::DispatchMessage(&msg);

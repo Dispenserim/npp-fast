@@ -1010,14 +1010,14 @@ BufferID FileManager::loadFile(const wchar_t* filename, Document doc, int encodi
 	}
 	else
 	{
-		::GetFullPathName(filename, MAX_PATH, fullpath, NULL);
+		::GetFullPathName(filename, MAX_PATH, fullpath, nullptr);
 		if (wcschr(fullpath, '~'))
 		{
 			::GetLongPathName(fullpath, fullpath, MAX_PATH);
 		}
 	}
 
-	bool isSnapshotMode = (backupFileName != NULL) && doesFileExist(backupFileName);
+	bool isSnapshotMode = (backupFileName != nullptr) && doesFileExist(backupFileName);
 	if (isSnapshotMode && !doesFileExist(fullpath)) // if backup mode and fullpath doesn't exist, we guess is UNTITLED
 	{
 		wcscpy_s(fullpath, MAX_PATH, filename); // we restore fullpath with filename, in our case is "new  #"
@@ -1042,7 +1042,7 @@ BufferID FileManager::loadFile(const wchar_t* filename, Document doc, int encodi
 		BufferID id = newBuf;
 		newBuf->_id = id;
 
-		if (backupFileName != NULL)
+		if (backupFileName != nullptr)
 		{
 			newBuf->_backupFileName = backupFileName;
 			if (!doesFileExist(fullpath))
@@ -1196,14 +1196,14 @@ bool FileManager::deleteFile(BufferID id)
 	fileNamePath.append(1, '\0');
 
 	SHFILEOPSTRUCT fileOpStruct = {};
-	fileOpStruct.hwnd = NULL;
+	fileOpStruct.hwnd = nullptr;
 	fileOpStruct.pFrom = fileNamePath.c_str();
-	fileOpStruct.pTo = NULL;
+	fileOpStruct.pTo = nullptr;
 	fileOpStruct.wFunc = FO_DELETE;
 	fileOpStruct.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION; // FOF_NOCONFIRMATION - prevent possible redundant shell-dlg (Notepad++ uses its own delete-confirmation dlg)
 	fileOpStruct.fAnyOperationsAborted = false;
-	fileOpStruct.hNameMappings         = NULL;
-	fileOpStruct.lpszProgressTitle     = NULL;
+	fileOpStruct.hNameMappings         = nullptr;
+	fileOpStruct.lpszProgressTitle     = nullptr;
 
 	return SHFileOperation(&fileOpStruct) == 0;
 }
@@ -1317,14 +1317,14 @@ bool FileManager::backupCurrentBuffer()
 				// if "backup" folder doesn't exist, create it.
 				if (!doesDirectoryExist(backupFilePath.c_str()))
 				{
-					::CreateDirectory(backupFilePath.c_str(), NULL);
+					::CreateDirectory(backupFilePath.c_str(), nullptr);
 				}
 
 				backupFilePath += buffer->getFileName();
 
 				const int temBufLen = 32;
 				wchar_t tmpbuf[temBufLen];
-				time_t ltime = time(0);
+				time_t ltime = time(nullptr);
 				const struct tm* today = localtime(&ltime);
 				if (!today)
 					return false;
@@ -1342,7 +1342,7 @@ bool FileManager::backupCurrentBuffer()
 			}
 
 			wchar_t fullpath[MAX_PATH]{};
-			::GetFullPathName(backupFilePath.c_str(), MAX_PATH, fullpath, NULL);
+			::GetFullPathName(backupFilePath.c_str(), MAX_PATH, fullpath, nullptr);
 			if (wcschr(fullpath, '~'))
 			{
 				::GetLongPathName(fullpath, fullpath, MAX_PATH);
@@ -1392,7 +1392,7 @@ bool FileManager::backupCurrentBuffer()
 					if (buffer->isUntitled()) // "new #" file is saved successfully, then we replace its only physical existence by its temp
 					{
 						if (doesFileExist(fullpath))
-							::ReplaceFile(fullpath, fullpathTemp.c_str(), nullptr, REPLACEFILE_IGNORE_MERGE_ERRORS | REPLACEFILE_IGNORE_ACL_ERRORS, 0, 0);
+							::ReplaceFile(fullpath, fullpathTemp.c_str(), nullptr, REPLACEFILE_IGNORE_MERGE_ERRORS | REPLACEFILE_IGNORE_ACL_ERRORS, nullptr, nullptr);
 						else
 							::MoveFileEx(fullpathTemp.c_str(), fullpath, MOVEFILE_REPLACE_EXISTING);
 					}
@@ -1530,7 +1530,7 @@ SavingStatus FileManager::saveBuffer(BufferID id, const wchar_t* filename, bool 
 	}
 	else
 	{
-		::GetFullPathName(filename, MAX_PATH, fullpath, NULL);
+		::GetFullPathName(filename, MAX_PATH, fullpath, nullptr);
 		if (wcschr(fullpath, '~'))
 		{
 			::GetLongPathName(fullpath, fullpath, MAX_PATH);
@@ -1656,7 +1656,7 @@ SavingStatus FileManager::saveBuffer(BufferID id, const wchar_t* filename, bool 
 		// set mapSize to at least 1, otherwise CreateFileMappingW will fail with ERROR_FILE_INVALID
 		const size_t mapSize = (std::max)(fileContentSaveUAC.size(), static_cast<size_t>(1));
 
-		HANDLE hMap = ::CreateFileMappingW(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, static_cast<DWORD>((uint64_t)mapSize >> 32), static_cast<DWORD>(mapSize), NULL);
+		HANDLE hMap = ::CreateFileMappingW(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, static_cast<DWORD>((uint64_t)mapSize >> 32), static_cast<DWORD>(mapSize), nullptr);
 
 		if (!hMap)
 		{
@@ -1676,7 +1676,7 @@ SavingStatus FileManager::saveBuffer(BufferID id, const wchar_t* filename, bool 
 		::UnmapViewOfFile(p);
 
 		// from here on, nobody (including a same-user attacker) can obtain write access to the section
-		HANDLE hMapRO = NULL;
+		HANDLE hMapRO = nullptr;
 		if (!::DuplicateHandle(::GetCurrentProcess(), hMap, ::GetCurrentProcess(), &hMapRO, FILE_MAP_READ, FALSE, DUPLICATE_CLOSE_SOURCE)) // DUPLICATE_CLOSE_SOURCE: destroy the writable handle hMap
 		{
 			_pscratchTilla->execute(SCI_SETDOCPOINTER, 0, _scratchDocDefault);
@@ -1944,8 +1944,8 @@ LangType FileManager::detectLanguageFromTextBeginning(const unsigned char *data,
 	std::string buf2Test = std::string((const char *)data + i, longestLength);
 
 	// Is there a \r or \n in the buffer? If so, truncate it
-	auto cr = buf2Test.find("\r");
-	auto nl = buf2Test.find("\n");
+	auto cr = buf2Test.find('\r');
+	auto nl = buf2Test.find('\n');
 	auto crnl = std::min<size_t>(cr, nl);
 	if (crnl != std::string::npos && crnl < longestLength)
 		buf2Test = std::string((const char *)data + i, crnl);

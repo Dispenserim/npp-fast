@@ -34,6 +34,6 @@ void CReadFileChanges::AddFile(LPCTSTR szFile, DWORD dwNotifyFilter)
 
 void CReadFileChanges::Terminate()
 {
-	_szFile = NULL;
+	_szFile = nullptr;
 	_dwNotifyFilter = 0;
 }

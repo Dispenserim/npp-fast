@@ -28,8 +28,8 @@ using namespace std;
 #define WH_MOUSE_LL 14
 #endif
 
-static HWND		hWndServer		= NULL;
-static HHOOK	hookMouse		= NULL;
+static HWND		hWndServer		= nullptr;
+static HHOOK	hookMouse		= nullptr;
 
 static LRESULT CALLBACK hookProcMouse(int nCode, WPARAM wParam, LPARAM lParam)
 {
@@ -169,7 +169,7 @@ DockedWidgetData* DockingCont::findDockedWidgetByWnd(HWND hClient)
 
 DockedWidgetData* DockingCont::findDockedWidgetByName(wchar_t* pszName)
 {
-	DockedWidgetData*	pTbData		= NULL;
+	DockedWidgetData*	pTbData		= nullptr;
 
 	// find entry by handle
 	for (size_t iTb = 0, len = _dwDataVect.size(); iTb < len; ++iTb)
@@ -375,7 +375,7 @@ LRESULT DockingCont::runProcCaption(HWND hwnd, UINT Message, WPARAM wParam, LPAR
 					// if state is changed draw new
 					if (_isMouseOver != isMouseOver)
 					{
-						::SetFocus(NULL);
+						::SetFocus(nullptr);
 						::RedrawWindow(hwnd, nullptr, nullptr, RDW_INVALIDATE);
 					}
 				}
@@ -466,15 +466,15 @@ LRESULT DockingCont::DockingCaptionSubclass(HWND hWnd, UINT uMsg, WPARAM wParam,
 
 void DockingCont::drawCaptionItem(DRAWITEMSTRUCT *pDrawItemStruct)
 {
-	HBRUSH bgbrush = NULL;
-	HFONT hOldFont = NULL;
+	HBRUSH bgbrush = nullptr;
+	HFONT hOldFont = nullptr;
 	RECT rc = pDrawItemStruct->rcItem;
 	HDC hDc = pDrawItemStruct->hDC;
 	HPEN hPen = ::CreatePen(PS_SOLID, 1, ::GetSysColor(COLOR_BTNSHADOW));
 	BITMAP bmp {};
-	HBITMAP hBmpCur = NULL;
-	HBITMAP hBmpOld = NULL;
-	HBITMAP hBmpNew = NULL;
+	HBITMAP hBmpCur = nullptr;
+	HBITMAP hBmpOld = nullptr;
+	HBITMAP hBmpNew = nullptr;
 	int length = static_cast<int32_t>(_pszCaption.length());
 
 	int nSavedDC = ::SaveDC(hDc);
@@ -521,7 +521,7 @@ void DockingCont::drawCaptionItem(DRAWITEMSTRUCT *pDrawItemStruct)
 
 			// draw grid lines
 
-			MoveToEx(hDc, rc.left , rc.top , NULL);
+			MoveToEx(hDc, rc.left , rc.top , nullptr);
 			LineTo  (hDc, rc.right, rc.top );
 			LineTo  (hDc, rc.right, rc.bottom );
 			LineTo  (hDc, rc.left , rc.bottom );
@@ -562,7 +562,7 @@ void DockingCont::drawCaptionItem(DRAWITEMSTRUCT *pDrawItemStruct)
 			::FillRect(hDc, &rc, bgbrush);
 
 			// draw grid lines
-			MoveToEx(hDc, rc.left , rc.top , NULL);
+			MoveToEx(hDc, rc.left , rc.top , nullptr);
 			LineTo  (hDc, rc.right, rc.top );
 			LineTo  (hDc, rc.right, rc.bottom );
 			LineTo  (hDc, rc.left , rc.bottom );
@@ -636,7 +636,7 @@ void DockingCont::drawCaptionItem(DRAWITEMSTRUCT *pDrawItemStruct)
 	else
 	{
 
-		HDC dcMem = ::CreateCompatibleDC(NULL);
+		HDC dcMem = ::CreateCompatibleDC(nullptr);
 
 		// select correct bitmap
 		if ((_isMouseOver == TRUE) && (_isMouseDown == TRUE))
@@ -672,7 +672,7 @@ eMousePos DockingCont::isInRect(HWND hwnd, int x, int y)
 	eMousePos	ret	= posOutside;
 
 	::GetWindowRect(hwnd, &rc);
-	::MapWindowPoints(NULL, hwnd, (LPPOINT)&rc, 2);
+	::MapWindowPoints(nullptr, hwnd, (LPPOINT)&rc, 2);
 
 	if (_isTopCaption == TRUE)
 	{
@@ -1342,13 +1342,13 @@ void DockingCont::onSize()
 		// draw caption
 		if (_isTopCaption == TRUE)
 		{
-			::SetWindowPos(_hCaption, NULL, rc.left, rc.top, rc.right, _captionHeightDynamic, SWP_NOZORDER | SWP_NOACTIVATE);
+			::SetWindowPos(_hCaption, nullptr, rc.left, rc.top, rc.right, _captionHeightDynamic, SWP_NOZORDER | SWP_NOACTIVATE);
 			rc.top += _captionHeightDynamic;
 			rc.bottom -= _captionHeightDynamic;
 		}
 		else
 		{
-			::SetWindowPos(_hCaption, NULL, rc.left, rc.top, _captionHeightDynamic, rc.bottom, SWP_NOZORDER | SWP_NOACTIVATE);
+			::SetWindowPos(_hCaption, nullptr, rc.left, rc.top, _captionHeightDynamic, rc.bottom, SWP_NOZORDER | SWP_NOACTIVATE);
 			rc.left += _captionHeightDynamic;
 			rc.right -= _captionHeightDynamic;
 		}
@@ -1364,7 +1364,7 @@ void DockingCont::onSize()
 			rcTemp.bottom	= tabDpiDynamicalHeight;
 			iTabOff			= tabDpiDynamicalHeight;
 
-			::SetWindowPos(_hContTab, NULL,
+			::SetWindowPos(_hContTab, nullptr,
 							rcTemp.left, rcTemp.top, rcTemp.right, rcTemp.bottom,
 							SWP_NOZORDER | SWP_SHOWWINDOW |  SWP_NOACTIVATE);
 
@@ -1390,7 +1390,7 @@ void DockingCont::onSize()
 		}
 
 		// set position of client area
-		::SetWindowPos(::GetDlgItem(_hSelf, IDC_CLIENT_TAB), NULL,
+		::SetWindowPos(::GetDlgItem(_hSelf, IDC_CLIENT_TAB), nullptr,
 						rcTemp.left, rcTemp.top, rcTemp.right, rcTemp.bottom,
 						SWP_NOZORDER | SWP_NOACTIVATE);
 	}
@@ -1410,7 +1410,7 @@ void DockingCont::onSize()
 			rcTemp.top = rcTemp.bottom - (tabDpiDynamicalHeight + _captionGapDynamic);
 			rcTemp.bottom = tabDpiDynamicalHeight;
 
-			::SetWindowPos(_hContTab, NULL,
+			::SetWindowPos(_hContTab, nullptr,
 							rcTemp.left, rcTemp.top, rcTemp.right, rcTemp.bottom,
 							SWP_NOZORDER | SWP_SHOWWINDOW);
 
@@ -1425,7 +1425,7 @@ void DockingCont::onSize()
 		rcTemp = rc;
 		rcTemp.bottom -= ((nbTab == 1)?0:tabDpiDynamicalHeight);
 
-		::SetWindowPos(::GetDlgItem(_hSelf, IDC_CLIENT_TAB), NULL,
+		::SetWindowPos(::GetDlgItem(_hSelf, IDC_CLIENT_TAB), nullptr,
 						rcTemp.left, rcTemp.top, rcTemp.right, rcTemp.bottom,
 						SWP_NOZORDER | SWP_NOACTIVATE);
 	}
@@ -1443,7 +1443,7 @@ void DockingCont::onSize()
 
 		if (dwData)
 		{
-			::SetWindowPos(dwData->hClient, NULL,
+			::SetWindowPos(dwData->hClient, nullptr,
 							0, 0, rcTemp.right, rcTemp.bottom,
 							SWP_NOZORDER);
 
@@ -1654,7 +1654,7 @@ void DockingCont::selectTab(int iTab)
 	if (iTab == -1)
 		return;
 
-	const wchar_t	*pszMaxTxt	= NULL;
+	const wchar_t	*pszMaxTxt	= nullptr;
 	TCITEM tcItem {};
 	SIZE size = {};
 	int maxWidth = 0;

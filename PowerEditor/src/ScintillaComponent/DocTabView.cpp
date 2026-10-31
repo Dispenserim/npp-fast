@@ -20,6 +20,7 @@
 #include <windows.h>
 
 #include <cwchar>
+#include <iterator>
 
 #include "Buffer.h"
 #include "NppConstants.h"
@@ -71,6 +72,26 @@ void DocTabView::createIconSets()
 	_docTabIconListDarkMode.create(iconDpiDynamicalSize, _hInst, docTabIconIDs_darkMode, sizeof(docTabIconIDs_darkMode) / sizeof(int));
 }
 
+// Duplicates every first ampersand(&): "test & test && test &&&" becomes "test && test &&& test &&&&".
+// Tab's caption must be encoded like this because otherwise tab control would make tab too small or too big for the text.
+// out must have room for 2 * MAX_PATH characters.
+static void encodeTabLabel(const wchar_t* in, wchar_t* out)
+{
+	while (*in != 0)
+	{
+		if (*in == '&')
+		{
+			*out++ = '&';
+			*out++ = '&';
+			while (*(++in) == '&')
+				*out++ = '&';
+		}
+		else
+			*out++ = *in++;
+	}
+	*out = '\0';
+}
+
 void DocTabView::addBuffer(BufferID buffer)
 {
 	if (buffer == BUFFER_INVALID)	//valid only
@@ -85,8 +106,12 @@ void DocTabView::addBuffer(BufferID buffer)
 	if (_hasImgLst)
 		index = 0;
 	tie.iImage = index;
-	tie.pszText = const_cast<wchar_t*>(buf->getCompactFileName());
+	// Insert with the final (encoded) label, so the bufferUpdated() below usually has nothing left to change.
+	wchar_t encodedLabel[2 * MAX_PATH] = { '\0' };
+	encodeTabLabel(buf->getCompactFileName(), encodedLabel);
+	tie.pszText = encodedLabel;
 	tie.lParam = reinterpret_cast<LPARAM>(buffer);
+	applyBatchFixedWidth();
 	int insertedIndex = static_cast<int>(::SendMessage(_hSelf, TCM_INSERTITEM, _nbItem++, reinterpret_cast<LPARAM>(&tie)));
 	addBufferToIndex(buffer);
 	if (insertedIndex >= 0)
@@ -110,6 +135,7 @@ void DocTabView::deletItemAt(size_t index)
 	if (index >= _nbItem)
 		return;
 	removeBufferFromIndex(getBufferByIndex(index));
+	applyBatchFixedWidth();
 	TabBar::deletItemAt(index);
 	_lastFoundIndex = -1;
 }
@@ -130,10 +156,49 @@ void DocTabView::removeBufferFromIndex(BufferID id)
 		_bufferTabCount.erase(it);
 }
 
+void DocTabView::applyBatchFixedWidth()
+{
+	if (_batchUpdateDepth == 0 || _isBatchFixedWidthApplied || !_hSelf)
+		return;
+
+	LONG_PTR style = ::GetWindowLongPtr(_hSelf, GWL_STYLE);
+	if (style & TCS_FIXEDWIDTH)
+		return; // already fixed width, nothing to gain
+
+	::SendMessage(_hSelf, WM_SETREDRAW, FALSE, 0); // nothing to paint until the batch is done
+	::SetWindowLongPtr(_hSelf, GWL_STYLE, style | TCS_FIXEDWIDTH);
+	_isBatchFixedWidthApplied = true;
+	_batchFixedWidthTabs.push_back(this);
+}
+
+void DocTabView::restoreBatchFixedWidth()
+{
+	if (!_isBatchFixedWidthApplied)
+		return;
+
+	_isBatchFixedWidthApplied = false;
+	LONG_PTR style = ::GetWindowLongPtr(_hSelf, GWL_STYLE);
+	::SetWindowLongPtr(_hSelf, GWL_STYLE, style & ~static_cast<LONG_PTR>(TCS_FIXEDWIDTH));
+	refresh(); // forces the tab control to re-measure all the tabs with the restored style
+	::SendMessage(_hSelf, WM_SETREDRAW, TRUE, 0);
+	::InvalidateRect(_hSelf, nullptr, TRUE);
+}
+
 void DocTabView::endBatchUpdate()
 {
 	if (_batchUpdateDepth > 0)
 		--_batchUpdateDepth;
+
+	if (_batchUpdateDepth == 0)
+	{
+		std::vector<DocTabView*> tabs;
+		tabs.swap(_batchFixedWidthTabs);
+		for (DocTabView* pTab : tabs)
+		{
+			pTab->restoreBatchFixedWidth();
+			_hPendingResizeParent = pTab->_hParent; // the tab widths changed, so a relayout is due
+		}
+	}
 
 	if (_batchUpdateDepth == 0 && _hPendingResizeParent)
 	{
@@ -295,29 +360,29 @@ void DocTabView::bufferUpdated(const Buffer* buffer, int mask)
 		tie.mask |= TCIF_TEXT;
 		tie.pszText = encodedLabel;
 
+		encodeTabLabel(buffer->getCompactFileName(), encodedLabel);
+	}
+
+	// Every TCM_SETITEM makes the tab control re-measure and re-layout all of its tabs, even when nothing changed,
+	// and buffers send many change notifications while they are being loaded. Only send what actually differs.
+	if (tie.mask != 0)
+	{
+		wchar_t currentLabel[2 * MAX_PATH] = { '\0' };
+		TCITEM current{};
+		current.mask = tie.mask;
+		current.pszText = currentLabel;
+		current.cchTextMax = static_cast<int>(std::size(currentLabel));
+		if (::SendMessage(_hSelf, TCM_GETITEM, index, reinterpret_cast<LPARAM>(&current)))
 		{
-			const wchar_t* in = buffer->getCompactFileName();
-			wchar_t* out = encodedLabel;
-
-			//This code will read in one character at a time and duplicate every first ampersand(&).
-			//ex. If input is "test & test && test &&&" then output will be "test && test &&& test &&&&".
-			//Tab's caption must be encoded like this because otherwise tab control would make tab too small or too big for the text.
-
-			while (*in != 0)
-			if (*in == '&')
-			{
-				*out++ = '&';
-				*out++ = '&';
-				while (*(++in) == '&')
-					*out++ = '&';
-			}
-			else
-				*out++ = *in++;
-			*out = '\0';
+			if ((tie.mask & TCIF_IMAGE) && current.iImage == tie.iImage)
+				tie.mask &= ~TCIF_IMAGE;
+			if ((tie.mask & TCIF_TEXT) && wcscmp(currentLabel, encodedLabel) == 0)
+				tie.mask &= ~TCIF_TEXT;
 		}
 	}
 
-	::SendMessage(_hSelf, TCM_SETITEM, index, reinterpret_cast<LPARAM>(&tie));
+	if (tie.mask != 0)
+		::SendMessage(_hSelf, TCM_SETITEM, index, reinterpret_cast<LPARAM>(&tie));
 
 	// send WM_SIZE only when change tab
 	// It is needed while a tab is closed (so tab changed) in multi-line tab mode

@@ -257,7 +257,7 @@ void ListView::init(HINSTANCE hInst, HWND parent)
 void ListView::destroy()
 {
 	::DestroyWindow(_hSelf);
-	_hSelf = NULL;
+	_hSelf = nullptr;
 }
 
 void ListView::addLine(std::vector<std::wstring>& values2Add, LPARAM lParam, int pos2insert)

@@ -192,11 +192,11 @@ bool SecurityGuard::verifySignedBinary(const std::wstring& filepath) const
 	{
 		// Verify signature and cert-chain validity
 		GUID policy = WINTRUST_ACTION_GENERIC_VERIFY_V2;
-		LONG hasError = ::WinVerifyTrust(NULL, &policy, &winTEXTrust_data);
+		LONG hasError = ::WinVerifyTrust(nullptr, &policy, &winTEXTrust_data);
 
 		// Post check cleanup
 		winTEXTrust_data.dwStateAction = WTD_STATEACTION_CLOSE;
-		LONG t2 = ::WinVerifyTrust(NULL, &policy, &winTEXTrust_data);
+		LONG t2 = ::WinVerifyTrust(nullptr, &policy, &winTEXTrust_data);
 
 		if (hasError)
 		{
@@ -227,7 +227,7 @@ bool SecurityGuard::verifySignedBinary(const std::wstring& filepath) const
 		BOOL result = ::CryptQueryObject(CERT_QUERY_OBJECT_FILE, filepath.c_str(),
 			CERT_QUERY_CONTENT_FLAG_PKCS7_SIGNED_EMBED, CERT_QUERY_FORMAT_FLAG_BINARY, 0,
 			&dwEncoding, &dwContentType, &dwFormatType,
-			&hStore, &hMsg, NULL);
+			&hStore, &hMsg, nullptr);
 
 		if (!result)
 		{
@@ -235,7 +235,7 @@ bool SecurityGuard::verifySignedBinary(const std::wstring& filepath) const
 		}
 
 		// Get signer information size.
-		result = ::CryptMsgGetParam(hMsg, CMSG_SIGNER_INFO_PARAM, 0, NULL, &dwSignerInfo);
+		result = ::CryptMsgGetParam(hMsg, CMSG_SIGNER_INFO_PARAM, 0, nullptr, &dwSignerInfo);
 		if (!result)
 		{
 			throw string("CryptMsgGetParam first call: ") + wstring2string(GetLastErrorAsString(GetLastError()), CP_UTF8);
@@ -243,7 +243,7 @@ bool SecurityGuard::verifySignedBinary(const std::wstring& filepath) const
 
 		// Get Signer Information.
 		pSignerInfo = (PCMSG_SIGNER_INFO)LocalAlloc(LPTR, dwSignerInfo);
-		if (NULL == pSignerInfo)
+		if (nullptr == pSignerInfo)
 		{
 			throw string("Failed to allocate memory for signature processing");
 		}
@@ -258,14 +258,14 @@ bool SecurityGuard::verifySignedBinary(const std::wstring& filepath) const
 		CERT_INFO cert_info = {};
 		cert_info.Issuer = pSignerInfo->Issuer;
 		cert_info.SerialNumber = pSignerInfo->SerialNumber;
-		PCCERT_CONTEXT context = ::CertFindCertificateInStore(hStore, X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, 0, CERT_FIND_SUBJECT_CERT, (PVOID)&cert_info, NULL);
+		PCCERT_CONTEXT context = ::CertFindCertificateInStore(hStore, X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, 0, CERT_FIND_SUBJECT_CERT, (PVOID)&cert_info, nullptr);
 		if (!context)
 		{
 			throw string("Certificate context: ") + wstring2string(GetLastErrorAsString(GetLastError()), CP_UTF8);
 		}
 
 		// Getting the full subject
-		auto subject_sze = ::CertNameToStr(X509_ASN_ENCODING, &context->pCertInfo->Subject, CERT_X500_NAME_STR, NULL, 0);
+		auto subject_sze = ::CertNameToStr(X509_ASN_ENCODING, &context->pCertInfo->Subject, CERT_X500_NAME_STR, nullptr, 0);
 		if (subject_sze <= 1)
 		{
 			throw string("Getting x509 field size problem.");
@@ -280,7 +280,7 @@ bool SecurityGuard::verifySignedBinary(const std::wstring& filepath) const
 
 		// Getting key_id 
 		DWORD key_id_sze = 0;
-		if (!::CertGetCertificateContextProperty(context, CERT_KEY_IDENTIFIER_PROP_ID, NULL, &key_id_sze))
+		if (!::CertGetCertificateContextProperty(context, CERT_KEY_IDENTIFIER_PROP_ID, nullptr, &key_id_sze))
 		{
 			throw string("x509 property not found") + wstring2string(GetLastErrorAsString(GetLastError()), CP_UTF8);
 		}
@@ -303,7 +303,7 @@ bool SecurityGuard::verifySignedBinary(const std::wstring& filepath) const
 			writeCertVerifLog(errorLogPath.c_str(), key_id_hex.c_str());
 
 		// Getting the display name			
-		auto sze = ::CertGetNameString(context, CERT_NAME_SIMPLE_DISPLAY_TYPE, 0, NULL, NULL, 0);
+		auto sze = ::CertGetNameString(context, CERT_NAME_SIMPLE_DISPLAY_TYPE, 0, nullptr, nullptr, 0);
 		if (sze <= 1)
 		{
 			throw string("Getting data size problem.") + wstring2string(GetLastErrorAsString(GetLastError()), CP_UTF8);
@@ -311,7 +311,7 @@ bool SecurityGuard::verifySignedBinary(const std::wstring& filepath) const
 
 		// Get display name.
 		std::unique_ptr<wchar_t[]> display_name_buffer(new wchar_t[sze]);
-		if (::CertGetNameString(context, CERT_NAME_SIMPLE_DISPLAY_TYPE, 0, NULL, display_name_buffer.get(), sze) <= 1)
+		if (::CertGetNameString(context, CERT_NAME_SIMPLE_DISPLAY_TYPE, 0, nullptr, display_name_buffer.get(), sze) <= 1)
 		{
 			throw string("Cannot get certificate info." + wstring2string(GetLastErrorAsString(GetLastError()), CP_UTF8));
 		}
@@ -390,9 +390,9 @@ bool SecurityGuard::verifySignedBinary(const std::wstring& filepath) const
 
 	// Clean up.
 
-	if (hStore != NULL)       CertCloseStore(hStore, 0);
-	if (hMsg != NULL)       CryptMsgClose(hMsg);
-	if (pSignerInfo != NULL)  LocalFree(pSignerInfo);
+	if (hStore != nullptr)       CertCloseStore(hStore, 0);
+	if (hMsg != nullptr)       CryptMsgClose(hMsg);
+	if (pSignerInfo != nullptr)  LocalFree(pSignerInfo);
 
 	return status;
 }

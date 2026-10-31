@@ -232,7 +232,7 @@ void StatusBar::init(HINSTANCE hInst, HWND hPere, int nbParts)
 		L"",
 		WS_CHILD | SBARS_SIZEGRIP,
 		0, 0, 0, 0,
-		_hParent, reinterpret_cast<HMENU>(IDC_STATUSBAR), _hInst, 0);
+		_hParent, reinterpret_cast<HMENU>(IDC_STATUSBAR), _hInst, nullptr);
 
 	if (!_hSelf)
 		throw std::runtime_error("StatusBar::init : CreateWindowEx() function return null");

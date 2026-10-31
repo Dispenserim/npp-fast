@@ -515,7 +515,7 @@ intptr_t CALLBACK VerticalFileSwitcher::run_dlgProc(UINT message, WPARAM wParam,
 			{
 				::TrackPopupMenu(_hGlobalMenu, 
 					NppParameters::getInstance().getNativeLangSpeaker()->isRTL() ? TPM_RIGHTALIGN | TPM_LAYOUTRTL : TPM_LEFTALIGN,
-					GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), 0, _hSelf, NULL);
+					GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), 0, _hSelf, nullptr);
 				colHeaderRClick = false;
 			}
 			return TRUE;

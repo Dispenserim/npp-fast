@@ -135,7 +135,7 @@ intptr_t CALLBACK FileBrowser::run_dlgProc(UINT message, WPARAM wParam, LPARAM l
 			NppParameters& nppParam = NppParameters::getInstance();
 
 			constexpr DWORD style = WS_CHILD | WS_VISIBLE | TBSTYLE_FLAT | TBSTYLE_LIST | TBSTYLE_TRANSPARENT | TBSTYLE_TOOLTIPS | TBSTYLE_CUSTOMERASE;
-			_hToolbarMenu = CreateWindowEx(WS_EX_LAYOUTRTL, TOOLBARCLASSNAME, NULL, style, 0, 0, 0, 0, _hSelf, nullptr, _hInst, NULL);
+			_hToolbarMenu = CreateWindowEx(WS_EX_LAYOUTRTL, TOOLBARCLASSNAME, nullptr, style, 0, 0, 0, 0, _hSelf, nullptr, _hInst, nullptr);
 
 			const DWORD tbExStyle = static_cast<DWORD>(::SendMessage(_hToolbarMenu, TB_GETEXTENDEDSTYLE, 0, 0));
 			::SendMessage(_hToolbarMenu, TB_SETEXTENDEDSTYLE, 0, tbExStyle | TBSTYLE_EX_DOUBLEBUFFER);
@@ -419,10 +419,10 @@ void FileBrowser::initPopupMenus()
 
 	_hRootMenu = ::CreatePopupMenu();
 	::InsertMenu(_hRootMenu, 0, MF_BYCOMMAND, IDM_FILEBROWSER_REMOVEROOTFOLDER, removeRootFolder.c_str());
-	::InsertMenu(_hRootMenu, 0, MF_BYCOMMAND, static_cast<UINT>(-1), 0);
+	::InsertMenu(_hRootMenu, 0, MF_BYCOMMAND, static_cast<UINT>(-1), nullptr);
 	::InsertMenu(_hRootMenu, 0, MF_BYCOMMAND, IDM_FILEBROWSER_COPYPATH, copyPath.c_str());
 	::InsertMenu(_hRootMenu, 0, MF_BYCOMMAND, IDM_FILEBROWSER_FINDINFILES, findInFile.c_str());
-	::InsertMenu(_hRootMenu, 0, MF_BYCOMMAND, static_cast<UINT>(-1), 0);
+	::InsertMenu(_hRootMenu, 0, MF_BYCOMMAND, static_cast<UINT>(-1), nullptr);
 	::InsertMenu(_hRootMenu, 0, MF_BYCOMMAND, IDM_FILEBROWSER_EXPLORERHERE, explorerHere.c_str());
 	::InsertMenu(_hRootMenu, 0, MF_BYCOMMAND, IDM_FILEBROWSER_CMDHERE, cmdHere.c_str());
 	::InsertMenu(_hRootMenu, 0, MF_BYCOMMAND, IDM_FILEBROWSER_POWERSHELLHERE, powershellHere.c_str());
@@ -430,18 +430,18 @@ void FileBrowser::initPopupMenus()
 	_hFolderMenu = ::CreatePopupMenu();
 	::InsertMenu(_hFolderMenu, 0, MF_BYCOMMAND, IDM_FILEBROWSER_COPYPATH, copyPath.c_str());
 	::InsertMenu(_hFolderMenu, 0, MF_BYCOMMAND, IDM_FILEBROWSER_FINDINFILES, findInFile.c_str());
-	::InsertMenu(_hFolderMenu, 0, MF_BYCOMMAND, static_cast<UINT>(-1), 0);
+	::InsertMenu(_hFolderMenu, 0, MF_BYCOMMAND, static_cast<UINT>(-1), nullptr);
 	::InsertMenu(_hFolderMenu, 0, MF_BYCOMMAND, IDM_FILEBROWSER_EXPLORERHERE, explorerHere.c_str());
 	::InsertMenu(_hFolderMenu, 0, MF_BYCOMMAND, IDM_FILEBROWSER_CMDHERE, cmdHere.c_str());
 	::InsertMenu(_hFolderMenu, 0, MF_BYCOMMAND, IDM_FILEBROWSER_POWERSHELLHERE, powershellHere.c_str());
 
 	_hFileMenu = ::CreatePopupMenu();
 	::InsertMenu(_hFileMenu, 0, MF_BYCOMMAND, IDM_FILEBROWSER_OPENINNPP, openInNpp.c_str());
-	::InsertMenu(_hFileMenu, 0, MF_BYCOMMAND, static_cast<UINT>(-1), 0);
+	::InsertMenu(_hFileMenu, 0, MF_BYCOMMAND, static_cast<UINT>(-1), nullptr);
 	::InsertMenu(_hFileMenu, 0, MF_BYCOMMAND, IDM_FILEBROWSER_COPYPATH, copyPath.c_str());
 	::InsertMenu(_hFileMenu, 0, MF_BYCOMMAND, IDM_FILEBROWSER_COPYFILENAME, copyFileName.c_str());
 	::InsertMenu(_hFileMenu, 0, MF_BYCOMMAND, IDM_FILEBROWSER_SHELLEXECUTE, shellExecute.c_str());
-	::InsertMenu(_hFileMenu, 0, MF_BYCOMMAND, static_cast<UINT>(-1), 0);
+	::InsertMenu(_hFileMenu, 0, MF_BYCOMMAND, static_cast<UINT>(-1), nullptr);
 	::InsertMenu(_hFileMenu, 0, MF_BYCOMMAND, IDM_FILEBROWSER_EXPLORERHERE, explorerHere.c_str());
 	::InsertMenu(_hFileMenu, 0, MF_BYCOMMAND, IDM_FILEBROWSER_CMDHERE, cmdHere.c_str());
 	::InsertMenu(_hFileMenu, 0, MF_BYCOMMAND, IDM_FILEBROWSER_POWERSHELLHERE, powershellHere.c_str());
@@ -567,7 +567,7 @@ void FileBrowser::notified(LPNMHDR notification)
 	else if (notification->code == TTN_GETDISPINFO)
 	{
 		LPTOOLTIPTEXT lpttt = (LPTOOLTIPTEXT)notification;
-		lpttt->hinst = NULL;
+		lpttt->hinst = nullptr;
 
 		if (notification->idFrom == FB_CMD_AIMFILE)
 		{
@@ -786,7 +786,7 @@ void FileBrowser::showContextMenu(int x, int y)
 	{
 		TrackPopupMenu(_hGlobalMenu, 
 			NppParameters::getInstance().getNativeLangSpeaker()->isRTL() ? TPM_RIGHTALIGN | TPM_LAYOUTRTL : TPM_LEFTALIGN,
-			x, y, 0, _hSelf, NULL);
+			x, y, 0, _hSelf, nullptr);
 	}
 	else
 	{
@@ -795,7 +795,7 @@ void FileBrowser::showContextMenu(int x, int y)
 
 		// get clicked item type
 		BrowserNodeType nodeType = getNodeType(tvHitInfo.hItem);
-		HMENU hMenu = NULL;
+		HMENU hMenu = nullptr;
 		if (nodeType == browserNodeType_root)
 			hMenu = _hRootMenu;
 		else if (nodeType == browserNodeType_folder)
@@ -805,7 +805,7 @@ void FileBrowser::showContextMenu(int x, int y)
 
 		TrackPopupMenu(hMenu, 
 			NppParameters::getInstance().getNativeLangSpeaker()->isRTL() ? TPM_RIGHTALIGN | TPM_LAYOUTRTL : TPM_LEFTALIGN,
-			x, y, 0, _hSelf, NULL);
+			x, y, 0, _hSelf, nullptr);
 	}
 }
 
@@ -1183,7 +1183,7 @@ HTREEITEM FileBrowser::getRootFromFullPath(const wstring & rootPath) const
 HTREEITEM FileBrowser::findChildNodeFromName(HTREEITEM parent, const wstring& label) const
 {
 	for (HTREEITEM hItemNode = _treeView.getChildFrom(parent);
-		hItemNode != NULL;
+		hItemNode != nullptr;
 		hItemNode = _treeView.getNextSibling(hItemNode))
 	{
 		wchar_t textBuffer[MAX_PATH] = { '\0' };
@@ -1343,7 +1343,7 @@ bool FileBrowser::addToTree(FilesToChange & group, HTREEITEM node)
 	else
 	{
 		for (HTREEITEM hItemNode = _treeView.getChildFrom(node);
-			hItemNode != NULL;
+			hItemNode != nullptr;
 			hItemNode = _treeView.getNextSibling(hItemNode))
 		{
 			wchar_t textBuffer[MAX_PATH] = { '\0' };
@@ -1404,7 +1404,7 @@ HTREEITEM FileBrowser::findInTree(const wstring& rootPath, HTREEITEM node, std::
 	else
 	{
 		for (HTREEITEM hItemNode = _treeView.getChildFrom(node);
-			hItemNode != NULL;
+			hItemNode != nullptr;
 			hItemNode = _treeView.getNextSibling(hItemNode))
 		{
 			wchar_t textBuffer[MAX_PATH] = { '\0' };
@@ -1458,7 +1458,7 @@ std::vector<HTREEITEM> FileBrowser::findInTree(FilesToChange & group, HTREEITEM 
 	else
 	{
 		for (HTREEITEM hItemNode = _treeView.getChildFrom(node);
-			hItemNode != NULL;
+			hItemNode != nullptr;
 			hItemNode = _treeView.getNextSibling(hItemNode))
 		{
 			wchar_t textBuffer[MAX_PATH] = {'\0'};
@@ -1485,7 +1485,7 @@ std::vector<HTREEITEM> FileBrowser::findChildNodesFromNames(HTREEITEM parent, st
 	std::vector<HTREEITEM> itemNodes;
 
 	for (HTREEITEM hItemNode = _treeView.getChildFrom(parent);
-		hItemNode != NULL && !labels.empty();
+		hItemNode != nullptr && !labels.empty();
 		hItemNode = _treeView.getNextSibling(hItemNode)
 		)
 	{
@@ -1511,7 +1511,7 @@ void FileBrowser::removeNamesAlreadyInNode(HTREEITEM parent, std::vector<wstring
 {
 	// We have to search for the labels in the child nodes of parent, and remove the ones that already exist
 	for (HTREEITEM hItemNode = _treeView.getChildFrom(parent);
-		hItemNode != NULL && !labels.empty();
+		hItemNode != nullptr && !labels.empty();
 		hItemNode = _treeView.getNextSibling(hItemNode)
 		)
 	{
@@ -1775,7 +1775,7 @@ void FolderUpdater::startWatcher()
 {
 	// no thread yet, create a event with non-signaled, to block all threads
 	_EventHandle = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
-	_watchThreadHandle = ::CreateThread(NULL, 0, watching, this, 0, NULL);
+	_watchThreadHandle = ::CreateThread(nullptr, 0, watching, this, 0, nullptr);
 }
 
 void FolderUpdater::stopWatcher()

@@ -34,7 +34,7 @@ Utf8_16_Read::~Utf8_16_Read()
 	if ((m_eEncoding == uni16BE) || (m_eEncoding == uni16LE) || (m_eEncoding == uni16BE_NoBOM) || (m_eEncoding == uni16LE_NoBOM))
     {
 		delete [] m_pNewBuf;
-		m_pNewBuf = NULL;
+		m_pNewBuf = nullptr;
 	}
 }
 
@@ -171,7 +171,7 @@ size_t Utf8_16_Read::convert(char* buf, size_t len)
             {
 				if (m_pNewBuf)
 					delete [] m_pNewBuf;
-                m_pNewBuf  = NULL;
+                m_pNewBuf  = nullptr;
 				m_nAllocatedBufSize = 0;
                 m_pNewBuf  = new ubyte[newSize];
 				if (m_pNewBuf)
@@ -302,7 +302,7 @@ UniMode Utf8_16_Read::determineEncodingFromBOM(const unsigned char *buf, size_t 
 Utf8_16_Write::Utf8_16_Write()
 {
 	m_eEncoding = uni8Bit;
-	m_pNewBuf = NULL;
+	m_pNewBuf = nullptr;
 	m_bFirstWrite = true;
 	m_nBufSize = 0;
 	m_dwLastFileError = NO_ERROR;
@@ -416,7 +416,7 @@ bool Utf8_16_Write::writeFile(const void* p, size_t _size)
 					{
 						m_dwLastFileError = m_pFile->getLastErrorCode();
 						delete[] buf;
-						return 0;
+						return false;
 					}
 					bufIndex = 0;
 				}
@@ -439,7 +439,7 @@ size_t Utf8_16_Write::convert(char* p, size_t _size)
 	if (m_pNewBuf)
 	{
 		delete [] m_pNewBuf;
-		m_pNewBuf = NULL;
+		m_pNewBuf = nullptr;
 		m_nBufSize = 0;
 	}
 
@@ -471,7 +471,7 @@ size_t Utf8_16_Write::convert(char* p, size_t _size)
 		case uni16BE:
 		case uni16LE:
 		{
-			utf16* pCur = NULL;
+			utf16* pCur = nullptr;
 
 			if (m_eEncoding == uni16BE || m_eEncoding == uni16LE)
 			{
@@ -524,7 +524,7 @@ void Utf8_16_Write::closeFile()
 	if (m_pNewBuf)
 	{
 		delete [] m_pNewBuf;
-		m_pNewBuf = NULL;
+		m_pNewBuf = nullptr;
 	}
 
 	if (m_pFile)
@@ -548,9 +548,9 @@ Utf8_Iter::Utf8_Iter()
 
 void Utf8_Iter::reset()
 {
-	m_pBuf = NULL;
-	m_pRead = NULL;
-	m_pEnd = NULL;
+	m_pBuf = nullptr;
+	m_pRead = nullptr;
+	m_pEnd = nullptr;
 	m_eState = eStart;
 	m_out1st = 0;
 	m_outLst = 0;
@@ -661,9 +661,9 @@ Utf16_Iter::Utf16_Iter()
 
 void Utf16_Iter::reset()
 {
-	m_pBuf = NULL;
-	m_pRead = NULL;
-	m_pEnd = NULL;
+	m_pBuf = nullptr;
+	m_pRead = nullptr;
+	m_pEnd = nullptr;
 	m_eState = eStart;
 	m_out1st = 0;
 	m_outLst = 0;

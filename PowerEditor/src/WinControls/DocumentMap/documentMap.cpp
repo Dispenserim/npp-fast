@@ -347,7 +347,7 @@ intptr_t CALLBACK DocumentMap::run_dlgProc(UINT message, WPARAM wParam, LPARAM l
 			
 			reloadMap();
 
-			_vzDlg.init(::GetModuleHandle(NULL), _hSelf);
+			_vzDlg.init(::GetModuleHandle(nullptr), _hSelf);
 			_vzDlg.doDialog();
 			NppParameters::setTransparent(_vzDlg.getHSelf(), 50); // 0 <= transparancy < 256
 			BringWindowToTop (_vzDlg.getHSelf());
@@ -543,7 +543,7 @@ intptr_t CALLBACK ViewZoneDlg::run_dlgProc(UINT message, WPARAM wParam, LPARAM l
 
 		case WM_SIZE:
         {
-			if (NULL != _viewZoneCanvas)
+			if (nullptr != _viewZoneCanvas)
 			{
 				int width = LOWORD(lParam);
 				int height = HIWORD(lParam);

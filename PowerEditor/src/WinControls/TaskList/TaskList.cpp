@@ -59,9 +59,9 @@ void TaskList::init(HINSTANCE hInst, HWND parent, HIMAGELIST hImaLst, int nbItem
                                 0,
                                 0,
                                 _hParent, 
-                                NULL, 
+                                nullptr, 
                                 hInst,
-                                NULL);
+                                nullptr);
 	if (!_hSelf)
 	{
 		throw std::runtime_error("TaskList::init : CreateWindowEx() function return null");

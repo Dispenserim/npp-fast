@@ -72,7 +72,7 @@ const int ScintillaEditView::_SC_MARGE_SYMBOL = 1;
 const int ScintillaEditView::_SC_MARGE_CHANGEHISTORY = 2;
 const int ScintillaEditView::_SC_MARGE_FOLDER = 3;
 
-std::string ScintillaEditView::_defaultCharList = "";
+std::string ScintillaEditView::_defaultCharList;
 
 /*
 SC_MARKNUM_*     | Arrow               Plus/minus           Circle tree                 Box tree
@@ -366,9 +366,9 @@ void ScintillaEditView::init(HINSTANCE hInst, HWND hPere)
 					WS_CHILD | WS_VSCROLL | WS_HSCROLL | WS_CLIPCHILDREN | WS_EX_RTLREADING,\
 					0, 0, 100, 100,\
 					_hParent,\
-					NULL,\
+					nullptr,\
 					_hInst,\
-					NULL);
+					nullptr);
 
 	if (!_hSelf)
 	{
@@ -2807,7 +2807,7 @@ void ScintillaEditView::getVisibleStartAndEndPosition(intptr_t* startPos, intptr
 char * ScintillaEditView::getWordFromRange(char * txt, size_t size, size_t pos1, size_t pos2)
 {
     if (!size)
-		return NULL;
+		return nullptr;
     if (pos1 > pos2)
     {
         size_t tmp = pos1;
@@ -2816,7 +2816,7 @@ char * ScintillaEditView::getWordFromRange(char * txt, size_t size, size_t pos1,
     }
 
     if (size < pos2 - pos1)
-        return NULL;
+        return nullptr;
 
     getText(txt, pos1, pos2);
 	return txt;
@@ -2825,7 +2825,7 @@ char * ScintillaEditView::getWordFromRange(char * txt, size_t size, size_t pos1,
 char * ScintillaEditView::getWordOnCaretPos(char * txt, size_t size)
 {
     if (!size)
-		return NULL;
+		return nullptr;
 
     pair<size_t, size_t> range = getWordRange();
     return getWordFromRange(txt, size, range.first, range.second);
@@ -2835,7 +2835,7 @@ char * ScintillaEditView::getWordOnCaretPos(char * txt, size_t size)
 char * ScintillaEditView::getSelectedTextToMultiChar(char * txt, size_t size, bool expand)
 {
 	if (!size)
-		return NULL;
+		return nullptr;
 
 	Sci_CharacterRangeFull range = getSelection();
 	if (range.cpMax == range.cpMin && expand)
@@ -3682,14 +3682,14 @@ intptr_t ScintillaEditView::caseConvertRange(intptr_t start, intptr_t end, TextC
 	char *mbStr = new char[mbLenMax];
 	getText(mbStr, start, end);
 
-	if (int wideLen = ::MultiByteToWideChar(codepage, 0, mbStr, mbLen, NULL, 0))
+	if (int wideLen = ::MultiByteToWideChar(codepage, 0, mbStr, mbLen, nullptr, 0))
 	{
 		wchar_t *wideStr = new wchar_t[wideLen];  // not NUL terminated
 		::MultiByteToWideChar(codepage, 0, mbStr, mbLen, wideStr, wideLen);
 
 		changeCase(wideStr, wideLen, caseToConvert);
 
-		if (int mbLenOut = ::WideCharToMultiByte(codepage, 0, wideStr, wideLen, mbStr, mbLenMax, NULL, NULL))
+		if (int mbLenOut = ::WideCharToMultiByte(codepage, 0, wideStr, wideLen, mbStr, mbLenMax, nullptr, nullptr))
 		{
 			// mbStr isn't NUL terminated either at this point
 			mbLen = mbLenOut;
@@ -4622,7 +4622,7 @@ void ScintillaEditView::setBorderEdge(bool doWithBorderEdge)
 
 	::SetWindowLongPtr(_hSelf, GWL_STYLE, style);
 	::SetWindowLongPtr(_hSelf, GWL_EXSTYLE, exStyle);
-	::SetWindowPos(_hSelf, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+	::SetWindowPos(_hSelf, nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 }
 
 void ScintillaEditView::getFoldColor(COLORREF& fgColor, COLORREF& bgColor, COLORREF& activeFgColor)
@@ -4799,7 +4799,7 @@ void ScintillaEditView::markedTextToClipboard(int indiStyle, bool doAll /*= fals
 			joined += L"\r\n";
 		}
 
-		str2Clipboard(joined, NULL);
+		str2Clipboard(joined, nullptr);
 	}
 }
 
@@ -4876,7 +4876,7 @@ bool ScintillaEditView::pasteToMultiSelection() const
 
 	// "MSDEVColumnSelect" is column format from Scintilla 
 	CLIPFORMAT cfColumnSelect = static_cast<CLIPFORMAT>(::RegisterClipboardFormat(L"MSDEVColumnSelect"));
-	if (!::IsClipboardFormatAvailable(cfColumnSelect) || !::OpenClipboard(NULL))
+	if (!::IsClipboardFormatAvailable(cfColumnSelect) || !::OpenClipboard(nullptr))
 		return false;
 
 	HANDLE clipboardData = ::GetClipboardData(CF_UNICODETEXT);
@@ -4902,9 +4902,9 @@ bool ScintillaEditView::pasteToMultiSelection() const
 	wstring eol;
 	if (clipboardStr.find(L"\r\n") != std::wstring::npos)
 		eol = L"\r\n";
-	else if (clipboardStr.find(L"\n") != std::wstring::npos)
+	else if (clipboardStr.find(L'\n') != std::wstring::npos)
 		eol = L"\n";
-	else if (clipboardStr.find(L"\r") != std::wstring::npos)
+	else if (clipboardStr.find(L'\r') != std::wstring::npos)
 		eol = L"\r";
 	else
 		eol = getEOLString();

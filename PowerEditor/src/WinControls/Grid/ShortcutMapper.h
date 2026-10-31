@@ -53,9 +53,9 @@ public:
 							const KeyCombo & itemKeyCombo, const size_t & itemIndex) const;
 
 	std::wstring getTextFromCombo(HWND hCombo);
-	bool isFilterValid(Shortcut sc);
-	bool isFilterValid(PluginCmdShortcut sc);
-	bool isFilterValid(ScintillaKeyMap sc);
+	bool isFilterValid(const Shortcut& sc);
+	bool isFilterValid(const PluginCmdShortcut& sc);
+	bool isFilterValid(const ScintillaKeyMap& sc);
 
 protected:
 	void resizeDialogElements();

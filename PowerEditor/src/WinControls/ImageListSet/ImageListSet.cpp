@@ -378,7 +378,7 @@ void ToolBarIcons::reInit(int size)
 			ICONINFO iconinfoSrc;
 			GetIconInfo(i._hIcon, &iconinfoSrc);
 
-			HDC dcScreen = ::GetDC(NULL);
+			HDC dcScreen = ::GetDC(nullptr);
 
 			BITMAP bmp{};
 			int nbByteBmp = ::GetObject(iconinfoSrc.hbmColor, sizeof(BITMAP), &bmp);

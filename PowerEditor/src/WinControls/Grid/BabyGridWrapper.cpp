@@ -36,7 +36,7 @@ void BabyGridWrapper::init(HINSTANCE hInst, HWND parent, int16_t id)
 					_hParent,
 					reinterpret_cast<HMENU>(id),
 					_hInst,
-					NULL);
+					nullptr);
 
 	_isRegistered = true;
 }

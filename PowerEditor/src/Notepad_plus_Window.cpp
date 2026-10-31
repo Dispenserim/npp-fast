@@ -18,7 +18,7 @@
 #include <shlwapi.h>
 #include "Notepad_plus_Window.h"
 
-HWND Notepad_plus_Window::gNppHWND = NULL;
+HWND Notepad_plus_Window::gNppHWND = nullptr;
 
 namespace // anonymous
 {
@@ -35,11 +35,11 @@ namespace // anonymous
 		~PaintLocker()
 		{
 			// re-allow drawing for the window
-			LockWindowUpdate(NULL);
+			LockWindowUpdate(nullptr);
 
 			// force re-draw
 			InvalidateRect(handle, nullptr, TRUE);
-			RedrawWindow(handle, nullptr, NULL, RDW_ERASE | RDW_ALLCHILDREN | RDW_FRAME | RDW_INVALIDATE);
+			RedrawWindow(handle, nullptr, nullptr, RDW_ERASE | RDW_ALLCHILDREN | RDW_FRAME | RDW_INVALIDATE);
 		}
 
 		HWND handle;
@@ -52,7 +52,7 @@ using namespace std;
 void Notepad_plus_Window::setStartupBgColor(COLORREF BgColor)
 {
 	RECT windowClientArea;
-	HDC hdc = GetDCEx(_hSelf, NULL, DCX_CACHE | DCX_LOCKWINDOWUPDATE); //lock window update flag due to PaintLocker
+	HDC hdc = GetDCEx(_hSelf, nullptr, DCX_CACHE | DCX_LOCKWINDOWUPDATE); //lock window update flag due to PaintLocker
 	GetClientRect(_hSelf, &windowClientArea);
 	HBRUSH hBrush = ::CreateSolidBrush(BgColor);
 	::FillRect(hdc, &windowClientArea, hBrush);
@@ -72,7 +72,7 @@ void Notepad_plus_Window::init(HINSTANCE hInst, HWND parent, const wchar_t *cmdL
 	nppClass.cbWndExtra = 0;
 	nppClass.hInstance = _hInst;
 	nppClass.hIcon = ::LoadIcon(hInst, MAKEINTRESOURCE(IDI_M30ICON));
-	nppClass.hCursor = ::LoadCursor(NULL, IDC_ARROW);
+	nppClass.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
 	nppClass.hbrBackground = ::CreateSolidBrush(::GetSysColor(COLOR_MENU));
 	nppClass.lpszMenuName = MAKEINTRESOURCE(IDR_M30_MENU);
 	nppClass.lpszClassName = _className;
@@ -108,7 +108,7 @@ void Notepad_plus_Window::init(HINSTANCE hInst, HWND parent, const wchar_t *cmdL
         // for retrieve it in Notepad_plus_Proc from
         // the CREATESTRUCT.lpCreateParams afterward.
 
-	if (NULL == _hSelf)
+	if (nullptr == _hSelf)
 		throw std::runtime_error("Notepad_plus_Window::init : CreateWindowEx() function return null");
 
 	if (!cmdLineParams->_pluginMessage.empty())
@@ -160,7 +160,7 @@ void Notepad_plus_Window::init(HINSTANCE hInst, HWND parent, const wchar_t *cmdL
 		::SendMessage(_hSelf, NPPM_INTERNAL_MULTILINETABBAR, 0, 0);
 
 	if (!nppGUI._menuBarShow)
-		::SetMenu(_hSelf, NULL);
+		::SetMenu(_hSelf, nullptr);
 
 	if (cmdLineParams->_isNoTab || (nppGUI._tabStatus & TAB_HIDE))
 	{
@@ -265,7 +265,7 @@ void Notepad_plus_Window::init(HINSTANCE hInst, HWND parent, const wchar_t *cmdL
 
 				if (!doesDirectoryExist(userDataThemePath.c_str()))
 				{
-					::CreateDirectory(userDataThemePath.c_str(), NULL);
+					::CreateDirectory(userDataThemePath.c_str(), nullptr);
 				}
 
 				wchar_t* fn = PathFindFileName(fileName.c_str());

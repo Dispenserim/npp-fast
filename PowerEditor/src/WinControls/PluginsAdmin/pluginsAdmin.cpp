@@ -310,7 +310,7 @@ bool PluginsAdminDlg::exitToInstallRemovePlugins(Operation op, const vector<Plug
 	wstring updaterParams = opStr;
 
 	wchar_t nppFullPath[MAX_PATH]{};
-	::GetModuleFileName(NULL, nppFullPath, MAX_PATH);
+	::GetModuleFileName(nullptr, nppFullPath, MAX_PATH);
 	updaterParams += L"\"";
 	updaterParams += nppFullPath;
 	updaterParams += L"\" ";
@@ -341,7 +341,7 @@ bool PluginsAdminDlg::exitToInstallRemovePlugins(Operation op, const vector<Plug
 			wstring folderName = i->_folderName;
 			if (folderName.empty())
 			{
-				auto lastindex = i->_displayName.find_last_of(L".");
+				auto lastindex = i->_displayName.find_last_of(L'.');
 				if (lastindex != wstring::npos)
 					folderName = i->_displayName.substr(0, lastindex);
 				else
@@ -408,7 +408,7 @@ bool PluginsAdminDlg::exitToDeactivateActivatePlugins(Operation op, const vector
 	wstring updaterParams = L"-moveFolder ";
 
 	wchar_t nppFullPath[MAX_PATH]{};
-	::GetModuleFileName(NULL, nppFullPath, MAX_PATH);
+	::GetModuleFileName(nullptr, nppFullPath, MAX_PATH);
 	updaterParams += L"\"";
 	updaterParams += nppFullPath;
 	updaterParams += L"\" ";
@@ -426,7 +426,7 @@ bool PluginsAdminDlg::exitToDeactivateActivatePlugins(Operation op, const vector
 		wstring folderName = pui->_folderName;
 		if (folderName.empty())
 		{
-			auto lastindex = pui->_displayName.find_last_of(L".");
+			auto lastindex = pui->_displayName.find_last_of(L'.');
 			folderName = (lastindex != wstring::npos) ? pui->_displayName.substr(0, lastindex) : pui->_displayName;
 		}
 
@@ -447,7 +447,7 @@ bool PluginsAdminDlg::exitToDeactivateActivatePlugins(Operation op, const vector
 	{
 		// destination folder must exist before gup tries to move things into it
 		if (!doesDirectoryExist(destRoot.c_str()))
-			::CreateDirectory(destRoot.c_str(), NULL);
+			::CreateDirectory(destRoot.c_str(), nullptr);
 
 		nppParameters.setWingupFullPath(_updaterFullPath);
 		nppParameters.setWingupParams(updaterParams);
@@ -679,7 +679,7 @@ static bool loadFromJson(std::vector<PluginUpdateInfo*>& pl, std::wstring& verSt
 
 	WcharMbcsConvertor& wmc = WcharMbcsConvertor::getInstance();
 
-	json jVerStr = j["version"];
+	const json& jVerStr = j["version"];
 	if (jVerStr.empty() || jVerStr.type() != json::value_t::string)
 		return false;
 
@@ -831,8 +831,8 @@ bool PluginsAdminDlg::initFromJson()
 
 	if (isSecured)
 	{
-		HMODULE hLib = NULL;
-		hLib = ::LoadLibraryEx(_pluginListFullPath.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE);
+		HMODULE hLib = nullptr;
+		hLib = ::LoadLibraryEx(_pluginListFullPath.c_str(), nullptr, LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE);
 
 		if (!hLib)
 		{
@@ -895,7 +895,7 @@ bool PluginsAdminDlg::updateList()
 bool PluginsAdminDlg::initAvailablePluginsViewFromList()
 {
 	wchar_t nppFullPathName[MAX_PATH]{};
-	GetModuleFileName(NULL, nppFullPathName, MAX_PATH);
+	GetModuleFileName(nullptr, nppFullPathName, MAX_PATH);
 
 	Version nppVer;
 	nppVer.setVersionFrom(nppFullPathName);
@@ -924,7 +924,7 @@ bool PluginsAdminDlg::initAvailablePluginsViewFromList()
 bool PluginsAdminDlg::initIncompatiblePluginList()
 {
 	wchar_t nppFullPathName[MAX_PATH]{};
-	GetModuleFileName(NULL, nppFullPathName, MAX_PATH);
+	GetModuleFileName(nullptr, nppFullPathName, MAX_PATH);
 
 	Version nppVer;
 	nppVer.setVersionFrom(nppFullPathName);

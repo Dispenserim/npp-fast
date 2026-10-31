@@ -162,7 +162,7 @@ void AnsiCharPanel::insertChar(unsigned char char2insert) const
 		if (isUnicode)
 		{
 			MultiByteToWideChar(0, 0, charStr, -1, wCharStr, _countof(wCharStr));
-			WideCharToMultiByte(CP_UTF8, 0, wCharStr, -1, multiByteStr, sizeof(multiByteStr), NULL, NULL);
+			WideCharToMultiByte(CP_UTF8, 0, wCharStr, -1, multiByteStr, sizeof(multiByteStr), nullptr, nullptr);
 		}
 		else // ANSI
 		{
@@ -173,7 +173,7 @@ void AnsiCharPanel::insertChar(unsigned char char2insert) const
 	else
 	{
 		MultiByteToWideChar(codepage, 0, charStr, -1, wCharStr, _countof(wCharStr));
-		WideCharToMultiByte(CP_UTF8, 0, wCharStr, -1, multiByteStr, sizeof(multiByteStr), NULL, NULL);
+		WideCharToMultiByte(CP_UTF8, 0, wCharStr, -1, multiByteStr, sizeof(multiByteStr), nullptr, nullptr);
 	}
 	(*_ppEditView)->execute(SCI_REPLACESEL, 0, reinterpret_cast<LPARAM>(""));
 	size_t len = (char2insert < 128) ? 1 : strlen(multiByteStr);
@@ -190,7 +190,7 @@ void AnsiCharPanel::insertString(LPWSTR string2insert) const
 		bool isUnicode = ((*_ppEditView)->execute(SCI_GETCODEPAGE) == SC_CP_UTF8);
 		if (isUnicode)
 		{
-			WideCharToMultiByte(CP_UTF8, 0, string2insert, -1, multiByteStr, sizeof(multiByteStr), NULL, NULL);
+			WideCharToMultiByte(CP_UTF8, 0, string2insert, -1, multiByteStr, sizeof(multiByteStr), nullptr, nullptr);
 		}
 		else // ANSI
 		{
@@ -199,7 +199,7 @@ void AnsiCharPanel::insertString(LPWSTR string2insert) const
 	}
 	else
 	{
-		WideCharToMultiByte(CP_UTF8, 0, string2insert, -1, multiByteStr, sizeof(multiByteStr), NULL, NULL);
+		WideCharToMultiByte(CP_UTF8, 0, string2insert, -1, multiByteStr, sizeof(multiByteStr), nullptr, nullptr);
 	}
 
 	(*_ppEditView)->execute(SCI_REPLACESEL, 0, reinterpret_cast<LPARAM>(""));
