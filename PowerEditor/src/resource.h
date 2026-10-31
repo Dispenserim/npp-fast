@@ -42,12 +42,6 @@
 #define IDI_M30ICON                100
 #define IDI_CHAMELEON              101
 #define IDI_CHAMELEON_DM           102
-//#define IDI_JESUISCHARLIE        102
-//#define IDI_GILETJAUNE           102
-//#define IDI_SAMESEXMARRIAGE      102
-//#define IDI_TAIWANSSOVEREIGNTY     105
-//#define IDI_TAIWANSSOVEREIGNTY_DM  106
-//#define IDI_WITHUKRAINE            105
 #define IDR_RT_MANIFEST            103
 #define IDI_ICONABSENT             104
 
