@@ -2433,8 +2433,17 @@ SearchLoadResult FileManager::loadFileContentForSearch(const SearchFillRequest& 
 
 BufferID FileManager::getBufferFromName(const wchar_t* name)
 {
+	if (!name)
+		return BUFFER_INVALID;
+
+	// Strings equal under case-insensitive comparison have the same length, so a cheap length check
+	// skips nearly all the _wcsicmp calls (this runs for every file opened or closed, against every open buffer).
+	const size_t nameLen = wcslen(name);
 	for (auto buf : _buffers)
 	{
+		if (buf->_fullPathName.length() != nameLen)
+			continue;
+
 		if (_wcsicmp(name, buf->getFullPathName()) == 0)
 		{
 			if (!(buf->_referees.empty()) && buf->_referees[0]->isVisible())

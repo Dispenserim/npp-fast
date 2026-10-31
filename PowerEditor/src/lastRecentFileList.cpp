@@ -86,6 +86,7 @@ void LastRecentFileList::switchMode()
 void LastRecentFileList::updateMenu()
 {
 	NppParameters& nppParam = NppParameters::getInstance();
+	bool fixedItemsInserted = false;
 
 	if (!_hasSeparators && _size > 0) 
 	{	
@@ -114,6 +115,7 @@ void LastRecentFileList::updateMenu()
 		::InsertMenu(_hMenu, _posBase + 3, MF_BYPOSITION, IDM_CLEAN_RECENT_FILE_LIST, cleanFileList.c_str());
 		::InsertMenu(_hMenu, _posBase + 4, MF_BYPOSITION, static_cast<UINT_PTR>(-1), 0);
 		_hasSeparators = true;
+		fixedItemsInserted = true;
 
 		if (isSubMenuMode())
 		{
@@ -141,7 +143,11 @@ void LastRecentFileList::updateMenu()
 		}
 	}
 
-	_pAccelerator->updateFullMenu();
+	// The freshly inserted fixed entries ("Restore Recent Closed File", ...) need their shortcut text.
+	// Refreshing the whole menu (every command, macro, run command and plugin command, plus a menu bar redraw)
+	// on every single add/remove made closing many files very slow, so only do it when it's actually needed.
+	if (fixedItemsInserted)
+		_pAccelerator->updateFullMenu();
 
 	//Remove all menu items
 	for (int i = 0; i < _size; ++i) 

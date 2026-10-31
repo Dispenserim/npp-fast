@@ -19,6 +19,7 @@
 
 #include <windows.h>
 
+#include <unordered_map>
 #include <vector>
 
 #include "Buffer.h"
@@ -60,6 +61,17 @@ public:
 
 	void setBuffer(size_t index, BufferID id);
 
+	// Hide TabBar::deletItemAt / deletAllItem so the buffer membership index stays in sync.
+	void deletItemAt(size_t index);
+	void deletAllItem();
+
+	// Batch mode: while at least one batch is open, the WM_SIZE that every tab insertion/removal
+	// would send to the main window is coalesced into a single one sent when the last batch ends.
+	// Opening or closing N files then costs one full window layout instead of N.
+	static void beginBatchUpdate() { ++_batchUpdateDepth; }
+	static void endBatchUpdate();
+	static void requestParentResize(HWND hParent);
+
 	void reSizeTo(RECT & rc) override;
 
 	void resizeIconsDpi() {
@@ -100,5 +112,29 @@ private :
 	std::vector<IconList *> _pIconListVector;
 	int _iconListIndexChoice = -1;
 
+	// Number of tabs holding each buffer (normally 0 or 1; can transiently be 2 while setBuffer() is used to reorder tabs).
+	// Lets getIndexByBuffer() answer "not in this view" without walking every tab via TCM_GETITEM,
+	// which made opening/closing many files O(n^2) window messages.
+	std::unordered_map<BufferID, int> _bufferTabCount;
+	// Index of the last tab found by getIndexByBuffer(); checked first since lookups are usually repeated or at the end.
+	int _lastFoundIndex = -1;
+
+	void addBufferToIndex(BufferID id) { if (id) ++_bufferTabCount[id]; }
+	void removeBufferFromIndex(BufferID id);
+	bool isBufferInIndex(BufferID id) const { return _bufferTabCount.find(id) != _bufferTabCount.end(); }
+
+	static inline int _batchUpdateDepth = 0;
+	static inline HWND _hPendingResizeParent = nullptr;
+
 	using TabBarPlus::init;
+};
+
+// RAII helper: coalesces main-window relayouts caused by tab insertions/removals while it is alive.
+class DocTabBatchUpdate
+{
+public:
+	DocTabBatchUpdate() { DocTabView::beginBatchUpdate(); }
+	~DocTabBatchUpdate() { DocTabView::endBatchUpdate(); }
+	DocTabBatchUpdate(const DocTabBatchUpdate&) = delete;
+	DocTabBatchUpdate& operator=(const DocTabBatchUpdate&) = delete;
 };

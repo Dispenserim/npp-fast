@@ -840,25 +840,25 @@ void Accelerator::updateShortcuts()
 void Accelerator::updateFullMenu()
 {
 	NppParameters& nppParam = NppParameters::getInstance();
-	vector<CommandShortcut> commands = nppParam.getUserShortcuts();
+	const vector<CommandShortcut>& commands = nppParam.getUserShortcuts();
 	for (size_t i = 0; i < commands.size(); ++i)
 	{
 		updateMenuItemByCommand(commands[i]);
 	}
 
-	vector<MacroShortcut> mcommands = nppParam.getMacroList();
+	const vector<MacroShortcut>& mcommands = nppParam.getMacroList();
 	for (size_t i = 0; i < mcommands.size(); ++i)
 	{
 		updateMenuItemByCommand(mcommands[i]);
 	}
 
-	vector<UserCommand> ucommands = nppParam.getUserCommandList();
+	const vector<UserCommand>& ucommands = nppParam.getUserCommandList();
 	for (size_t i = 0; i < ucommands.size(); ++i)
 	{
 		updateMenuItemByCommand(ucommands[i]);
 	}
 
-	vector<PluginCmdShortcut> pcommands = nppParam.getPluginCommandList();
+	const vector<PluginCmdShortcut>& pcommands = nppParam.getPluginCommandList();
 	for (size_t i = 0; i < pcommands.size(); ++i)
 	{
 		updateMenuItemByCommand(pcommands[i]);
