@@ -293,6 +293,17 @@ void Notepad_plus_Window::init(HINSTANCE hInst, HWND parent, const wchar_t *cmdL
 				themePath = themeSwitcher.getThemeDirPath();
 				pathAppend(themePath, xmlFileName);
 			}
+
+			if (!doesFileExist(themePath.c_str()) && NppDarkMode::isEnabled())
+			{
+				std::wstring builtinPath = nppParams.extractBuiltinDarkTheme(xmlFileName);
+				if (!builtinPath.empty())
+				{
+					themePath = builtinPath;
+					if (!themeSwitcher.themeNameExists(themeSwitcher.getThemeFromXmlFileName(themePath.c_str()).c_str()))
+						themeSwitcher.addThemeFromXml(themePath);
+				}
+			}
 		}
 		else
 		{

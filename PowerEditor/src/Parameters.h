@@ -1734,6 +1734,11 @@ public:
 
 	bool isCloud() const { return _isCloud; }
 
+	// Writes the copy of DarkModeDefault.xml that is built into the exe to the user themes folder,
+	// for when dark mode is on but no themes folder came with the exe (e.g. a bare build or CI exe).
+	// Returns the path of the file on disk, or an empty string if xmlFileName is another theme or writing failed.
+	std::wstring extractBuiltinDarkTheme(const std::wstring& xmlFileName) const;
+
 	void saveConfig_xml() const;
 
 	const std::wstring& getUserPath() const { return _userPath; }

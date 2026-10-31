@@ -899,6 +899,48 @@ bool LocalizationSwitcher::switchToLang(const wchar_t *lang2switch) const
 }
 
 
+std::wstring NppParameters::extractBuiltinDarkTheme(const std::wstring& xmlFileName) const
+{
+	if (_wcsicmp(xmlFileName.c_str(), L"DarkModeDefault.xml") != 0 || _userPath.empty())
+		return L"";
+
+	std::wstring themePath = _userPath;
+	pathAppend(themePath, L"themes");
+	if (!doesDirectoryExist(themePath.c_str()))
+		::CreateDirectory(themePath.c_str(), nullptr);
+	pathAppend(themePath, L"DarkModeDefault.xml");
+
+	if (doesFileExist(themePath.c_str()))
+		return themePath;
+
+	HMODULE hModule = ::GetModuleHandle(nullptr);
+	HRSRC hRes = ::FindResource(hModule, MAKEINTRESOURCE(IDR_DARKMODEDEFAULT_XML), RT_RCDATA);
+	if (!hRes)
+		return L"";
+
+	HGLOBAL hData = ::LoadResource(hModule, hRes);
+	const DWORD size = ::SizeofResource(hModule, hRes);
+	const void* data = hData ? ::LockResource(hData) : nullptr;
+	if (!data || size == 0)
+		return L"";
+
+	HANDLE hFile = ::CreateFile(themePath.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
+	if (hFile == INVALID_HANDLE_VALUE)
+		return L"";
+
+	DWORD written = 0;
+	const BOOL ok = ::WriteFile(hFile, data, size, &written, nullptr);
+	::CloseHandle(hFile);
+
+	if (!ok || written != size)
+	{
+		::DeleteFile(themePath.c_str());
+		return L"";
+	}
+
+	return themePath;
+}
+
 std::wstring ThemeSwitcher::getThemeFromXmlFileName(const wchar_t* xmlFullPath)
 {
 	if (!xmlFullPath || !xmlFullPath[0])
@@ -7128,6 +7170,13 @@ void NppParameters::feedGUIParameters(const NppXml::Element& element)
 						themePath = _nppPath;
 						pathAppend(themePath, L"stylers.xml");
 					}
+				}
+
+				if (!doesFileExist(themePath.c_str()) && _nppGUI._darkmode._isEnabled)
+				{
+					std::wstring builtinPath = extractBuiltinDarkTheme(xmlFileName);
+					if (!builtinPath.empty())
+						themePath = builtinPath;
 				}
 
 				if (doesFileExist(themePath.c_str()))
