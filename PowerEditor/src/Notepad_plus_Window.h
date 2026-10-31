@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #pragma once
 #include "Notepad_plus.h"
+#include "resource.h"
 
 constexpr int splitterSize = 8;
 
@@ -107,7 +108,7 @@ private:
 	static LRESULT CALLBACK Notepad_plus_Proc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
 	LRESULT runProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
 
-	static constexpr wchar_t _className[32] = L"Notepad++";
+	static constexpr wchar_t _className[32] = NPP_APP_NAME;
 	bool _isPrelaunch = false;
 	bool _disablePluginsManager = false;
 

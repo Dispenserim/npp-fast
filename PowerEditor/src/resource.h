@@ -19,7 +19,12 @@
 
 //************ Notepad++ version **************************
 
-#define NOTEPAD_PLUS_VERSION L"Notepad++ v8.9.8.1"
+// Display name of this fork. It is also the main window class name, which Notepad++
+// uses as its single-instance key, so this build never hands files to (or receives
+// files from) a stock Notepad++ that is running at the same time.
+#define NPP_APP_NAME L"Notepad++ FAST"
+
+#define NOTEPAD_PLUS_VERSION L"Notepad++ FAST v8.9.8.1"
 
 // should be X.Y : ie. if VERSION_DIGITALVALUE == 4, 7, 1, 0 , then X = 4, Y = 71
 // ex : #define VERSION_VALUE L"5.63\0"
