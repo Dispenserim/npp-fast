@@ -130,8 +130,12 @@ intptr_t CALLBACK TaskListDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM l
 		{
 			// Dismiss it if window became active again while not pressing ctrl key.
 			// But allow mouse clicking to change document.
+			// The switcher is also opened by holding the right mouse button and turning the wheel (no ctrl key),
+			// so it must not be dismissed while the right button is held, or right button + wheel does nothing.
 			if (LOWORD(wParam) == WA_ACTIVE
-				&& ::GetKeyState(VK_CONTROL) >= 0)
+				&& ::GetKeyState(VK_CONTROL) >= 0
+				&& ::GetKeyState(VK_RBUTTON) >= 0
+				&& ::GetAsyncKeyState(VK_RBUTTON) >= 0)
 			{
 				::EndDialog(_hSelf, -1);
 				return TRUE;
