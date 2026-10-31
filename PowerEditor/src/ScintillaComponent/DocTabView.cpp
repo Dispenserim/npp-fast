@@ -87,17 +87,68 @@ void DocTabView::addBuffer(BufferID buffer)
 	tie.iImage = index;
 	tie.pszText = const_cast<wchar_t*>(buf->getCompactFileName());
 	tie.lParam = reinterpret_cast<LPARAM>(buffer);
-	::SendMessage(_hSelf, TCM_INSERTITEM, _nbItem++, reinterpret_cast<LPARAM>(&tie));
+	int insertedIndex = static_cast<int>(::SendMessage(_hSelf, TCM_INSERTITEM, _nbItem++, reinterpret_cast<LPARAM>(&tie)));
+	addBufferToIndex(buffer);
+	if (insertedIndex >= 0)
+		_lastFoundIndex = insertedIndex;
 	bufferUpdated(buf, BufferChangeMask);
 
-	::SendMessage(_hParent, WM_SIZE, 0, 0);
+	requestParentResize(_hParent);
 }
 
 void DocTabView::closeBuffer(BufferID buffer)
 {
 	int indexToClose = getIndexByBuffer(buffer);
+	if (indexToClose == -1)
+		return;
 	deletItemAt(static_cast<size_t>(indexToClose));
-	::SendMessage(_hParent, WM_SIZE, 0, 0);
+	requestParentResize(_hParent);
+}
+
+void DocTabView::deletItemAt(size_t index)
+{
+	if (index >= _nbItem)
+		return;
+	removeBufferFromIndex(getBufferByIndex(index));
+	TabBar::deletItemAt(index);
+	_lastFoundIndex = -1;
+}
+
+void DocTabView::deletAllItem()
+{
+	TabBar::deletAllItem();
+	_bufferTabCount.clear();
+	_lastFoundIndex = -1;
+}
+
+void DocTabView::removeBufferFromIndex(BufferID id)
+{
+	auto it = _bufferTabCount.find(id);
+	if (it == _bufferTabCount.end())
+		return;
+	if (--(it->second) <= 0)
+		_bufferTabCount.erase(it);
+}
+
+void DocTabView::endBatchUpdate()
+{
+	if (_batchUpdateDepth > 0)
+		--_batchUpdateDepth;
+
+	if (_batchUpdateDepth == 0 && _hPendingResizeParent)
+	{
+		HWND hParent = _hPendingResizeParent;
+		_hPendingResizeParent = nullptr;
+		::SendMessage(hParent, WM_SIZE, 0, 0);
+	}
+}
+
+void DocTabView::requestParentResize(HWND hParent)
+{
+	if (_batchUpdateDepth > 0)
+		_hPendingResizeParent = hParent;
+	else
+		::SendMessage(hParent, WM_SIZE, 0, 0);
 }
 
 void DocTabView::setIndividualTabColour(BufferID bufferId, int colorId)
@@ -153,14 +204,41 @@ BufferID DocTabView::findBufferByName(const wchar_t * fullfilename) //-1 if not 
 
 int DocTabView::getIndexByBuffer(BufferID id)
 {
+	// Fast path: the buffer is not in this view at all (the common case while opening files,
+	// and for every buffer of the other view).
+	if (!id || !isBufferInIndex(id))
+		return -1;
+
 	TCITEM tie{};
 	tie.lParam = -1;
 	tie.mask = TCIF_PARAM;
-	for (size_t i = 0; i < _nbItem; ++i)
-	{
+
+	auto isAt = [&](int i) -> bool {
+		if (i < 0 || static_cast<size_t>(i) >= _nbItem)
+			return false;
+		tie.lParam = -1;
 		::SendMessage(_hSelf, TCM_GETITEM, i, reinterpret_cast<LPARAM>(&tie));
-		if (reinterpret_cast<BufferID>(tie.lParam) == id)
-			return static_cast<int>(i);
+		return reinterpret_cast<BufferID>(tie.lParam) == id;
+	};
+
+	// Lookups are usually repeated for the same tab, or target the last tab (just added / closing right to left).
+	if (isAt(_lastFoundIndex))
+		return _lastFoundIndex;
+
+	const int lastIndex = static_cast<int>(_nbItem) - 1;
+	if (lastIndex != _lastFoundIndex && isAt(lastIndex))
+	{
+		_lastFoundIndex = lastIndex;
+		return lastIndex;
+	}
+
+	for (int i = 0; i < lastIndex; ++i)
+	{
+		if (i != _lastFoundIndex && isAt(i))
+		{
+			_lastFoundIndex = i;
+			return i;
+		}
 	}
 	return -1;
 }
@@ -172,6 +250,10 @@ BufferID DocTabView::getBufferByIndex(size_t index)
 	tie.lParam = -1;
 	tie.mask = TCIF_PARAM;
 	::SendMessage(_hSelf, TCM_GETITEM, index, reinterpret_cast<LPARAM>(&tie));
+
+	// Callers very often look the index of this buffer back up right away (e.g. doClose(getBufferByIndex(i), ...)).
+	if (index < _nbItem)
+		_lastFoundIndex = static_cast<int>(index);
 
 	return reinterpret_cast<BufferID>(tie.lParam);
 }
@@ -240,7 +322,7 @@ void DocTabView::bufferUpdated(const Buffer* buffer, int mask)
 	// send WM_SIZE only when change tab
 	// It is needed while a tab is closed (so tab changed) in multi-line tab mode
 	if (mask & BufferChangeRecentTag)
-		::SendMessage(_hParent, WM_SIZE, 0, 0);
+		requestParentResize(_hParent);
 }
 
 
@@ -249,14 +331,20 @@ void DocTabView::setBuffer(size_t index, BufferID id)
 	if (index >= _nbItem)
 		return;
 
+	BufferID previousId = getBufferByIndex(index);
+
 	TCITEM tie{};
 	tie.lParam = reinterpret_cast<LPARAM>(id);
 	tie.mask = TCIF_PARAM;
 	::SendMessage(_hSelf, TCM_SETITEM, index, reinterpret_cast<LPARAM>(&tie));
 
+	removeBufferFromIndex(previousId);
+	addBufferToIndex(id);
+	_lastFoundIndex = static_cast<int>(index);
+
 	bufferUpdated(MainFileManager.getBufferByID(id), BufferChangeMask);	//update tab, everything has changed
 
-	::SendMessage(_hParent, WM_SIZE, 0, 0);
+	requestParentResize(_hParent);
 }
 
 

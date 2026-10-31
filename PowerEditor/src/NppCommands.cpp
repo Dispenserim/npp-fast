@@ -4071,11 +4071,14 @@ void Notepad_plus::command(int id)
 		{
 			BufferID lastOne = BUFFER_INVALID;
 			int size = _lastRecentFileList.getSize();
-			for (int i = size - 1; i >= 0; i--)
 			{
-				BufferID test = doOpen(_lastRecentFileList.getIndex(i));
-				if (test != BUFFER_INVALID)
-					lastOne = test;
+				DocTabBatchUpdate batchUpdate; // one window relayout for all the opened files
+				for (int i = size - 1; i >= 0; i--)
+				{
+					BufferID test = doOpen(_lastRecentFileList.getIndex(i));
+					if (test != BUFFER_INVALID)
+						lastOne = test;
+				}
 			}
 			if (lastOne != BUFFER_INVALID)
 			{

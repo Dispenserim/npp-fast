@@ -30,6 +30,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <optional>
 #include <ctime>
 #include <exception>
 #include <memory>
@@ -4752,13 +4753,16 @@ void Notepad_plus::dropFiles(HDROP hdrop)
 		else if (isOldMode || folderPaths.size() == 0) // old mode or new mode + only files
 		{
 			BufferID lastOpened = BUFFER_INVALID;
-			for (int i = 0; i < filesDropped; ++i)
 			{
-				wchar_t pathDropped[MAX_PATH]{};
-				::DragQueryFileW(hdrop, i, pathDropped, MAX_PATH);
-				BufferID test = doOpen(pathDropped);
-				if (test != BUFFER_INVALID)
-					lastOpened = test;
+				DocTabBatchUpdate batchUpdate; // one window relayout for all the dropped files
+				for (int i = 0; i < filesDropped; ++i)
+				{
+					wchar_t pathDropped[MAX_PATH]{};
+					::DragQueryFileW(hdrop, i, pathDropped, MAX_PATH);
+					BufferID test = doOpen(pathDropped);
+					if (test != BUFFER_INVALID)
+						lastOpened = test;
+				}
 			}
 
 			if (lastOpened != BUFFER_INVALID)
@@ -7138,6 +7142,11 @@ std::vector<wstring> Notepad_plus::loadCommandlineParams(const wchar_t * command
 	}
 
 	BufferID lastOpened = BUFFER_INVALID;
+	// One window relayout for all the files given on the command line.
+	// Not used when a line/position is requested: centring the caret needs the up-to-date editor size.
+	std::optional<DocTabBatchUpdate> batchUpdate;
+	if (lineNumber < 0 && positionNumber < 0)
+		batchUpdate.emplace();
 	for (int i = 0, len = fnss.size(); i < len ; ++i)
 	{
 		const wchar_t *pFn = fnss.getFileName(i);
@@ -7197,6 +7206,8 @@ std::vector<wstring> Notepad_plus::loadCommandlineParams(const wchar_t * command
 			createMonitoringThread(pBuf);
 		}
 	}
+	batchUpdate.reset();
+
 	if (lastOpened != BUFFER_INVALID)
     {
 		switchToFile(lastOpened);

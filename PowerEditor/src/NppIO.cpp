@@ -29,6 +29,7 @@
 #include <cwchar>
 #include <cwctype>
 #include <string>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -305,8 +306,8 @@ BufferID Notepad_plus::doOpen(const wstring& fileName, bool isRecursive, bool is
 	// Search case 1 & 2 firstly
 	BufferID foundBufID = MainFileManager.getBufferFromName(targetFileName.c_str());
 
-	// if case 1 & 2 not found, search case 3
-	if (foundBufID == BUFFER_INVALID)
+	// if case 1 & 2 not found, search case 3 (no need to search again if the full path is the same string)
+	if (foundBufID == BUFFER_INVALID && targetFileName != longFileName)
 	{
 		wstring fileName2Find;
 		fileName2Find = longFileName;
@@ -555,6 +556,7 @@ BufferID Notepad_plus::doOpen(const wstring& fileName, bool isRecursive, bool is
 
             if (ok2Open)
             {
+                DocTabBatchUpdate batchUpdate; // one window relayout for all the opened files
                 for (size_t i = 0 ; i < nbFiles2Open ; ++i)
                     doOpen(fileNames[i]);
             }
@@ -948,11 +950,10 @@ void Notepad_plus::doClose(BufferID id, int whichOne, bool doDeleteBackup)
 		}
 
 		// Add to recent file only if file is removed and does not exist in any of the views
-		BufferID buffID = MainFileManager.getBufferFromName(fileFullPath.c_str());
-		if (buffID == BUFFER_INVALID && fileFullPath.length() > 0)
+		if (!fileFullPath.empty() && MainFileManager.getBufferFromName(fileFullPath.c_str()) == BUFFER_INVALID)
 			_lastRecentFileList.add(fileFullPath.c_str());
 	}
-	::SendMessage(_pPublicInterface->getHSelf(), WM_SIZE, 0, 0);
+	DocTabView::requestParentResize(_pPublicInterface->getHSelf());
 
 	if (NppParameters::getInstance().getNppGUI()._tabStatus & TAB_QUITONEMPTY)
 	{
@@ -1380,6 +1381,7 @@ bool Notepad_plus::fileCloseAll(bool doDeleteBackup, bool isSnapshotMode)
 	}
 
 	//Then start closing, inactive view first so the active is left open
+	DocTabBatchUpdate batchUpdate; // one window relayout for all the closed files
     if (bothActive())
     {
 		//first close all docs in non-current view, which gets closed automatically
@@ -1476,6 +1478,7 @@ bool Notepad_plus::fileCloseAllGiven(const std::vector<BufferViewInfo>& fileInfo
 
 	// Now we close.
 	bool isSnapshotMode = NppParameters::getInstance().getNppGUI().isSnapshotMode();
+	DocTabBatchUpdate batchUpdate; // one window relayout for all the closed files
 	for (const auto& i : buffersToClose)
 	{
 		doClose(i._bufID, i._iView, isSnapshotMode);
@@ -1727,6 +1730,7 @@ bool Notepad_plus::fileCloseAllButCurrent()
 	switchEditViewTo(activeViewID);
 
 	//Then start closing, inactive view first so the active is left open
+	DocTabBatchUpdate batchUpdate; // one window relayout for all the closed files
     if (bothActive())
     {
 		//first close all docs in non-current view, which gets closed automatically
@@ -2399,11 +2403,14 @@ void Notepad_plus::fileOpen()
 	BufferID lastOpened = BUFFER_INVALID;
 	const auto& fns = fDlg.doOpenMultiFilesDlg();
 	size_t sz = fns.size();
-	for (size_t i = 0 ; i < sz ; ++i)
 	{
-		BufferID test = doOpen(fns.at(i).c_str());
-		if (test != BUFFER_INVALID)
-			lastOpened = test;
+		DocTabBatchUpdate batchUpdate; // one window relayout for all the opened files
+		for (size_t i = 0 ; i < sz ; ++i)
+		{
+			BufferID test = doOpen(fns.at(i).c_str());
+			if (test != BUFFER_INVALID)
+				lastOpened = test;
+		}
 	}
 
 	if (lastOpened != BUFFER_INVALID)
@@ -2517,6 +2524,22 @@ bool Notepad_plus::loadSession(Session & session, bool isSnapshotMode, const wch
 		return true;
 	}
 
+	// getLangFromMenuName() walks the whole Language menu with GetMenuString() for every call;
+	// session files mostly share a handful of languages, so remember the answers for this load.
+	std::unordered_map<std::wstring, int> langMenuIdCache;
+	auto getLangFromMenuNameCached = [this, &langMenuIdCache](const wchar_t* langName) -> int {
+		auto it = langMenuIdCache.find(langName);
+		if (it != langMenuIdCache.end())
+			return it->second;
+		int id = getLangFromMenuName(langName);
+		langMenuIdCache.emplace(langName, id);
+		return id;
+	};
+
+	// One window relayout for all the session files instead of one per file.
+	// Ended before the positions are restored and the active buffers are set, so these see the final layout.
+	DocTabView::beginBatchUpdate();
+
 	for (size_t i = 0; i < session.nbMainFiles() ; )
 	{
 		const wchar_t *pFn = session._mainViewFiles[i]._fileName.c_str();
@@ -2570,7 +2593,7 @@ bool Notepad_plus::loadSession(Session & session, bool isSnapshotMode, const wch
 			{
 				pLn = session._mainViewFiles[i]._langName.c_str();
 
-				int id = getLangFromMenuName(pLn);
+				int id = getLangFromMenuNameCached(pLn);
 				
 				if (!id) // it could be due to the hidden language from the sub-menu "Languages"
 				{
@@ -2624,18 +2647,22 @@ bool Notepad_plus::loadSession(Session & session, bool isSnapshotMode, const wch
 
 			//Force in the document so we can add the markers
 			//Don't use default methods because of performance
-			Document prevDoc = _mainEditView.execute(SCI_GETDOCPOINTER);
-			unsigned long MODEVENTMASK_ON = nppParam.getScintillaModEventMask();
-			_mainEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
-			_mainEditView.execute(SCI_SETDOCPOINTER, 0, buf->getDocument());
-			_mainEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
-			for (size_t j = 0, len = session._mainViewFiles[i]._marks.size(); j < len ; ++j)
+			//Swapping the document of a visible view is not free, so only do it when there are bookmarks to restore
+			if (!session._mainViewFiles[i]._marks.empty())
 			{
-				_mainEditView.execute(SCI_MARKERADD, session._mainViewFiles[i]._marks[j], MARK_BOOKMARK);
+				Document prevDoc = _mainEditView.execute(SCI_GETDOCPOINTER);
+				unsigned long MODEVENTMASK_ON = nppParam.getScintillaModEventMask();
+				_mainEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
+				_mainEditView.execute(SCI_SETDOCPOINTER, 0, buf->getDocument());
+				_mainEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
+				for (size_t j = 0, len = session._mainViewFiles[i]._marks.size(); j < len ; ++j)
+				{
+					_mainEditView.execute(SCI_MARKERADD, session._mainViewFiles[i]._marks[j], MARK_BOOKMARK);
+				}
+				_mainEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
+				_mainEditView.execute(SCI_SETDOCPOINTER, 0, prevDoc);
+				_mainEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
 			}
-			_mainEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
-			_mainEditView.execute(SCI_SETDOCPOINTER, 0, prevDoc);
-			_mainEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
 			++i;
 		}
 		else
@@ -2718,7 +2745,7 @@ bool Notepad_plus::loadSession(Session & session, bool isSnapshotMode, const wch
 			if (canHideView(MAIN_VIEW))
 				hideView(MAIN_VIEW);
 			const wchar_t *pLn = session._subViewFiles[k]._langName.c_str();
-			int id = getLangFromMenuName(pLn);
+			int id = getLangFromMenuNameCached(pLn);
 			LangType typeToSet = L_TEXT;
 
 			if (id != 0)
@@ -2764,18 +2791,22 @@ bool Notepad_plus::loadSession(Session & session, bool isSnapshotMode, const wch
 
 			//Force in the document so we can add the markers
 			//Don't use default methods because of performance
-			Document prevDoc = _subEditView.execute(SCI_GETDOCPOINTER);
-			unsigned long MODEVENTMASK_ON = nppParam.getScintillaModEventMask();
-			_subEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
-			_subEditView.execute(SCI_SETDOCPOINTER, 0, buf->getDocument());
-			_subEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
-			for (size_t j = 0, len = session._subViewFiles[k]._marks.size(); j < len ; ++j)
+			//Swapping the document of a visible view is not free, so only do it when there are bookmarks to restore
+			if (!session._subViewFiles[k]._marks.empty())
 			{
-				_subEditView.execute(SCI_MARKERADD, session._subViewFiles[k]._marks[j], MARK_BOOKMARK);
+				Document prevDoc = _subEditView.execute(SCI_GETDOCPOINTER);
+				unsigned long MODEVENTMASK_ON = nppParam.getScintillaModEventMask();
+				_subEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
+				_subEditView.execute(SCI_SETDOCPOINTER, 0, buf->getDocument());
+				_subEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
+				for (size_t j = 0, len = session._subViewFiles[k]._marks.size(); j < len ; ++j)
+				{
+					_subEditView.execute(SCI_MARKERADD, session._subViewFiles[k]._marks[j], MARK_BOOKMARK);
+				}
+				_subEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
+				_subEditView.execute(SCI_SETDOCPOINTER, 0, prevDoc);
+				_subEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
 			}
-			_subEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_OFF);
-			_subEditView.execute(SCI_SETDOCPOINTER, 0, prevDoc);
-			_subEditView.execute(SCI_SETMODEVENTMASK, MODEVENTMASK_ON);
 
 			++k;
 		}
@@ -2792,6 +2823,8 @@ bool Notepad_plus::loadSession(Session & session, bool isSnapshotMode, const wch
 		_subEditView.syncFoldStateWith(session._subViewFiles[subIndex2Update]._foldStates);
 		_isFolding = false;
 	}
+
+	DocTabView::endBatchUpdate();
 
 	_mainEditView.restoreCurrentPosPreStep();
 	_subEditView.restoreCurrentPosPreStep();
