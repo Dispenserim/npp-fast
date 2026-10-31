@@ -42,6 +42,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <vector>
 #include <array>
 
@@ -2201,7 +2202,7 @@ static DWORD WINAPI getFileAttributesExWorker(void* data)
 // True for a plain "X:\..." path on a local fixed (or RAM) drive. Those can't hang the way network shares,
 // removable or optical drives can, so they don't need the thread-with-timeout protection below.
 // The drive type is cached for a few seconds per drive letter, since querying it isn't free either.
-static bool isLocalFixedDrivePath(const wchar_t* path)
+bool isLocalFixedDrivePath(const wchar_t* path)
 {
 	if (!path || !path[0] || path[1] != L':' || (path[2] != L'\\' && path[2] != L'/'))
 		return false;
@@ -2285,6 +2286,90 @@ BOOL getFileAttributesExWithTimeout(const wchar_t* filePath, WIN32_FILE_ATTRIBUT
 		*pdwWin32ApiError = data._error;
 
 	return data._result;
+}
+
+struct FilePrefetcher::State
+{
+	std::vector<std::wstring> _paths;
+	std::atomic<size_t> _next{ 0 };
+	std::atomic<bool> _stop{ false };
+	std::vector<std::thread> _workers;
+};
+
+FilePrefetcher::FilePrefetcher(const std::vector<std::wstring>& paths)
+{
+	constexpr size_t minFilesWorthIt = 2;
+	constexpr ULONGLONG maxFileSizeToPrefetch = 64ULL * 1024 * 1024;
+
+	std::vector<std::wstring> toPrefetch;
+	for (const auto& path : paths)
+	{
+		if (isLocalFixedDrivePath(path.c_str()))
+			toPrefetch.push_back(path);
+	}
+	if (toPrefetch.size() < minFilesWorthIt)
+		return;
+
+	_state = new State;
+	_state->_paths = std::move(toPrefetch);
+
+	const unsigned int hwThreads = std::thread::hardware_concurrency();
+	const size_t nbWorkers = std::min<size_t>({ static_cast<size_t>(hwThreads ? hwThreads : 2), 8, _state->_paths.size() });
+
+	State* state = _state;
+	auto worker = [state, maxFileSizeToPrefetch]()
+	{
+		std::vector<char> chunk(256 * 1024);
+		for (;;)
+		{
+			if (state->_stop.load(std::memory_order_relaxed))
+				return;
+
+			const size_t i = state->_next.fetch_add(1, std::memory_order_relaxed);
+			if (i >= state->_paths.size())
+				return;
+
+			HANDLE hFile = ::CreateFileW(state->_paths[i].c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+				nullptr, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
+			if (hFile == INVALID_HANDLE_VALUE)
+				continue;
+
+			LARGE_INTEGER size{};
+			if (::GetFileSizeEx(hFile, &size) && static_cast<ULONGLONG>(size.QuadPart) <= maxFileSizeToPrefetch)
+			{
+				DWORD nbRead = 0;
+				while (!state->_stop.load(std::memory_order_relaxed)
+					&& ::ReadFile(hFile, chunk.data(), static_cast<DWORD>(chunk.size()), &nbRead, nullptr) && nbRead > 0)
+				{
+				}
+			}
+			::CloseHandle(hFile);
+		}
+	};
+
+	try
+	{
+		for (size_t w = 0; w < nbWorkers; ++w)
+			_state->_workers.emplace_back(worker);
+	}
+	catch (...)
+	{
+		// could not start (more) threads: the prefetch is optional, so just go on with what we have
+	}
+}
+
+FilePrefetcher::~FilePrefetcher()
+{
+	if (!_state)
+		return;
+
+	_state->_stop.store(true, std::memory_order_relaxed);
+	for (auto& t : _state->_workers)
+	{
+		if (t.joinable())
+			t.join();
+	}
+	delete _state;
 }
 
 bool doesFileExist(const wchar_t* filePath, DWORD milliSec2wait, bool* isTimeoutReached)

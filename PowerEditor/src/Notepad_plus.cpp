@@ -4754,6 +4754,7 @@ void Notepad_plus::dropFiles(HDROP hdrop)
 		{
 			BufferID lastOpened = BUFFER_INVALID;
 			{
+				FilePrefetcher prefetcher(filePaths); // read the files ahead on worker threads
 				DocTabBatchUpdate batchUpdate; // one window relayout for all the dropped files
 				for (int i = 0; i < filesDropped; ++i)
 				{
@@ -7147,6 +7148,7 @@ std::vector<wstring> Notepad_plus::loadCommandlineParams(const wchar_t * command
 	std::optional<DocTabBatchUpdate> batchUpdate;
 	if (lineNumber < 0 && positionNumber < 0)
 		batchUpdate.emplace();
+	FilePrefetcher prefetcher(fnss.getFileNames()); // read the files ahead on worker threads
 	for (int i = 0, len = fnss.size(); i < len ; ++i)
 	{
 		const wchar_t *pFn = fnss.getFileName(i);

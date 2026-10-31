@@ -271,6 +271,26 @@ bool doesFileExist(const wchar_t* filePath, DWORD milliSec2wait = 0, bool* isTim
 bool doesDirectoryExist(const wchar_t* dirPath, DWORD milliSec2wait = 0, bool* isTimeoutReached = nullptr);
 bool doesPathExist(const wchar_t* path, DWORD milliSec2wait = 0, bool* isTimeoutReached = nullptr);
 
+// True for a plain "X:\\..." path on a local fixed (or RAM) drive, i.e. a path that can't hang on access.
+bool isLocalFixedDrivePath(const wchar_t* path);
+
+// Reads files on background threads, ahead of a sequential open on the main thread, so that the main thread
+// mostly finds them in the OS file cache (and already scanned by the antivirus). Only files on local fixed
+// drives are prefetched (others could hang a worker). Purely an optimisation: nothing read here is used directly.
+// The destructor stops the workers (they check between chunks) and waits for them.
+class FilePrefetcher
+{
+public:
+	explicit FilePrefetcher(const std::vector<std::wstring>& paths);
+	~FilePrefetcher();
+	FilePrefetcher(const FilePrefetcher&) = delete;
+	FilePrefetcher& operator=(const FilePrefetcher&) = delete;
+
+private:
+	struct State;
+	State* _state = nullptr;
+};
+
 
 // check if the window rectangle intersects with any currently active monitor's working area
 bool isWindowVisibleOnAnyMonitor(const RECT& rectWndIn);

@@ -4073,6 +4073,10 @@ void Notepad_plus::command(int id)
 			BufferID lastOne = BUFFER_INVALID;
 			int size = _lastRecentFileList.getSize();
 			{
+				std::vector<std::wstring> recentFiles;
+				for (int i = size - 1; i >= 0; i--)
+					recentFiles.push_back(_lastRecentFileList.getIndex(i));
+				FilePrefetcher prefetcher(recentFiles); // read the files ahead on worker threads
 				DocTabBatchUpdate batchUpdate; // one window relayout for all the opened files
 				for (int i = size - 1; i >= 0; i--)
 				{

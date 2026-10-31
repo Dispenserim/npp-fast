@@ -28,6 +28,7 @@
 #include <ctime>
 #include <cwchar>
 #include <cwctype>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -556,6 +557,7 @@ BufferID Notepad_plus::doOpen(const wstring& fileName, bool isRecursive, bool is
 
             if (ok2Open)
             {
+                FilePrefetcher prefetcher(fileNames); // read the files ahead on worker threads
                 DocTabBatchUpdate batchUpdate; // one window relayout for all the opened files
                 for (size_t i = 0 ; i < nbFiles2Open ; ++i)
                     doOpen(fileNames[i]);
@@ -2342,6 +2344,7 @@ void Notepad_plus::fileOpen()
 	const auto& fns = fDlg.doOpenMultiFilesDlg();
 	size_t sz = fns.size();
 	{
+		FilePrefetcher prefetcher(fns); // read the files ahead on worker threads
 		DocTabBatchUpdate batchUpdate; // one window relayout for all the opened files
 		for (size_t i = 0 ; i < sz ; ++i)
 		{
@@ -2477,6 +2480,16 @@ bool Notepad_plus::loadSession(Session & session, bool isSnapshotMode, const wch
 	// One window relayout for all the session files instead of one per file.
 	// Ended before the positions are restored and the active buffers are set, so these see the final layout.
 	DocTabView::beginBatchUpdate();
+
+	// Read the session files ahead on worker threads, while they are opened one by one below.
+	std::vector<std::wstring> sessionFilePaths;
+	sessionFilePaths.reserve(session._mainViewFiles.size() + session._subViewFiles.size());
+	for (const auto& sfi : session._mainViewFiles)
+		sessionFilePaths.push_back(sfi._fileName);
+	for (const auto& sfi : session._subViewFiles)
+		sessionFilePaths.push_back(sfi._fileName);
+	std::optional<FilePrefetcher> prefetcher;
+	prefetcher.emplace(sessionFilePaths);
 
 	for (size_t i = 0; i < session.nbMainFiles() ; )
 	{
@@ -2762,6 +2775,7 @@ bool Notepad_plus::loadSession(Session & session, bool isSnapshotMode, const wch
 		_isFolding = false;
 	}
 
+	prefetcher.reset();
 	DocTabView::endBatchUpdate();
 
 	_mainEditView.restoreCurrentPosPreStep();
